@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Nagger.Interfaces;
-using Nagger.Models;
-
-namespace Nagger.Services
+﻿namespace Nagger.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Interfaces;
+    using Models;
+
     public class TimeService : ITimeService
     {
-        private readonly ILocalTimeRepository _localTimeRepository;
-        private readonly ILocalTaskRepository _localTaskRepository;
-        private readonly IRemoteTimeRepository _remoteTimeRepository;
+        readonly ILocalTimeRepository _localTimeRepository;
+        readonly ILocalTaskRepository _localTaskRepository;
+        readonly IRemoteTimeRepository _remoteTimeRepository;
 
-        public TimeService(ILocalTimeRepository localTimeRepository, ILocalTaskRepository localTaskRepository, 
+        public TimeService(ILocalTimeRepository localTimeRepository, ILocalTaskRepository localTaskRepository,
             IRemoteTimeRepository remoteTimeRepository)
         {
             _localTaskRepository = localTaskRepository;
@@ -20,17 +20,17 @@ namespace Nagger.Services
             _remoteTimeRepository = remoteTimeRepository;
         }
 
-        public void RecordTime(TimeEntry timeEntry) 
+        public void RecordTime(TimeEntry timeEntry)
         {
             _localTimeRepository.RecordTime(timeEntry);
         }
 
-        public TimeEntry GetLastTimeEntry() 
+        public TimeEntry GetLastTimeEntry()
         {
             return _localTimeRepository.GetLastTimeEntry();
         }
 
-        private static bool EntriesAreForSameTask(TimeEntry firstEntry, TimeEntry secondEntry) 
+        static bool EntriesAreForSameTask(TimeEntry firstEntry, TimeEntry secondEntry)
         {
             // first check if the entries have a task
             // if they do check if the task ids are the same
@@ -39,15 +39,15 @@ namespace Nagger.Services
             return firstEntry.Task.Id == secondEntry.Task.Id;
         }
 
-        private static TimeEntry UpdateEntryWithTimeDifference(TimeEntry first, TimeEntry second)
+        static TimeEntry UpdateEntryWithTimeDifference(TimeEntry first, TimeEntry second)
         {
             // get the difference between the two entries and update the first
             var timeDifference = second.TimeRecorded - first.TimeRecorded;
-            first.MinutesSpent += (int)timeDifference.TotalMinutes;
+            first.MinutesSpent += (int) timeDifference.TotalMinutes;
             return first;
         }
 
-        public void SyncWithRemote() 
+        public void SyncWithRemote()
         {
             // Squash the time.
             SquashTime();
@@ -65,7 +65,7 @@ namespace Nagger.Services
             }
         }
 
-        public void SquashTime() 
+        public void SquashTime()
         {
             // get all time entries that have not been synced
             var unsyncedEntries = _localTimeRepository.GetUnsyncedEntries().OrderBy(x => x.TimeRecorded);
@@ -75,11 +75,11 @@ namespace Nagger.Services
             TimeEntry firstEntryForTask = null;
             var squashedEntries = new List<TimeEntry>();
             var entriesToRemove = new List<TimeEntry>();
-            foreach (var entry in unsyncedEntries) 
+            foreach (var entry in unsyncedEntries)
             {
                 if (currentDate == DateTime.MinValue) currentDate = entry.TimeRecorded.Date;
 
-                if (currentDate != entry.TimeRecorded.Date) 
+                if (currentDate != entry.TimeRecorded.Date)
                 {
                     currentDate = entry.TimeRecorded.Date;
                     firstEntryForTask = null;
@@ -93,7 +93,7 @@ namespace Nagger.Services
                 {
                     entriesToRemove.Add(entry);
                 }
-                else 
+                else
                 {
                     // question: what about lunches in the middle of the day? if there are no entries in the DB then how can you track lunches and breaks?
                     squashedEntries.Add(firstEntryForTask);
@@ -114,12 +114,16 @@ namespace Nagger.Services
         }
 
         // todo: remove
+
         #region Test_Stuff
-        public TimeEntry GetTestTimeEntry() 
+
+        public TimeEntry GetTestTimeEntry()
         {
             var testTask = _localTaskRepository.GetTestTask();
-            return new TimeEntry(testTask, _localTimeRepository.GetNaggingInterval(), "just a testing entry"+System.Guid.NewGuid());
+            return new TimeEntry(testTask, _localTimeRepository.GetNaggingInterval(),
+                "just a testing entry" + System.Guid.NewGuid());
         }
+
         #endregion
     }
 }

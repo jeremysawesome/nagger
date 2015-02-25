@@ -1,11 +1,11 @@
-﻿using Nagger.Data.JIRA.API;
-using Nagger.Models;
-
-namespace Nagger.Data.JIRA
+﻿namespace Nagger.Data.JIRA
 {
+    using API;
+    using Models;
+
     public class JiraSprintApi : JiraBaseApi
     {
-        private const string ApiUrl = "https://www.example.com/rest/greenhopper/latest";
+        const string ApiUrl = "https://www.example.com/rest/greenhopper/latest";
 
         public JiraSprintApi(User user)
             : base(user, ApiUrl)

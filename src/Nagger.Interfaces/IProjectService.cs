@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using Nagger.Models;
-
-namespace Nagger.Interfaces
+﻿namespace Nagger.Interfaces
 {
+    using System.Collections.Generic;
+    using Models;
+
     public interface IProjectService
     {
-	    IEnumerable<Project> GetProjects();
+        IEnumerable<Project> GetProjects();
     }
 }

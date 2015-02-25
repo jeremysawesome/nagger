@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Nagger.Models
+﻿namespace Nagger.Models
 {
+    using System.Collections.Generic;
+    using System.Linq;
+
     public class Task
     {
         public string Id { get; set; }
@@ -13,7 +13,14 @@ namespace Nagger.Models
 
         public Project Project { get; set; }
 
-        public bool HasTasks { get { return Tasks != null && Tasks.Any(); } }
-        public bool HasParent { get { return Parent != null; } }
+        public bool HasTasks
+        {
+            get { return Tasks != null && Tasks.Any(); }
+        }
+
+        public bool HasParent
+        {
+            get { return Parent != null; }
+        }
     }
 }

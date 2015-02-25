@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Nagger.Interfaces;
-using Nagger.Models;
-
-namespace Nagger.Data.Fake
+﻿namespace Nagger.Data.Fake
 {
+    using System;
+    using System.Collections.Generic;
+    using Interfaces;
+    using Models;
+
     public class FakeRemoteTaskRepository : IRemoteTaskRepository
     {
         public IEnumerable<Task> GetTasks()
@@ -38,7 +38,7 @@ namespace Nagger.Data.Fake
             throw new NotImplementedException();
         }
 
-        private static Task GetTask(string id, string name, Task parent = null)
+        static Task GetTask(string id, string name, Task parent = null)
         {
             return new Task
             {

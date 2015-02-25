@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace Nagger.Data.JIRA.DTO
+﻿namespace Nagger.Data.JIRA.DTO
 {
+    using System.Collections.Generic;
+
     public class IssueFields
     {
         public string summary { get; set; }

@@ -1,10 +1,10 @@
-﻿using Nagger.Interfaces;
-
-namespace Nagger.Services
+﻿namespace Nagger.Services
 {
-    public class SettingsService :ISettingsService
+    using Interfaces;
+
+    public class SettingsService : ISettingsService
     {
-        private readonly ISettingsRepository _settingsRepository;
+        readonly ISettingsRepository _settingsRepository;
 
         public SettingsService(ISettingsRepository settingsRepository)
         {

@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Authentication;
-using Nagger.Data.JIRA.API;
-using Nagger.Interfaces;
-using Nagger.Models;
-using RestSharp;
-
-namespace Nagger.Data.JIRA
+﻿namespace Nagger.Data.JIRA
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Authentication;
+    using API;
+    using Interfaces;
+    using Models;
+    using RestSharp;
+
     public class JiraRemoteProjectRepository : BaseJiraRepository, IRemoteProjectRepository
     {
-        private readonly JiraApi _api;
+        readonly JiraApi _api;
 
         public JiraRemoteProjectRepository(ISettingsService settingsService)
             : base(settingsService)

@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Authentication;
-using System.Text;
-using Nagger.Data;
-using Nagger.Data.Fake;
-using Nagger.Data.JIRA;
-using Nagger.Interfaces;
-using Nagger.Models;
-using Nagger.Services;
-
-namespace Nagger
+﻿namespace Nagger
 {
-    class Program
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Authentication;
+    using System.Text;
+    using Data;
+    using Data.JIRA;
+    using Interfaces;
+    using Models;
+    using Services;
+
+    internal class Program
     {
         // jira documentation for api:
         //https://docs.atlassian.com/jira/REST/latest/#id165531
@@ -27,14 +25,13 @@ namespace Nagger
 
         static ITaskService _taskService;
         static ITimeService _timeService;
-        private static IProjectService _projectService;
+        static IProjectService _projectService;
 
         static IRemoteTimeRepository _testRemote;
-        private static ISettingsService _settingsService;
+        static ISettingsService _settingsService;
 
-        private static void Setup() 
+        static void Setup()
         {
-
             // for DI with unity refer to http://geekswithblogs.net/danielggarcia/archive/2014/01/23/introduction-to-dependency-injection-with-unity.aspx
 
             var localTaskRepo = new LocalTaskRepository();
@@ -55,13 +52,13 @@ namespace Nagger
             _projectService = new ProjectService(localProjectRepo, remoteProjectRepository);
         }
 
-        private static void PopulateTestData() 
+        static void PopulateTestData()
         {
             PopulateTestData(DateTime.Now);
             PopulateTestData(DateTime.Today.AddDays(4));
         }
 
-        private static void PopulateTestData(DateTime timeRecorded) 
+        static void PopulateTestData(DateTime timeRecorded)
         {
             const int numEntries = 10;
             for (var i = 0; i < numEntries; i++)
@@ -69,7 +66,7 @@ namespace Nagger
                 var entry = _timeService.GetTestTimeEntry();
                 entry.TimeRecorded = timeRecorded;
                 entry.TimeRecorded = entry.TimeRecorded.AddHours(i); //add some time
-                if (i % 3 == 0) 
+                if (i%3 == 0)
                 {
                     var task = _taskService.GetTestTask();
                     task.Id = "test";
@@ -105,7 +102,7 @@ namespace Nagger
             Console.WriteLine("Id: {0}", timeEntry.Id);
             Console.WriteLine("timeRecorded: {0}", timeEntry.TimeRecorded);*/
 
-           /* var newTask = new Task() {
+            /* var newTask = new Task() {
                 Id = "12394",
                 Name = "Finalize fixes from Sprint 5 review (PR #180)"
             };
@@ -122,9 +119,9 @@ namespace Nagger
             _testRemote.RecordTime(newEntry);*/
             try
             {
-                Setup();   
+                Setup();
             }
-            catch(InvalidCredentialException ex)
+            catch (InvalidCredentialException ex)
             {
                 /**
                  * Obviously credentials will need to be handled better in the actual interface. But for the "testing" console
@@ -169,7 +166,8 @@ namespace Nagger
 
         #region OutputTasks
 
-        private static string OutputTasks(IEnumerable<Task> tasks) {
+        static string OutputTasks(IEnumerable<Task> tasks)
+        {
             var sb = new StringBuilder();
 
             sb.AppendLine("Outputting Tasks...");
@@ -183,23 +181,26 @@ namespace Nagger
             return sb.ToString();
         }
 
-        private static string TaskString(Task task)
+        static string TaskString(Task task)
         {
             var beginningSpace = string.Empty;
 
             var checkingTask = task;
-            while (checkingTask.HasParent) {
+            while (checkingTask.HasParent)
+            {
                 beginningSpace += "  ";
                 checkingTask = checkingTask.Parent;
             }
 
-            return String.Format("{0}Name: {1} || id: {2} || HasTasks: {3} {4}", beginningSpace, task.Name, task.Id, task.HasTasks, Environment.NewLine);
+            return String.Format("{0}Name: {1} || id: {2} || HasTasks: {3} {4}", beginningSpace, task.Name, task.Id,
+                task.HasTasks, Environment.NewLine);
         }
+
         #endregion
 
         #region OutputProjects
 
-        private static string OutputProjects(IEnumerable<Project> projects)
+        static string OutputProjects(IEnumerable<Project> projects)
         {
             var sb = new StringBuilder();
 

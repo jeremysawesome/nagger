@@ -1,20 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Nagger.Data.JIRA.API;
-using Nagger.Data.JIRA.DTO;
-using Nagger.Interfaces;
-using Nagger.Models;
-using RestSharp;
-using Project = Nagger.Models.Project;
-
-namespace Nagger.Data.JIRA
+﻿namespace Nagger.Data.JIRA
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using API;
+    using DTO;
+    using Interfaces;
+    using Models;
+    using RestSharp;
+    using Project = Models.Project;
+
     public class JiraRemoteTaskRepository : IRemoteTaskRepository
     {
-        private readonly JiraApi _api;
+        readonly JiraApi _api;
         // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
-        private readonly BaseJiraRepository _baseJiraRepository;
+        readonly BaseJiraRepository _baseJiraRepository;
 
         public JiraRemoteTaskRepository(BaseJiraRepository baseJiraRepository)
         {

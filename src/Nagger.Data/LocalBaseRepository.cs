@@ -1,7 +1,7 @@
-﻿using System.Data.SQLite;
-
-namespace Nagger.Data
+﻿namespace Nagger.Data
 {
+    using System.Data.SQLite;
+
     public abstract class LocalBaseRepository
     {
         protected SQLiteConnection GetConnection()

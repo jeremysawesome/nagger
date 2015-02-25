@@ -1,10 +1,12 @@
-﻿using System;
-
-namespace Nagger.Models
+﻿namespace Nagger.Models
 {
+    using System;
+
     public class TimeEntry
     {
-        public TimeEntry() { }
+        public TimeEntry()
+        {
+        }
 
         public TimeEntry(Task task, string comment = null)
         {
@@ -14,7 +16,7 @@ namespace Nagger.Models
             Project = task.Project;
         }
 
-        public TimeEntry(Project project, int minutesSpent, string comment = null) 
+        public TimeEntry(Project project, int minutesSpent, string comment = null)
         {
             TimeRecorded = DateTime.Now;
             Project = project;
@@ -22,7 +24,7 @@ namespace Nagger.Models
             Comment = comment;
         }
 
-        public TimeEntry(Task task, int minutesSpent, string comment = null) 
+        public TimeEntry(Task task, int minutesSpent, string comment = null)
         {
             TimeRecorded = DateTime.Now;
             Task = task;
@@ -39,7 +41,11 @@ namespace Nagger.Models
         public Project Project { get; set; }
         public bool Synced { get; set; }
 
-        public bool HasTask { get { return Task != null; } }
+        public bool HasTask
+        {
+            get { return Task != null; }
+        }
+
         // note: no need to add a "user" we are going to work under the assumption that there is only one user
     }
 }

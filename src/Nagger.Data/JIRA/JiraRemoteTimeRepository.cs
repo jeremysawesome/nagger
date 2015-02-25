@@ -1,12 +1,12 @@
-﻿using System;
-using Nagger.Interfaces;
-using Nagger.Models;
-
-namespace Nagger.Data.JIRA
+﻿namespace Nagger.Data.JIRA
 {
+    using System;
+    using Interfaces;
+    using Models;
+
     public class JiraRemoteTimeRepository : BaseJiraRepository, IRemoteTimeRepository
     {
-        private const string apiUrl = "https://www.example.com/rest/api/latest";
+        const string apiUrl = "https://www.example.com/rest/api/latest";
         // insert a worklog in Jira
         /*        {
             "self": "http://www.example.com/jira/rest/api/2/issue/10010/worklog/10000",
@@ -50,7 +50,7 @@ namespace Nagger.Data.JIRA
         }
 
         // let's see if we can post this to JIRA without needing the "self" url
-        private class JiraTimeEntry
+        class JiraTimeEntry
         {
             public JiraTimeEntry(TimeEntry entry)
             {

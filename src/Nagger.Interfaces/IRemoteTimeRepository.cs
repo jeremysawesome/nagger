@@ -1,7 +1,7 @@
-﻿using Nagger.Models;
-
-namespace Nagger.Interfaces
+﻿namespace Nagger.Interfaces
 {
+    using Models;
+
     public interface IRemoteTimeRepository
     {
         bool RecordTime(TimeEntry timeEntry);

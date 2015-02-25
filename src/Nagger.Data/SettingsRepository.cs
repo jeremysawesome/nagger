@@ -1,7 +1,7 @@
-﻿using Nagger.Interfaces;
-
-namespace Nagger.Data
+﻿namespace Nagger.Data
 {
+    using Interfaces;
+
     public class SettingsRepository : LocalBaseRepository, ISettingsRepository
     {
         public T GetSetting<T>(string name)

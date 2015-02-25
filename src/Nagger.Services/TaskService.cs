@@ -1,40 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using Nagger.Interfaces;
-using Nagger.Models;
-
-namespace Nagger.Services
+﻿namespace Nagger.Services
 {
+    using System.Collections.Generic;
+    using Interfaces;
+    using Models;
+
     public class TaskService : ITaskService
     {
-        private readonly ILocalTaskRepository _localTaskRepository;
-        private readonly IRemoteTaskRepository _remoteTaskRepository;
+        readonly ILocalTaskRepository _localTaskRepository;
+        readonly IRemoteTaskRepository _remoteTaskRepository;
 
-        public TaskService(ILocalTaskRepository localTaskRepository, IRemoteTaskRepository remoteTaskRepository) 
+        public TaskService(ILocalTaskRepository localTaskRepository, IRemoteTaskRepository remoteTaskRepository)
         {
             _localTaskRepository = localTaskRepository;
             _remoteTaskRepository = remoteTaskRepository;
         }
 
-        public Task GetLastTask() 
+        public Task GetLastTask()
         {
             return _localTaskRepository.GetLastTask();
         }
 
-        public void StoreTask(Task task) 
+        public void StoreTask(Task task)
         {
             _localTaskRepository.StoreTask(task);
         }
 
-        public void SyncTasksWithRemote() 
+        public void SyncTasksWithRemote()
         {
             //todo: figure out if there is a way to retrieve only the unsynced tasks... 
             // maybe pass in a last task id? assuming the remote task repo creates tasks in order?
             // maybe only get tasks that are greater than a certain date?
             var remoteTasks = _remoteTaskRepository.GetTasks();
 
-            foreach (var task in remoteTasks) 
-            { 
+            foreach (var task in remoteTasks)
+            {
                 _localTaskRepository.StoreTask(task);
             }
         }

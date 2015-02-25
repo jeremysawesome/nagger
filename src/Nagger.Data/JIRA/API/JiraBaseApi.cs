@@ -1,13 +1,13 @@
-﻿using System;
-using Nagger.Models;
-using RestSharp;
-
-namespace Nagger.Data.JIRA.API
+﻿namespace Nagger.Data.JIRA.API
 {
+    using System;
+    using Models;
+    using RestSharp;
+
     public class JiraBaseApi
     {
-        private readonly string _apiUrl;
-        private readonly User _user;
+        readonly string _apiUrl;
+        readonly User _user;
 
         public JiraBaseApi(User user, string apiUrl)
         {
@@ -25,7 +25,7 @@ namespace Nagger.Data.JIRA.API
             throw new ApplicationException("Error retrieving data from Jira", response.ErrorException);
         }
 
-        private RestClient GetClient()
+        RestClient GetClient()
         {
             return new RestClient
             {

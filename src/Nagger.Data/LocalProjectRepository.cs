@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using Nagger.Interfaces;
-using Nagger.Models;
-
-namespace Nagger.Data
+﻿namespace Nagger.Data
 {
+    using System.Collections.Generic;
+    using Interfaces;
+    using Models;
+
     public class LocalProjectRepository : LocalBaseRepository, ILocalProjectRepository
     {
         public Project GetProjectById(string id)

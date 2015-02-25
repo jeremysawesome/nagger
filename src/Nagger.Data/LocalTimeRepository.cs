@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Nagger.Interfaces;
-using Nagger.Models;
-
-namespace Nagger.Data
+﻿namespace Nagger.Data
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Interfaces;
+    using Models;
+
     public class LocalTimeRepository : LocalBaseRepository, ILocalTimeRepository
     {
-        private readonly ILocalTaskRepository _localTaskRepository;
+        readonly ILocalTaskRepository _localTaskRepository;
 
         public LocalTimeRepository(ILocalTaskRepository localTaskRepository)
         {

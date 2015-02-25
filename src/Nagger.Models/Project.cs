@@ -6,7 +6,7 @@
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public string Key { get; set; } 
+        public string Key { get; set; }
         /*public IEnumerable<Task> Tasks { get; set; }
 
         public bool HasTasks { get { return Tasks.Any(); } }*/

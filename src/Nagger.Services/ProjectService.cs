@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using Nagger.Interfaces;
-using Nagger.Models;
-
-namespace Nagger.Services
+﻿namespace Nagger.Services
 {
+    using System.Collections.Generic;
+    using Interfaces;
+    using Models;
+
     public class ProjectService : IProjectService
     {
-        private readonly ILocalProjectRepository _localProjectRepository;
-        private readonly IRemoteProjectRepository _remoteProjectRepository;
+        readonly ILocalProjectRepository _localProjectRepository;
+        readonly IRemoteProjectRepository _remoteProjectRepository;
 
         public ProjectService(ILocalProjectRepository localProjectRepository,
             IRemoteProjectRepository remoteProjectRepository)
@@ -22,7 +22,7 @@ namespace Nagger.Services
             return _localProjectRepository.GetProjects();
         }
 
-        private void SyncProjectsWithRemote()
+        void SyncProjectsWithRemote()
         {
             /**
              * Todo: look into a way to improve the way projects are retrieved. Ideally we would only pull the ones we don't have

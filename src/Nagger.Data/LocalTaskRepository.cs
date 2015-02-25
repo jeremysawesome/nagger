@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using Nagger.Interfaces;
-using Nagger.Models;
-
-namespace Nagger.Data
+﻿namespace Nagger.Data
 {
+    using System.Collections.Generic;
+    using Interfaces;
+    using Models;
+
     public class LocalTaskRepository : LocalBaseRepository, ILocalTaskRepository
     {
         public IEnumerable<Task> GetTasksByProject(Project project)
@@ -121,7 +121,7 @@ namespace Nagger.Data
             return task;
         }
 
-        private IEnumerable<Task> GetTaskChildren(Task parent)
+        IEnumerable<Task> GetTaskChildren(Task parent)
         {
             var tasks = new List<Task>();
             using (var cnn = GetConnection())
@@ -153,7 +153,7 @@ namespace Nagger.Data
             return tasks;
         }
 
-        private void StoreChildren(Task task)
+        void StoreChildren(Task task)
         {
             if (!task.HasTasks) return;
             foreach (var childTask in task.Tasks)
@@ -163,7 +163,7 @@ namespace Nagger.Data
             }
         }
 
-        private void StoreParents(Task task)
+        void StoreParents(Task task)
         {
             var currentTask = task;
             while (currentTask.Parent != null)
@@ -173,7 +173,7 @@ namespace Nagger.Data
             }
         }
 
-        private void InsertTask(Task task)
+        void InsertTask(Task task)
         {
             using (var cnn = GetConnection())
             using (var cmd = cnn.CreateCommand())

@@ -1,15 +1,15 @@
-﻿using System.Security.Authentication;
-using Nagger.Interfaces;
-using Nagger.Models;
-
-namespace Nagger.Data.JIRA
+﻿namespace Nagger.Data.JIRA
 {
+    using System.Security.Authentication;
+    using Interfaces;
+    using Models;
+
     public class BaseJiraRepository
     {
-        private const string UsernameKey = "JiraUsername";
-        private const string PasswordKey = "JiraPassword";
-        private readonly ISettingsService _settingsService;
-        private User _user;
+        const string UsernameKey = "JiraUsername";
+        const string PasswordKey = "JiraPassword";
+        readonly ISettingsService _settingsService;
+        User _user;
 
         public BaseJiraRepository(ISettingsService settingsService)
         {
@@ -31,7 +31,7 @@ namespace Nagger.Data.JIRA
             get { return JiraUser != null; }
         }
 
-        private User GetUser()
+        User GetUser()
         {
             var username = _settingsService.GetSetting<string>(UsernameKey);
             if (string.IsNullOrEmpty(username)) return null;
