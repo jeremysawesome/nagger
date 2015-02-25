@@ -32,15 +32,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.SQLite, Version=1.0.79.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\System.Data.SQLite.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ProjectService.cs" />
@@ -49,10 +40,6 @@
     <Compile Include="TimeService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Nagger.Data\Nagger.Data.csproj">
-      <Project>{bfc1a531-425d-41b4-b23e-e40b1bb81c39}</Project>
-      <Name>Nagger.Data</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Nagger.Interfaces\Nagger.Interfaces.csproj">
       <Project>{b6e0e8e1-438e-4a98-9382-364a478f149d}</Project>
       <Name>Nagger.Interfaces</Name>
