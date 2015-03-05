@@ -27,6 +27,13 @@
 
         public void SyncTasksWithRemote()
         {
+            /*
+             * So, I feel like SyncTasksWithRemote should only get the most recent tasks that we don't have.
+             * If there are a TON of tasks we don't have then it might take a long time.
+             * The question is, do we want to differentiate this functionality from an "importAllTasks" functionality?
+             */
+
+
             //todo: figure out if there is a way to retrieve only the unsynced tasks... 
             // maybe pass in a last task id? assuming the remote task repo creates tasks in order?
             // maybe only get tasks that are greater than a certain date?

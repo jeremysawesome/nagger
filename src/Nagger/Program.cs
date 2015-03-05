@@ -32,7 +32,7 @@
 
         static void Setup()
         {
-            // for DI with unity refer to http://geekswithblogs.net/danielggarcia/archive/2014/01/23/introduction-to-dependency-injection-with-unity.aspx
+            // use DI with autofaq
 
             var localTaskRepo = new LocalTaskRepository();
             var localTimeRepo = new LocalTimeRepository(localTaskRepo);
