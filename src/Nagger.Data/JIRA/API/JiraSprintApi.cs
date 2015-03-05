@@ -5,6 +5,7 @@
 
     public class JiraSprintApi : JiraBaseApi
     {
+        //todo: move the url out to a setting so this can be used by whomever
         const string ApiUrl = "https://www.example.com/rest/greenhopper/latest";
 
         public JiraSprintApi(User user)
