@@ -33,6 +33,8 @@
          * database). This should allow us to grab what we need (and only load the newest tasks).
 		**/
 
+        // quick note: It appears that "id" in JQL is equal to the Issue Key (ex: CAT-123) and not the actual Id that JIRA assigns to an issue
+
         public IEnumerable<Task> GetTasks(string lastTaskId = null)
         {
             //todo: add support for "all results" instead of the limit, maybe a "while more" loop?
