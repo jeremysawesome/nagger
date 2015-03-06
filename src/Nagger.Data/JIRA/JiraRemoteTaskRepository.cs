@@ -34,11 +34,16 @@
 		**/
 
         // quick note: It appears that "id" in JQL is equal to the Issue Key (ex: CAT-123) and not the actual Id that JIRA assigns to an issue
+        // - or.. to be more specific. the "id" can be either IssueKey or IssueId.
+
+        // more thoughts: It is possible for stories/tasks to be renamed, or even deleted. How are we going to handle this?
+
+        // potentially order by date created over the actual id. This seems to work: https://www.example.com/rest/api/latest/search?jql=order%20by%20created%20asc&fields=summary,parent
 
         public IEnumerable<Task> GetTasks(string lastTaskId = null)
         {
             //todo: add support for "all results" instead of the limit, maybe a "while more" loop?
-            //https://www.example.com/rest/api/latest/search?jql=project%3D%22ProjectName%22&fields=summary
+            //https://www.example.com/rest/api/latest/search?jql=project%3D%22ProjectName%22&fields=summary,parent
 
             var request = new RestRequest
             {
