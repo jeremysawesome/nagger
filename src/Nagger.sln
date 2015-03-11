@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nagger.Console", "Nagger\Nagger.Console.csproj", "{293A2A3E-090D-4EB4-A6FA-C3329B792E69}"
 EndProject
@@ -12,6 +12,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nagger.Services", "Nagger.Services\Nagger.Services.csproj", "{23A0BFD0-1EF1-4CEF-A5C9-41834BAF44AF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nagger.Data", "Nagger.Data\Nagger.Data.csproj", "{BFC1A531-425D-41B4-B23E-E40B1BB81C39}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B21125AD-8909-44E6-AE34-9F991D37E351}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nagger.Tests", "Nagger.Tests\Nagger.Tests.csproj", "{C73D56C1-7705-4130-921B-DA36FBCB9B16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,8 +43,15 @@ Global
 		{BFC1A531-425D-41B4-B23E-E40B1BB81C39}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFC1A531-425D-41B4-B23E-E40B1BB81C39}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFC1A531-425D-41B4-B23E-E40B1BB81C39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C73D56C1-7705-4130-921B-DA36FBCB9B16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C73D56C1-7705-4130-921B-DA36FBCB9B16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C73D56C1-7705-4130-921B-DA36FBCB9B16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C73D56C1-7705-4130-921B-DA36FBCB9B16}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C73D56C1-7705-4130-921B-DA36FBCB9B16} = {B21125AD-8909-44E6-AE34-9F991D37E351}
 	EndGlobalSection
 EndGlobal
