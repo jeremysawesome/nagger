@@ -1,4 +1,6 @@
-﻿namespace Nagger
+﻿using Autofac;
+
+namespace Nagger
 {
     using System;
     using System.Collections.Generic;
@@ -27,18 +29,31 @@
         // get all ProjectName issues
         // https://www.example.com/rest/api/latest/search?jql=project%3D%22ProjectName%22
 
-        static ITaskService _taskService;
-        static ITimeService _timeService;
-        static IProjectService _projectService;
+        static IContainer Container { get; set; }
 
-        static IRemoteTimeRepository _testRemote;
-        static ISettingsService _settingsService;
+        static void RegisterComponents(ContainerBuilder builder)
+        {
+            builder.RegisterType<JiraRemoteProjectRepository>().As<IRemoteProjectRepository>();
+            builder.RegisterType<JiraRemoteTaskRepository>().As<IRemoteTaskRepository>();
+            builder.RegisterType<JiraRemoteTimeRepository>().As<IRemoteTimeRepository>();
+
+            builder.RegisterType<LocalProjectRepository>().As<ILocalProjectRepository>();
+            builder.RegisterType<LocalTaskRepository>().As<ILocalTaskRepository>();
+            builder.RegisterType<LocalTimeRepository>().As<ILocalTimeRepository>();
+
+            builder.RegisterType<SettingsRepository>().As<ISettingsRepository>();
+
+            builder.RegisterType<ProjectService>().As<IProjectService>();
+            builder.RegisterType<SettingsService>().As<ISettingsService>();
+            builder.RegisterType<TaskService>().As<ITaskService>();
+            builder.RegisterType<TimeService>().As<ITimeService>();
+        }
 
         static void Setup()
         {
             // use DI with autofaq
 
-            var localTaskRepo = new LocalTaskRepository();
+            /*var localTaskRepo = new LocalTaskRepository();
             var localTimeRepo = new LocalTimeRepository(localTaskRepo);
             var localProjectRepo = new LocalProjectRepository();
 
@@ -53,7 +68,11 @@
 
             _taskService = new TaskService(localTaskRepo, jiraRemoteTaskRepo);
             _timeService = new TimeService(localTimeRepo, localTaskRepo, remoteTimeRepo);
-            _projectService = new ProjectService(localProjectRepo, remoteProjectRepository);
+            _projectService = new ProjectService(localProjectRepo, remoteProjectRepository);*/
+
+            var builder = new ContainerBuilder();
+            RegisterComponents(builder);
+            Container = builder.Build();
         }
 
         static void PopulateTestData()
