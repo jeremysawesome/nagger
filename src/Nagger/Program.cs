@@ -13,6 +13,10 @@
 
     internal class Program
     {
+        // note: Elysium can be used for WPF theming - seems like pretty easily
+        //http://bizvise.com/2012/09/27/how-to-create-metro-style-window-on-wpf-using-elysium/
+        
+        
         // jira documentation for api:
         //https://docs.atlassian.com/jira/REST/latest/#id165531
 
