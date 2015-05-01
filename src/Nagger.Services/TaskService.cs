@@ -1,0 +1,69 @@
+﻿using System;
+using System.Collections.Generic;
+using Nagger.Interfaces;
+using Nagger.Models;
+
+namespace Nagger.Services
+{
+    public class TaskService : ITaskService
+    {
+        private readonly ILocalTaskRepository _localTaskRepository;
+        private readonly IRemoteTaskRepository _remoteTaskRepository;
+
+        public TaskService(ILocalTaskRepository localTaskRepository, IRemoteTaskRepository remoteTaskRepository) 
+        {
+            _localTaskRepository = localTaskRepository;
+            _remoteTaskRepository = remoteTaskRepository;
+        }
+
+        public Task GetLastTask() 
+        {
+            return _localTaskRepository.GetLastTask();
+        }
+
+        public void StoreTask(Task task) 
+        {
+            _localTaskRepository.StoreTask(task);
+        }
+
+        public void SyncTasksWithRemote() 
+        {
+            //todo: figure out if there is a way to retrieve only the unsynced tasks... 
+            // maybe pass in a last task id? assuming the remote task repo creates tasks in order?
+            // maybe only get tasks that are greater than a certain date?
+            var remoteTasks = _remoteTaskRepository.GetTasks();
+
+            foreach (var task in remoteTasks) 
+            { 
+                _localTaskRepository.StoreTask(task);
+            }
+        }
+
+        /**
+         * Maybe we should only sync tasks once a day? Perhaps we can maintain a "TasksSynced" boolean?
+         * Or maybe we just sync the tasks before popping up any nagger messages?
+        **/
+
+        public IEnumerable<Task> GetTasks()
+        {
+            SyncTasksWithRemote();
+            return _localTaskRepository.GetTasks();
+        }
+
+        public IEnumerable<Task> GetTasksByProject(Project project)
+        {
+            return _localTaskRepository.GetTasksByProject(project);
+        }
+
+        public IEnumerable<Task> GetTasksByProjectId(string projectId)
+        {
+            return _localTaskRepository.GetTasks(projectId);
+        }
+
+        // todo: remove
+        public Task GetTestTask()
+        {
+            return _localTaskRepository.GetTestTask();
+        }
+    }
+}
