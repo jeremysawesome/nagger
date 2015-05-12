@@ -1,12 +1,10 @@
-﻿using Autofac;
-
-namespace Nagger
+﻿namespace Nagger
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Security.Authentication;
     using System.Text;
+    using Autofac;
     using Data;
     using Data.JIRA;
     using Interfaces;
