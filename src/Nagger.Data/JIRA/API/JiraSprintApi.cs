@@ -6,10 +6,10 @@
     public class JiraSprintApi : JiraBaseApi
     {
         //todo: move the url out to a setting so this can be used by whomever
-        const string ApiUrl = "https://www.example.com/rest/greenhopper/latest";
+        const string ApiUrlPath = "/rest/greenhopper/latest";
 
-        public JiraSprintApi(User user)
-            : base(user, ApiUrl)
+        public JiraSprintApi(User user, string apiBaseUrl)
+            : base(user, apiBaseUrl, ApiUrlPath)
         {
             // maybe refactor this sucker down the road?
         }

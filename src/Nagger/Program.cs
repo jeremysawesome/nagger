@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Runtime.Remoting.Messaging;
     using System.Security.Authentication;
     using System.Text;
     using Autofac;
@@ -15,8 +17,8 @@
     {
         // note: Elysium can be used for WPF theming - seems like pretty easily
         //http://bizvise.com/2012/09/27/how-to-create-metro-style-window-on-wpf-using-elysium/
-        
-        
+
+
         // jira documentation for api:
         //https://docs.atlassian.com/jira/REST/latest/#id165531
 
@@ -45,29 +47,13 @@
             builder.RegisterType<SettingsService>().As<ISettingsService>();
             builder.RegisterType<TaskService>().As<ITaskService>();
             builder.RegisterType<TimeService>().As<ITimeService>();
+            builder.RegisterType<InputService>().As<IInputService>();
+
+            builder.RegisterType<BaseJiraRepository>();
         }
 
         static void Setup()
         {
-            // use DI with autofaq
-
-            /*var localTaskRepo = new LocalTaskRepository();
-            var localTimeRepo = new LocalTimeRepository(localTaskRepo);
-            var localProjectRepo = new LocalProjectRepository();
-
-            //var fakeRemoteTaskRepo = new FakeRemoteTaskRepository();
-            var settingsRepository = new SettingsRepository();
-            _settingsService = new SettingsService(settingsRepository);
-            var baseJiraRepository = new BaseJiraRepository(_settingsService);
-            var jiraRemoteTaskRepo = new JiraRemoteTaskRepository(baseJiraRepository);
-
-            var remoteTimeRepo = new JiraRemoteTimeRepository(_settingsService);
-            var remoteProjectRepository = new JiraRemoteProjectRepository(_settingsService);
-
-            _taskService = new TaskService(localTaskRepo, jiraRemoteTaskRepo);
-            _timeService = new TimeService(localTimeRepo, localTaskRepo, remoteTimeRepo);
-            _projectService = new ProjectService(localProjectRepo, remoteProjectRepository);*/
-
             var builder = new ContainerBuilder();
             RegisterComponents(builder);
             Container = builder.Build();
@@ -81,20 +67,25 @@
 
         static void PopulateTestData(DateTime timeRecorded)
         {
-            const int numEntries = 10;
-            for (var i = 0; i < numEntries; i++)
+            using (var scope = Container.BeginLifetimeScope())
             {
-                var entry = _timeService.GetTestTimeEntry();
-                entry.TimeRecorded = timeRecorded;
-                entry.TimeRecorded = entry.TimeRecorded.AddHours(i); //add some time
-                if (i%3 == 0)
+                var timeService = scope.Resolve<ITimeService>();
+                var taskService = scope.Resolve<ITaskService>();
+                const int numEntries = 10;
+                for (var i = 0; i < numEntries; i++)
                 {
-                    var task = _taskService.GetTestTask();
-                    task.Id = "test";
-                    task.Name = "test";
-                    entry.Task = task;
+                    var entry = timeService.GetTestTimeEntry();
+                    entry.TimeRecorded = timeRecorded;
+                    entry.TimeRecorded = entry.TimeRecorded.AddHours(i); //add some time
+                    if (i%3 == 0)
+                    {
+                        var task = taskService.GetTestTask();
+                        task.Id = "test";
+                        task.Name = "test";
+                        entry.Task = task;
+                    }
+                    timeService.RecordTime(entry);
                 }
-                _timeService.RecordTime(entry);
             }
         }
 
@@ -138,52 +129,86 @@
 
             _testRemote = new JiraRemoteTimeRepository();
             _testRemote.RecordTime(newEntry);*/
-            try
+
+            Setup();
+
+            using (var scope = Container.BeginLifetimeScope())
             {
-                Setup();
-            }
-            catch (InvalidCredentialException ex)
-            {
-                /**
-                 * Obviously credentials will need to be handled better in the actual interface. But for the "testing" console
-                 * app we are just going to do things the easy way.
-                **/
-                Console.WriteLine("The following error ocurred: {0}", ex.Message);
-                Console.WriteLine("Please provide your credentials.");
-                var user = "";
-                while (string.IsNullOrWhiteSpace(user))
+                var settingsService = scope.Resolve<ISettingsService>();
+                IProjectService projectService = null;
+                ITaskService taskService = null;
+
+                var noCreds = true;
+                while (noCreds)
                 {
-                    Console.WriteLine("Username:");
-                    user = Console.ReadLine();
-                }
-                var pass = "";
-                while (string.IsNullOrWhiteSpace(pass))
-                {
-                    Console.WriteLine("Password:");
-                    pass = Console.ReadLine();
+                    try
+                    {
+                        projectService = scope.Resolve<IProjectService>();
+                        taskService = scope.Resolve<ITaskService>();
+                        noCreds = false;
+                    }
+                    catch (InvalidCredentialException ex)
+                    {
+                        /**
+                     * Obviously credentials will need to be handled better in the actual interface. But for the "testing" console
+                     * app we are just going to do things the easy way.
+                    **/
+                        Console.WriteLine("The following error ocurred: {0}", ex.Message);
+                        Console.WriteLine("Please provide your credentials.");
+                        var user = "";
+                        while (string.IsNullOrWhiteSpace(user))
+                        {
+                            Console.WriteLine("Username:");
+                            user = Console.ReadLine();
+                        }
+                        var pass = "";
+                        while (string.IsNullOrWhiteSpace(pass))
+                        {
+                            Console.WriteLine("Password:");
+                            pass = Console.ReadLine();
+                        }
+
+                        settingsService.SaveSetting("JiraUsername", user);
+                        settingsService.SaveSetting("JiraPassword", pass);
+                        noCreds = false;
+                    }
                 }
 
-                _settingsService.SaveSetting("JiraUsername", user);
-                _settingsService.SaveSetting("JiraPassword", pass);
+                if (projectService == null || taskService == null) return;
 
-                // try it again
-                Setup();
+                var projects = projectService.GetProjects().ToList();
+                var tasks = taskService.GetTasks();
+
+                Console.WriteLine(OutputProjects(projects));
+                Console.WriteLine(OutputTasks(tasks));
+
+                Console.WriteLine("Getting Tasks for specific project");
+                var project = projects.FirstOrDefault(x => x.Key == "CAT");
+                Console.WriteLine(OutputTasks(taskService.GetTasksByProject(project)));
+
+                Console.WriteLine("done");
+
+                Console.Read();
             }
-
-            var projects = _projectService.GetProjects().ToList();
-            var tasks = _taskService.GetTasks();
-
-            Console.WriteLine(OutputProjects(projects));
-            Console.WriteLine(OutputTasks(tasks));
-
-            Console.WriteLine("Getting Tasks for specific project");
-            var project = projects.FirstOrDefault(x => x.Key == "CAT");
-            Console.WriteLine(OutputTasks(_taskService.GetTasksByProject(project)));
-
-            Console.WriteLine("done");
-
-            Console.Read();
         }
+
+        #region OutputProjects
+
+        static string OutputProjects(IEnumerable<Project> projects)
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine("Outputting Projects...");
+            foreach (var project in projects)
+            {
+                sb.AppendFormat("ID: {0} || Name: {1} || Key: {2}", project.Id, project.Name, project.Key);
+                sb.AppendLine();
+            }
+
+            return sb.ToString();
+        }
+
+        #endregion
 
         #region OutputTasks
 
@@ -215,24 +240,6 @@
 
             return String.Format("{0}Name: {1} || id: {2} || HasTasks: {3} {4}", beginningSpace, task.Name, task.Id,
                 task.HasTasks, Environment.NewLine);
-        }
-
-        #endregion
-
-        #region OutputProjects
-
-        static string OutputProjects(IEnumerable<Project> projects)
-        {
-            var sb = new StringBuilder();
-
-            sb.AppendLine("Outputting Projects...");
-            foreach (var project in projects)
-            {
-                sb.AppendFormat("ID: {0} || Name: {1} || Key: {2}", project.Id, project.Name, project.Key);
-                sb.AppendLine();
-            }
-
-            return sb.ToString();
         }
 
         #endregion

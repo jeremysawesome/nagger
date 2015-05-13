@@ -12,11 +12,14 @@
     {
         readonly JiraApi _api;
 
-        public JiraRemoteProjectRepository(ISettingsService settingsService)
-            : base(settingsService)
+        public JiraRemoteProjectRepository(ISettingsService settingsService, IInputService inputService)
+            : base(settingsService, inputService)
         {
-            if (!UserExists) throw new InvalidCredentialException("There is no JIRA user specified");
-            _api = new JiraApi(JiraUser);
+            // the project and time repositories use different API's but the same user and password
+            // question: how do I best go about getting the correct urls?
+            // do I just assume that the last portion of the url will always be the same?
+            // we'll go down that route for now
+            _api = new JiraApi(JiraUser, ApiBaseUrl);
         }
 
         public IEnumerable<Project> GetProjects()

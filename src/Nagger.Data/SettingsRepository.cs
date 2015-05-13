@@ -25,7 +25,7 @@
             using (var cnn = GetConnection())
             using (var cmd = cnn.CreateCommand())
             {
-                cmd.CommandText = @"INSERT INTO Settings (Name, Value)
+                cmd.CommandText = @"INSERT OR REPLACE INTO Settings (Name, Value)
                                 VALUES (@Name, @Value)";
 
                 cmd.Prepare();

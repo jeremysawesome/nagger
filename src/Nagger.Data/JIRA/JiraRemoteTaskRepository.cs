@@ -19,7 +19,7 @@
         public JiraRemoteTaskRepository(BaseJiraRepository baseJiraRepository)
         {
             _baseJiraRepository = baseJiraRepository;
-            _api = new JiraApi(_baseJiraRepository.JiraUser);
+            _api = new JiraApi(_baseJiraRepository.JiraUser, _baseJiraRepository.ApiBaseUrl);
         }
 
 

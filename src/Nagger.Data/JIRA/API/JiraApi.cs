@@ -9,10 +9,10 @@
     public class JiraApi : JiraBaseApi
     {
         // todo: move the ApiUrl out into a setting so this can be used by whomever
-        const string ApiUrl = "https://www.example.com/rest/api/latest";
+        const string ApiUrlPath = "/rest/api/latest";
 
-        public JiraApi(User user)
-            : base(user, ApiUrl)
+        public JiraApi(User user, string apiBaseUrl)
+            : base(user, apiBaseUrl, ApiUrlPath)
         {
             // maybe refactor this sucker down the road?
         }

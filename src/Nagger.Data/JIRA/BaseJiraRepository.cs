@@ -1,6 +1,5 @@
 ﻿namespace Nagger.Data.JIRA
 {
-    using System.Security.Authentication;
     using Interfaces;
     using Models;
 
@@ -8,13 +7,26 @@
     {
         const string UsernameKey = "JiraUsername";
         const string PasswordKey = "JiraPassword";
+        const string ApiBaseUrlKey = "JiraApi";
         readonly ISettingsService _settingsService;
-        User _user;
+        readonly IInputService _inputService;
 
-        public BaseJiraRepository(ISettingsService settingsService)
+        User _user;
+        string _apiBaseUrl;
+
+        public BaseJiraRepository(ISettingsService settingsService, IInputService inputService)
         {
             _settingsService = settingsService;
-            if (!UserExists) throw new InvalidCredentialException("There is no JIRA user specified");
+            _inputService = inputService;
+        }
+
+        public string ApiBaseUrl
+        {
+            get
+            {
+                _apiBaseUrl = _apiBaseUrl ?? GetApiBaseUrl();
+                return _apiBaseUrl;
+            }
         }
 
         public User JiraUser
@@ -34,9 +46,18 @@
         User GetUser()
         {
             var username = _settingsService.GetSetting<string>(UsernameKey);
-            if (string.IsNullOrEmpty(username)) return null;
+            if (string.IsNullOrEmpty(username))
+            {
+                username = _inputService.AskForInput("Please provide your username for JIRA");
+                _settingsService.SaveSetting(UsernameKey, username);
+            }
 
             var password = _settingsService.GetSetting<string>(PasswordKey);
+            if (string.IsNullOrEmpty(password))
+            {
+                password = _inputService.AskForPassword("Please provide your password for JIRA");
+                _settingsService.SaveSetting(PasswordKey, password);
+            }
 
             return new User
             {
@@ -45,7 +66,17 @@
             };
         }
 
-        // also need to be able to save a user
+        string GetApiBaseUrl()
+        {
+            var baseUrl = _settingsService.GetSetting<string>(ApiBaseUrlKey);
+            if (string.IsNullOrEmpty(baseUrl))
+            {
+                baseUrl = _inputService.AskForInput("Please provide your JIRA base url");
+                _settingsService.SaveSetting(ApiBaseUrlKey, baseUrl);
+            }
+            return baseUrl;
+        }
+
         public void SaveUser(User user)
         {
             if (user == null) return;

@@ -9,10 +9,10 @@
         readonly string _apiUrl;
         readonly User _user;
 
-        public JiraBaseApi(User user, string apiUrl)
+        public JiraBaseApi(User user, string apiBaseUrl, string apiPath)
         {
             _user = user;
-            _apiUrl = apiUrl;
+            _apiUrl = apiBaseUrl.TrimEnd('/') + apiPath;
         }
 
         public T Execute<T>(RestRequest request) where T : new()

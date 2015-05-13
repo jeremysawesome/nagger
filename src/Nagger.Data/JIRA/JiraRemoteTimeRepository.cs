@@ -33,7 +33,7 @@
             "id": "100028"
         }*/
 
-        public JiraRemoteTimeRepository(ISettingsService settingsService) : base(settingsService)
+        public JiraRemoteTimeRepository(ISettingsService settingsService, IInputService inputService) : base(settingsService,inputService)
         {
         }
 
