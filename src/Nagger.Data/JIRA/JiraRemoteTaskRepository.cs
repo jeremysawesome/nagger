@@ -87,7 +87,8 @@
 
         public IEnumerable<Task> GetTasks()
         {
-            throw new NotImplementedException();
+            // todo: Implement this
+            return new List<Task>();
         }
 
         public IEnumerable<Task> GetTasks(Project project)
