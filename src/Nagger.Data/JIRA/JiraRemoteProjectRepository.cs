@@ -2,7 +2,6 @@
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Security.Authentication;
     using API;
     using Interfaces;
     using Models;

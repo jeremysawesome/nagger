@@ -134,45 +134,8 @@
 
             using (var scope = Container.BeginLifetimeScope())
             {
-                var settingsService = scope.Resolve<ISettingsService>();
-                IProjectService projectService = null;
-                ITaskService taskService = null;
-
-                var noCreds = true;
-                while (noCreds)
-                {
-                    try
-                    {
-                        projectService = scope.Resolve<IProjectService>();
-                        taskService = scope.Resolve<ITaskService>();
-                        noCreds = false;
-                    }
-                    catch (InvalidCredentialException ex)
-                    {
-                        /**
-                     * Obviously credentials will need to be handled better in the actual interface. But for the "testing" console
-                     * app we are just going to do things the easy way.
-                    **/
-                        Console.WriteLine("The following error ocurred: {0}", ex.Message);
-                        Console.WriteLine("Please provide your credentials.");
-                        var user = "";
-                        while (string.IsNullOrWhiteSpace(user))
-                        {
-                            Console.WriteLine("Username:");
-                            user = Console.ReadLine();
-                        }
-                        var pass = "";
-                        while (string.IsNullOrWhiteSpace(pass))
-                        {
-                            Console.WriteLine("Password:");
-                            pass = Console.ReadLine();
-                        }
-
-                        settingsService.SaveSetting("JiraUsername", user);
-                        settingsService.SaveSetting("JiraPassword", pass);
-                        noCreds = false;
-                    }
-                }
+                var projectService = scope.Resolve<IProjectService>();
+                var taskService = scope.Resolve<ITaskService>();
 
                 if (projectService == null || taskService == null) return;
 
