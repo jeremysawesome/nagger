@@ -3,8 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Runtime.Remoting.Messaging;
-    using System.Security.Authentication;
     using System.Text;
     using Autofac;
     using Data;
@@ -59,36 +57,6 @@
             Container = builder.Build();
         }
 
-        static void PopulateTestData()
-        {
-            PopulateTestData(DateTime.Now);
-            PopulateTestData(DateTime.Today.AddDays(4));
-        }
-
-        static void PopulateTestData(DateTime timeRecorded)
-        {
-            using (var scope = Container.BeginLifetimeScope())
-            {
-                var timeService = scope.Resolve<ITimeService>();
-                var taskService = scope.Resolve<ITaskService>();
-                const int numEntries = 10;
-                for (var i = 0; i < numEntries; i++)
-                {
-                    var entry = timeService.GetTestTimeEntry();
-                    entry.TimeRecorded = timeRecorded;
-                    entry.TimeRecorded = entry.TimeRecorded.AddHours(i); //add some time
-                    if (i%3 == 0)
-                    {
-                        var task = taskService.GetTestTask();
-                        task.Id = "test";
-                        task.Name = "test";
-                        entry.Task = task;
-                    }
-                    timeService.RecordTime(entry);
-                }
-            }
-        }
-
         static void Main(string[] args)
         {
             // task scheduler example:
@@ -96,39 +64,6 @@
 
             // example url
             //https://www.example.com/rest/api/latest/issue/cat-262
-
-            // first step call the Jira API and get a list of current tasks for this sprint back
-            /*Setup();
-            
-            Console.WriteLine("Populating Test Data...");
-            PopulateTestData();
-            Console.WriteLine("Done");
-
-            Console.WriteLine("Getting Last Task");
-            var task = _taskService.GetLastTask();
-            Console.WriteLine("Id: {0}", task.Id);
-            Console.WriteLine("Name: {0}", task.Name);
-
-            Console.WriteLine("Getting Last TimeEntry");
-            var timeEntry = _timeService.GetLastTimeEntry();
-            Console.WriteLine("Id: {0}", timeEntry.Id);
-            Console.WriteLine("timeRecorded: {0}", timeEntry.TimeRecorded);*/
-
-            /* var newTask = new Task() {
-                Id = "12394",
-                Name = "Finalize fixes from Sprint 5 review (PR #180)"
-            };
-
-            var newEntry = new TimeEntry() 
-            {
-                Task = newTask,
-                TimeRecorded = new DateTime(2014,11,14),
-                MinutesSpent = 450,
-                Synced = false
-            };
-
-            _testRemote = new JiraRemoteTimeRepository();
-            _testRemote.RecordTime(newEntry);*/
 
             Setup();
 
