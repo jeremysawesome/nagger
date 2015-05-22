@@ -122,5 +122,34 @@
                 Parent = (x.fields == null || x.fields.parent == null) ? null : new Task {Id = x.fields.parent.id}
             });
         }
+
+        public IEnumerable<Task> GetTasksByProjectId(string id)
+        {
+            var request = new RestRequest
+            {
+                Resource = "search",
+                Parameters =
+                {
+                    new Parameter
+                    {
+                     Name="jql",   
+                     Type = ParameterType.QueryString,
+                     Value=string.Format("project=\"{0}\" order by id", id)
+                    },
+                    new Parameter{ Name = "fields", Type = ParameterType.QueryString, Value = "summary"}
+                }
+            };
+
+            var apiResult = _api.Execute<TaskResult>(request);
+            if (apiResult == null || apiResult.issues == null) return null;
+
+            return apiResult.issues.Select(x => new Task
+            {
+                Id = x.id,
+                Name = x.key,
+                Description = (x.fields == null) ? "" : x.fields.summary,
+                Parent = (x.fields == null || x.fields.parent == null) ? null : new Task { Id = x.fields.parent.id }
+            });
+        }
     }
 }
