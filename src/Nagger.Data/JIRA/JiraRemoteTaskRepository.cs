@@ -1,6 +1,5 @@
 ﻿namespace Nagger.Data.JIRA
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using API;
@@ -132,11 +131,11 @@
                 {
                     new Parameter
                     {
-                     Name="jql",   
-                     Type = ParameterType.QueryString,
-                     Value=string.Format("project=\"{0}\" order by id", id)
+                        Name = "jql",
+                        Type = ParameterType.QueryString,
+                        Value = string.Format("project=\"{0}\" order by id", id)
                     },
-                    new Parameter{ Name = "fields", Type = ParameterType.QueryString, Value = "summary"}
+                    new Parameter {Name = "fields", Type = ParameterType.QueryString, Value = "summary"}
                 }
             };
 
@@ -148,7 +147,7 @@
                 Id = x.id,
                 Name = x.key,
                 Description = (x.fields == null) ? "" : x.fields.summary,
-                Parent = (x.fields == null || x.fields.parent == null) ? null : new Task { Id = x.fields.parent.id }
+                Parent = (x.fields == null || x.fields.parent == null) ? null : new Task {Id = x.fields.parent.id}
             });
         }
     }
