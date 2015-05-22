@@ -28,16 +28,16 @@
 		 * handle this.
          * 
          * 
-         * Each task has an ID. This is stored in the local db. We can use this id to grab tasks that are greater than a certain id (the last id in the 
+         * Each task has an ID. This is stored in the local db. We can use this projectId to grab tasks that are greater than a certain projectId (the last projectId in the 
          * database). This should allow us to grab what we need (and only load the newest tasks).
 		**/
 
-        // quick note: It appears that "id" in JQL is equal to the Issue Key (ex: CAT-123) and not the actual Id that JIRA assigns to an issue
-        // - or.. to be more specific. the "id" can be either IssueKey or IssueId.
+        // quick note: It appears that "projectId" in JQL is equal to the Issue Key (ex: CAT-123) and not the actual Id that JIRA assigns to an issue
+        // - or.. to be more specific. the "projectId" can be either IssueKey or IssueId.
 
         // more thoughts: It is possible for stories/tasks to be renamed, or even deleted. How are we going to handle this?
 
-        // potentially order by date created over the actual id. This seems to work: https://www.example.com/rest/api/latest/search?jql=order%20by%20created%20asc&fields=summary,parent
+        // potentially order by date created over the actual projectId. This seems to work: https://www.example.com/rest/api/latest/search?jql=order%20by%20created%20asc&fields=summary,parent
 
         public IEnumerable<Task> GetTasks(string lastTaskId = null)
         {
