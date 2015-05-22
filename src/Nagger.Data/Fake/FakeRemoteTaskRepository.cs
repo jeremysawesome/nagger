@@ -38,6 +38,11 @@
             throw new NotImplementedException();
         }
 
+        public IEnumerable<Task> GetTasksByProjectId(string projectId, string lastTaskId = "")
+        {
+            throw new NotImplementedException();
+        }
+
         static Task GetTask(string id, string name, Task parent = null)
         {
             return new Task
