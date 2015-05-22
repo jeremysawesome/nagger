@@ -71,18 +71,19 @@
             {
                 var projectService = scope.Resolve<IProjectService>();
                 var taskService = scope.Resolve<ITaskService>();
+                var inputService = scope.Resolve<IInputService>();
 
                 if (projectService == null || taskService == null) return;
 
                 var projects = projectService.GetProjects().ToList();
-                var tasks = taskService.GetTasks();
 
                 Console.WriteLine(OutputProjects(projects));
-                Console.WriteLine(OutputTasks(tasks));
+
+                var projectId = inputService.AskForInput("Which project Id should we retrieve tasks for?");
 
                 Console.WriteLine("Getting Tasks for specific project");
-                var project = projects.FirstOrDefault(x => x.Key == "CAT");
-                Console.WriteLine(OutputTasks(taskService.GetTasksByProject(project)));
+                var tasks = taskService.GetTasksByProjectId(projectId);
+                Console.WriteLine(OutputTasks(tasks));
 
                 Console.WriteLine("done");
 
@@ -92,11 +93,10 @@
 
         #region OutputProjects
 
-        static string OutputProjects(IEnumerable<Project> projects)
+        static string OutputProjects(ICollection<Project> projects)
         {
             var sb = new StringBuilder();
-
-            sb.AppendLine("Outputting Projects...");
+            sb.AppendFormat("Outputting {0} Projects...", projects.Count).AppendLine();
             foreach (var project in projects)
             {
                 sb.AppendFormat("ID: {0} || Name: {1} || Key: {2}", project.Id, project.Name, project.Key);
