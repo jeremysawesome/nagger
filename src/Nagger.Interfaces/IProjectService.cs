@@ -6,5 +6,7 @@
     public interface IProjectService
     {
         IEnumerable<Project> GetProjects();
+
+        Project GetProjectById(string id);
     }
 }

@@ -22,6 +22,11 @@
             return _localProjectRepository.GetProjects();
         }
 
+        public Project GetProjectById(string id)
+        {
+            return _localProjectRepository.GetProjectById(id);
+        }
+
         void SyncProjectsWithRemote()
         {
             /**
