@@ -7,6 +7,6 @@
     {
         IEnumerable<Task> GetTasks();
         IEnumerable<Task> GetTasks(Project project);
-        IEnumerable<Task> GetTasksByProjectId(string id);
+        IEnumerable<Task> GetTasksByProjectId(string projectId, string lastTaskId = "");
     }
 }

@@ -25,6 +25,14 @@
             _localTaskRepository.StoreTask(task);
         }
 
+        void StoreTasks(IEnumerable<Task> tasks)
+        {
+            foreach (var task in tasks)
+            {
+                _localTaskRepository.StoreTask(task);
+            }
+        }
+
         public void SyncTasksWithRemote()
         {
             /*
@@ -38,11 +46,7 @@
             // maybe pass in a last task id? assuming the remote task repo creates tasks in order?
             // maybe only get tasks that are greater than a certain date?
             var remoteTasks = _remoteTaskRepository.GetTasks();
-
-            foreach (var task in remoteTasks)
-            {
-                _localTaskRepository.StoreTask(task);
-            }
+            StoreTasks(remoteTasks);
         }
 
         /**
@@ -58,11 +62,17 @@
 
         public IEnumerable<Task> GetTasksByProject(Project project)
         {
-            return _localTaskRepository.GetTasksByProject(project);
+            return GetTasksByProjectId(project.Id);
         }
 
         public IEnumerable<Task> GetTasksByProjectId(string projectId)
         {
+            // we should grab the most recent task for this project
+            // then when we call the remote task repository we get all tasks since the most recent one
+            var mostRecentTask = GetLastTask();
+            var mostRecentTaskId = mostRecentTask == null ? "" : mostRecentTask.Id;
+            var remoteTasks = _remoteTaskRepository.GetTasksByProjectId(projectId, mostRecentTaskId);
+            StoreTasks(remoteTasks);
             return _localTaskRepository.GetTasks(projectId);
         }
 

@@ -122,33 +122,67 @@
             });
         }
 
-        public IEnumerable<Task> GetTasksByProjectId(string id)
+        Task BuildTaskFromIssue(Issue issue)
         {
-            var request = new RestRequest
+            return new Task
             {
-                Resource = "search",
-                Parameters =
-                {
-                    new Parameter
+                Id = issue.id,
+                Name = issue.key,
+                Description = (issue.fields == null) ? "" : issue.fields.summary,
+                Project = (issue.fields == null || issue.fields.project == null)
+                    ? null
+                    : new Project
                     {
-                        Name = "jql",
-                        Type = ParameterType.QueryString,
-                        Value = string.Format("project=\"{0}\" order by id", id)
+                        Id = issue.fields.project.id,
+                        Key = issue.fields.project.key,
+                        Name = issue.fields.project.name
                     },
-                    new Parameter {Name = "fields", Type = ParameterType.QueryString, Value = "summary"}
-                }
+                Parent =
+                    (issue.fields == null || issue.fields.parent == null)
+                        ? null
+                        : new Task {Id = issue.fields.parent.id}
             };
+        }
 
-            var apiResult = _api.Execute<TaskResult>(request);
-            if (apiResult == null || apiResult.issues == null) return null;
-
-            return apiResult.issues.Select(x => new Task
+        public IEnumerable<Task> GetTasksByProjectId(string projectId, string lastTaskId = "")
+        {
+            while (true)
             {
-                Id = x.id,
-                Name = x.key,
-                Description = (x.fields == null) ? "" : x.fields.summary,
-                Parent = (x.fields == null || x.fields.parent == null) ? null : new Task {Id = x.fields.parent.id}
-            });
+                var lastTaskCondition = (string.IsNullOrEmpty(lastTaskId)) ? "" : "AND id > " + lastTaskId;
+                var request = new RestRequest
+                {
+                    Resource = "search",
+                    Parameters =
+                    {
+                        new Parameter
+                        {
+                            Name = "jql",
+                            Type = ParameterType.QueryString,
+                            Value = string.Format("project=\"{0}\" {1} order by id", projectId, lastTaskCondition)
+                        },
+                        new Parameter {Name = "fields", Type = ParameterType.QueryString, Value = "summary"}
+                    }
+                };
+
+                var apiResult = _api.Execute<TaskResult>(request);
+                if (apiResult == null || apiResult.issues == null) yield break;
+
+                foreach (var issue in apiResult.issues)
+                {
+                    var task = BuildTaskFromIssue(issue);
+                    if (task.Project == null) task.Project = new Project {Id = projectId};
+                    yield return task;
+                }
+
+                // because we limit the query, the total value will change. It will decrease every single time we limit the query
+                // so we need to continue until the cound of issue is greater than or equal to the total
+                if (apiResult.startAt + apiResult.issues.Count < apiResult.total)
+                {
+                    lastTaskId = apiResult.issues.Last().id;
+                    continue;
+                }
+                yield break;
+            }
         }
     }
 }
