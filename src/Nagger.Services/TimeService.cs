@@ -112,18 +112,5 @@
             _localTimeRepository.UpdateMinutesSpentOnTimeEntries(squashedEntries);
             _localTimeRepository.RemoveTimeEntries(entriesToRemove);
         }
-
-        // todo: remove
-
-        #region Test_Stuff
-
-        public TimeEntry GetTestTimeEntry()
-        {
-            var testTask = _localTaskRepository.GetTestTask();
-            return new TimeEntry(testTask, _localTimeRepository.GetNaggingInterval(),
-                "just a testing entry" + System.Guid.NewGuid());
-        }
-
-        #endregion
     }
 }
