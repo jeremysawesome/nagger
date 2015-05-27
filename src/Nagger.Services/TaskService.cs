@@ -20,6 +20,11 @@
             return _localTaskRepository.GetLastTask();
         }
 
+        Task GetLastSyncedTask()
+        {
+            return _localTaskRepository.GetLastSyncedTask();
+        }
+
         public void StoreTask(Task task)
         {
             _localTaskRepository.StoreTask(task);
@@ -69,7 +74,7 @@
         {
             // we should grab the most recent task for this project
             // then when we call the remote task repository we get all tasks since the most recent one
-            var mostRecentTask = GetLastTask();
+            var mostRecentTask = GetLastSyncedTask();
             var mostRecentTaskId = mostRecentTask == null ? "" : mostRecentTask.Id;
             var remoteTasks = _remoteTaskRepository.GetTasksByProjectId(projectId, mostRecentTaskId);
             StoreTasks(remoteTasks);

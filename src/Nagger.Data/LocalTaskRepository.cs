@@ -50,6 +50,19 @@
             return tasks;
         }
 
+        public Task GetLastSyncedTask()
+        {
+            using (var cnn = GetConnection())
+            using (var cmd = cnn.CreateCommand())
+            {
+                cmd.CommandText = @"SELECT id FROM Tasks ORDER BY id DESC LIMIT 1";
+                using (var reader = cmd.ExecuteReader())
+                {
+                    return !reader.Read() ? null : GetTaskById(reader.Get<string>("Id"));
+                }
+            }
+        }
+
         public Task GetTaskById(string id)
         {
             using (var cnn = GetConnection())
