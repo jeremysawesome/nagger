@@ -46,7 +46,8 @@
 
             // https://www.example.com/rest/api/latest/search?jql=project%3D%22ProjectName%22
             // needs to post to: /rest/api/2/issue/{issueIdOrKey}/worklog
-            throw new NotImplementedException();
+            // todo: implement this instead of just returning false
+            return false;
         }
 
         // let's see if we can post this to JIRA without needing the "self" url
