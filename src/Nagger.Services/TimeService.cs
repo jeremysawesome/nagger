@@ -8,8 +8,8 @@
 
     public class TimeService : ITimeService
     {
-        readonly ILocalTimeRepository _localTimeRepository;
         readonly ILocalTaskRepository _localTaskRepository;
+        readonly ILocalTimeRepository _localTimeRepository;
         readonly IRemoteTimeRepository _remoteTimeRepository;
 
         public TimeService(ILocalTimeRepository localTimeRepository, ILocalTaskRepository localTaskRepository,
@@ -28,23 +28,6 @@
         public TimeEntry GetLastTimeEntry()
         {
             return _localTimeRepository.GetLastTimeEntry();
-        }
-
-        static bool EntriesAreForSameTask(TimeEntry firstEntry, TimeEntry secondEntry)
-        {
-            // first check if the entries have a task
-            // if they do check if the task ids are the same
-            // entries without tasks are considered different even if the comment is the same (for now)
-            if (!(firstEntry.HasTask && secondEntry.HasTask)) return false;
-            return firstEntry.Task.Id == secondEntry.Task.Id;
-        }
-
-        static TimeEntry UpdateEntryWithTimeDifference(TimeEntry first, TimeEntry second)
-        {
-            // get the difference between the two entries and update the first
-            var timeDifference = second.TimeRecorded - first.TimeRecorded;
-            first.MinutesSpent += (int) timeDifference.TotalMinutes;
-            return first;
         }
 
         public void SyncWithRemote()
@@ -111,6 +94,23 @@
 
             _localTimeRepository.UpdateMinutesSpentOnTimeEntries(squashedEntries);
             _localTimeRepository.RemoveTimeEntries(entriesToRemove);
+        }
+
+        static bool EntriesAreForSameTask(TimeEntry firstEntry, TimeEntry secondEntry)
+        {
+            // first check if the entries have a task
+            // if they do check if the task ids are the same
+            // entries without tasks are considered different even if the comment is the same (for now)
+            if (!(firstEntry.HasTask && secondEntry.HasTask)) return false;
+            return firstEntry.Task.Id == secondEntry.Task.Id;
+        }
+
+        static TimeEntry UpdateEntryWithTimeDifference(TimeEntry first, TimeEntry second)
+        {
+            // get the difference between the two entries and update the first
+            var timeDifference = second.TimeRecorded - first.TimeRecorded;
+            first.MinutesSpent += (int) timeDifference.TotalMinutes;
+            return first;
         }
     }
 }
