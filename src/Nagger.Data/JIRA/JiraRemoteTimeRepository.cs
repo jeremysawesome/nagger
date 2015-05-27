@@ -49,25 +49,5 @@
             // todo: implement this instead of just returning false
             return false;
         }
-
-        // let's see if we can post this to JIRA without needing the "self" url
-        class JiraTimeEntry
-        {
-            public JiraTimeEntry(TimeEntry entry)
-            {
-                // todo: replace hardcoded name
-                author = new {name = "username"};
-                comment = entry.Comment;
-                started = entry.TimeRecorded.ToString("s");
-                timeSpentSeconds = (entry.MinutesSpent*60).ToString();
-                id = entry.Task.Id;
-            }
-
-            public object author { get; set; }
-            public string comment { get; set; }
-            public string started { get; set; }
-            public string timeSpentSeconds { get; set; }
-            public string id { get; set; }
-        }
     }
 }
