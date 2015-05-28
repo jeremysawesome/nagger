@@ -7,6 +7,7 @@
     {
         Task GetLastTask();
         Task GetTaskByName(string name);
+        Task GetTaskById(string taskId);
         void StoreTask(Task task);
         void SyncTasksWithRemote();
         IEnumerable<Task> GetTasks();

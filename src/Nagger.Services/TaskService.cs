@@ -24,6 +24,12 @@
         {
             return _localTaskRepository.GetTaskByName(name);
         }
+
+        public Task GetTaskById(string taskId)
+        {
+            return _localTaskRepository.GetTaskById(taskId);
+        }
+
         Task GetLastSyncedTask()
         {
             return _localTaskRepository.GetLastSyncedTask();
