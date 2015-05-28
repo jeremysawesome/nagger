@@ -143,7 +143,7 @@
                 var currentTask = taskService.GetLastTask();
                 if (currentTask != null)
                 {
-                    var stillWorking = inputService.AskForBoolean("Are you still working on " + currentTask.Id+"?");
+                    var stillWorking = inputService.AskForBoolean("Are you still working on " + currentTask.Name+"?");
                     if (!stillWorking) currentTask = null;
                 }
                 if (currentTask == null) currentTask = AskForTask(projectService, inputService, taskService);
