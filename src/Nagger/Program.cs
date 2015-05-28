@@ -119,8 +119,8 @@
             var idIsKnown = inputService.AskForBoolean("Do you know the key of the task you are working on? (example: CAT-102)");
             if (idIsKnown)
             {
-                var taskId = inputService.AskForInput("What is the task id?");
-                return taskService.GetTaskById(taskId);
+                var taskId = inputService.AskForInput("What is the task key?");
+                return taskService.GetTaskByName(taskId);
             }
             else
             {
