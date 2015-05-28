@@ -6,6 +6,7 @@
     public interface ITaskService
     {
         Task GetLastTask();
+        Task GetTaskByName(string name);
         void StoreTask(Task task);
         void SyncTasksWithRemote();
         IEnumerable<Task> GetTasks();

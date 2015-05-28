@@ -7,6 +7,7 @@
     {
         Task GetLastTask();
         Task GetLastSyncedTask();
+        Task GetTaskByName(string name);
         Task GetTaskById(string id);
         void StoreTask(Task task);
         IEnumerable<Task> GetTasks(string projectId = null);

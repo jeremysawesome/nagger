@@ -63,6 +63,22 @@
             }
         }
 
+        public Task GetTaskByName(string name)
+        {
+            using (var cnn = GetConnection())
+            using (var cmd = cnn.CreateCommand())
+            {
+                cmd.CommandText = @"SELECT Id FROM Tasks WHERE Name = @name";
+                cmd.Prepare();
+                cmd.Parameters.AddWithValue("@name", name);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    return !reader.Read() ? null : GetTaskById(reader.Get<string>("Id"));
+                }
+            }
+        }
+
         public Task GetTaskById(string id)
         {
             using (var cnn = GetConnection())

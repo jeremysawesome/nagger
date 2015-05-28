@@ -20,6 +20,10 @@
             return _localTaskRepository.GetLastTask();
         }
 
+        public Task GetTaskByName(string name)
+        {
+            return _localTaskRepository.GetTaskByName(name);
+        }
         Task GetLastSyncedTask()
         {
             return _localTaskRepository.GetLastSyncedTask();
