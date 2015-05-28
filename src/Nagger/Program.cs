@@ -3,13 +3,17 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using System.Text;
-    using Autofac;
     using Data;
     using Data.JIRA;
     using Interfaces;
     using Models;
+    using Quartz;
+    using Quartz.Impl;
     using Services;
+    using Autofac;
+
 
     internal class Program
     {
@@ -53,11 +57,76 @@
             builder.RegisterType<BaseJiraRepository>();
         }
 
-        static void Setup()
+        static void SetupIocContainer()
         {
             var builder = new ContainerBuilder();
             RegisterComponents(builder);
             Container = builder.Build();
+        }
+
+        static void Schedule()
+        {
+            var scheduler = StdSchedulerFactory.GetDefaultScheduler();
+            scheduler.Start();
+
+            var job = JobBuilder.Create<JobRunner>()
+                .WithIdentity("naggerJob")
+                .Build();
+
+            var trigger = TriggerBuilder.Create()
+                .WithIdentity("naggerJob")
+                .StartNow()
+                .WithSimpleSchedule(x => x
+                    .WithIntervalInMinutes(15)
+                    .RepeatForever())
+                .Build();
+
+            scheduler.ScheduleJob(job, trigger);
+        }
+
+        static Task AskForTask(IProjectService projectService, IInputService inputService, ITaskService taskService)
+        {
+            Console.WriteLine("Ok. We're going to list some projects. Let's figure out what you are working on.");
+            var projects = projectService.GetProjects().ToList();
+            Console.WriteLine(OutputProjects(projects));
+            var projectId = inputService.AskForInput("Which project Id are you working on?");
+            Console.WriteLine("Getting tasks for that project. This might take a while.");
+            var tasks = taskService.GetTasksByProjectId(projectId);
+            Console.WriteLine("Ok. We've got the tasks. If you know the key of the task you are working on you can insert that key. Or we can show all the tasks and you can pick.");
+            var idIsKnown = inputService.AskForBoolean("Do you know the key of the task you are working on? (example: CAT-102)");
+            if (idIsKnown)
+            {
+                var taskId = inputService.AskForInput("What is the task id?");
+                return taskService.GetTaskById(taskId);
+            }
+            else
+            {
+                Console.WriteLine("This feature is not implemented yet. :(");
+                return null;
+            }
+        }
+
+        static void Run()
+        {
+            using (var scope = Container.BeginLifetimeScope())
+            {
+                var projectService = scope.Resolve<IProjectService>();
+                var taskService = scope.Resolve<ITaskService>();
+                var inputService = scope.Resolve<IInputService>();
+                var timeService = scope.Resolve<ITimeService>();
+
+                if (projectService == null || taskService == null) return;
+
+                var currentTask = taskService.GetLastTask();
+                if (currentTask != null)
+                {
+                    var stillWorking = inputService.AskForBoolean("Are you still working on " + currentTask.Id+"?");
+                    if (!stillWorking) currentTask = null;
+                }
+                if (currentTask == null) currentTask = AskForTask(projectService, inputService, taskService);
+                if (currentTask == null) return;
+                timeService.RecordTime(currentTask);
+            }
         }
 
         static void Main(string[] args)
@@ -68,30 +137,8 @@
             // example url
             //https://www.example.com/rest/api/latest/issue/cat-262
 
-            Setup();
-
-            using (var scope = Container.BeginLifetimeScope())
-            {
-                var projectService = scope.Resolve<IProjectService>();
-                var taskService = scope.Resolve<ITaskService>();
-                var inputService = scope.Resolve<IInputService>();
-
-                if (projectService == null || taskService == null) return;
-
-                var projects = projectService.GetProjects().ToList();
-
-                Console.WriteLine(OutputProjects(projects));
-
-                var projectId = inputService.AskForInput("Which project Id should we retrieve tasks for?");
-
-                Console.WriteLine("Getting Tasks for specific project");
-                var tasks = taskService.GetTasksByProjectId(projectId);
-                Console.WriteLine(OutputTasks(tasks));
-
-                Console.WriteLine("done");
-
-                Console.Read();
-            }
+            SetupIocContainer();
+            Schedule();
         }
 
         #region OutputProjects
@@ -110,6 +157,14 @@
         }
 
         #endregion
+
+        class JobRunner : IJob
+        {
+            public void Execute(IJobExecutionContext context)
+            {
+                Run();
+            }
+        }
 
         #region OutputTasks
 
