@@ -59,6 +59,8 @@
 
         static IContainer Container { get; set; }
 
+        static bool running = false;
+
         static void RegisterComponents(ContainerBuilder builder)
         {
             builder.RegisterType<JiraRemoteProjectRepository>().As<IRemoteProjectRepository>();
@@ -132,7 +134,7 @@
         static void Run()
         {
             using (var scope = Container.BeginLifetimeScope())
-            {
+            {       
                 var projectService = scope.Resolve<IProjectService>();
                 var taskService = scope.Resolve<ITaskService>();
                 var inputService = scope.Resolve<IInputService>();
@@ -188,7 +190,10 @@
         {
             public void Execute(IJobExecutionContext context)
             {
+                if (running) return;
+                running = true;
                 Run();
+                running = false;
             }
         }
 
