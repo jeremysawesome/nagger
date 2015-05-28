@@ -14,6 +14,14 @@
             return answer;
         }
 
+        public bool AskForBoolean(string question)
+        {
+            Console.WriteLine(question);
+            Console.Write("(Y)es/(N)o: ");
+            var answer = Console.ReadLine() ?? "";
+            return (answer.ToLower().StartsWith("y"));
+        }
+
         // see: https://gist.github.com/huobazi/1039424
         public string AskForPassword(string question)
         {
