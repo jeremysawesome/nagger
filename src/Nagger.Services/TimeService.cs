@@ -20,6 +20,12 @@
             _remoteTimeRepository = remoteTimeRepository;
         }
 
+        public void RecordTime(Task task)
+        {
+            var timeEntry = new TimeEntry(task);
+            _localTimeRepository.RecordTime(timeEntry);
+        }
+
         public void RecordTime(TimeEntry timeEntry)
         {
             _localTimeRepository.RecordTime(timeEntry);
