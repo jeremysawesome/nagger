@@ -140,6 +140,7 @@
 
                 if (projectService == null || taskService == null) return;
 
+                ConsoleUtil.ShowWindow();
                 var currentTask = taskService.GetLastTask();
                 if (currentTask != null)
                 {
@@ -147,6 +148,8 @@
                     if (!stillWorking) currentTask = null;
                 }
                 if (currentTask == null) currentTask = AskForTask(projectService, inputService, taskService);
+                ConsoleUtil.HideWindow();
+
                 if (currentTask == null) return;
                 timeService.RecordTime(currentTask);
             }
