@@ -18,6 +18,7 @@
             _localTaskRepository = localTaskRepository;
             _localTimeRepository = localTimeRepository;
             _remoteTimeRepository = remoteTimeRepository;
+            _settingsService = settingsService;
         }
 
         public void RecordTime(Task task)
@@ -34,6 +35,14 @@
         public TimeEntry GetLastTimeEntry()
         {
             return _localTimeRepository.GetLastTimeEntry();
+        }
+
+        public void DailyTimeSync()
+        {
+            var lastSync = _settingsService.GetSetting<DateTime>("LastSyncedDate");
+            if (lastSync.Date >= DateTime.Today) return;
+            SyncWithRemote();
+            _settingsService.SaveSetting("LastSyncedDate", DateTime.Now.ToString());
         }
 
         public void SyncWithRemote()

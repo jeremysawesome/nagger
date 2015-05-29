@@ -142,6 +142,8 @@
 
                 if (projectService == null || taskService == null) return;
 
+                timeService.DailyTimeSync();
+
                 ConsoleUtil.ShowWindow();
                 var currentTask = taskService.GetLastTask();
                 if (currentTask != null)
