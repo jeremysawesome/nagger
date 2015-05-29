@@ -37,6 +37,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExtensionMethods\TimeSpanExtensions.cs" />
     <Compile Include="InputService.cs" />
     <Compile Include="ProjectService.cs" />
     <Compile Include="SettingsService.cs" />
