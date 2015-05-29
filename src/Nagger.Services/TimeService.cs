@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using ExtensionMethods;
     using Interfaces;
     using Models;
 
@@ -11,9 +12,10 @@
         readonly ILocalTaskRepository _localTaskRepository;
         readonly ILocalTimeRepository _localTimeRepository;
         readonly IRemoteTimeRepository _remoteTimeRepository;
+        readonly ISettingsService _settingsService;
 
         public TimeService(ILocalTimeRepository localTimeRepository, ILocalTaskRepository localTaskRepository,
-            IRemoteTimeRepository remoteTimeRepository)
+            IRemoteTimeRepository remoteTimeRepository, ISettingsService settingsService)
         {
             _localTaskRepository = localTaskRepository;
             _localTimeRepository = localTimeRepository;
@@ -120,11 +122,25 @@
             return firstEntry.Task.Id == secondEntry.Task.Id;
         }
 
-        static TimeEntry UpdateEntryWithTimeDifference(TimeEntry first, TimeEntry second)
+        TimeSpan ApplyCeiling(TimeSpan span)
         {
+            var interval = _settingsService.GetSetting<int>("NaggingInterval");
+            var intervalSpan = TimeSpan.FromMinutes(interval);
+            return span.Ceiling(intervalSpan);
+        }
+
+        TimeEntry UpdateEntryWithTimeDifference(TimeEntry first, TimeEntry second)
+        {
+            // quick notes here - the problem is that sometimes the difference between the two entries
+            // is 14 minutes and sometimes it's 16 minutes.
+            // so do we want to do a ceiling or not? Or perhaps there is a better way to fix this... maybe by using the time
+            // that nagger asked the question as the entry time... instead of the time that the question was answered?
+
+
             // get the difference between the two entries and update the first
             var timeDifference = second.TimeRecorded - first.TimeRecorded;
-            first.MinutesSpent += (int) timeDifference.TotalMinutes;
+            timeDifference = ApplyCeiling(timeDifference);
+            first.MinutesSpent = (int)timeDifference.TotalMinutes;
             return first;
         }
     }
