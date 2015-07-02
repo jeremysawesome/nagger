@@ -29,6 +29,12 @@
             _localTimeRepository.RecordTime(timeEntry);
         }
 
+        public void RecordTime(Task task, DateTime time)
+        {
+            var timeEntry = new TimeEntry(task, time);
+            _localTimeRepository.RecordTime(timeEntry);
+        }
+
         public void RecordTime(TimeEntry timeEntry)
         {
             _localTimeRepository.RecordTime(timeEntry);
