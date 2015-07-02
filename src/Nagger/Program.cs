@@ -142,6 +142,8 @@
 
                 if (projectService == null || taskService == null) return;
 
+                var askTime = DateTime.Now;
+
                 timeService.DailyTimeSync();
 
                 ConsoleUtil.ShowWindow();
@@ -155,7 +157,7 @@
                 ConsoleUtil.HideWindow();
 
                 if (currentTask == null) return;
-                timeService.RecordTime(currentTask);
+                timeService.RecordTime(currentTask, askTime);
             }
         }
 
