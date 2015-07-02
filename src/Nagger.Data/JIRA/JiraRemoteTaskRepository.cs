@@ -39,6 +39,14 @@
 
         // potentially order by date created over the actual projectId. This seems to work: https://www.example.com/rest/api/latest/search?jql=order%20by%20created%20asc&fields=summary,parent
 
+
+        // todo: it's possible for issues to be deleted from JIRA. If this is the case we won't be able to track time against them.
+        // also - it doesn't seem like JIRA tracks deleted issues. If they are gone then they are gone. So... we are going to need
+        // to somehow check and remove issues from our DB (or mark them as removed)
+        // maybe this can be part of the SyncWithRemote functionality? not sure how to handle it right now. Whatever it is needs to be
+        // as fast as possible. We don't want to ping JIRA unnecessarily.
+        // currrently this problem makes it so we cannot track tasks accurately (because we aren't able to get the new issues)
+
         public IEnumerable<Task> GetTasks(string lastTaskId = null)
         {
             //todo: add support for "all results" instead of the limit, maybe a "while more" loop?
