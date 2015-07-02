@@ -16,6 +16,14 @@
             Project = task.Project;
         }
 
+        public TimeEntry(Task task, DateTime time, string comment = null)
+        {
+            Task = task;
+            TimeRecorded = time;
+            Comment = comment;
+            Project = task.Project;
+        }
+
         public TimeEntry(Project project, int minutesSpent, string comment = null)
         {
             TimeRecorded = DateTime.Now;
