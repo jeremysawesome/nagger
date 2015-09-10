@@ -126,8 +126,10 @@
             }
             else
             {
-                Console.WriteLine("This feature is not implemented yet. :(");
-                return null;
+                Console.WriteLine("Ok. We are outputting the tasks for that project.");
+                OutputTasks(tasks);
+                var taskId = inputService.AskForInput("What is the task key?");
+                return taskService.GetTaskByName(taskId);
             }
         }
 
