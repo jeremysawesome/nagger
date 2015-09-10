@@ -127,7 +127,7 @@
             else
             {
                 Console.WriteLine("Ok. We are outputting the tasks for that project.");
-                OutputTasks(tasks);
+                Console.WriteLine(OutputTasks(tasks));
                 var taskId = inputService.AskForInput("What is the task key?");
                 return taskService.GetTaskByName(taskId);
             }
