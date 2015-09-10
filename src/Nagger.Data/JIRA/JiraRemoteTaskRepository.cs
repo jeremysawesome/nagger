@@ -152,8 +152,9 @@
             };
         }
 
-        public IEnumerable<Task> GetTasksByProjectId(string projectId, string lastTaskId = "")
+        public IEnumerable<Task> GetTasksByProjectId(string projectId, string lastTaskId = null)
         {
+            lastTaskId = lastTaskId ?? "";
             while (true)
             {
                 var lastTaskCondition = (string.IsNullOrEmpty(lastTaskId)) ? "" : "AND id > " + lastTaskId;
