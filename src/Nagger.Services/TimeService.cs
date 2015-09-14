@@ -102,6 +102,7 @@
                 else
                 {
                     // question: what about lunches in the middle of the day? if there are no entries in the DB then how can you track lunches and breaks?
+                    // do we really care about tracking lunches and breaks though... we are tracking time worked on tasks (not time on breaks).
                     squashedEntries.Add(firstEntryForTask);
                     firstEntryForTask = entry;
                 }
@@ -141,6 +142,7 @@
             // is 14 minutes and sometimes it's 16 minutes.
             // so do we want to do a ceiling or not? Or perhaps there is a better way to fix this... maybe by using the time
             // that nagger asked the question as the entry time... instead of the time that the question was answered?
+            // this was updated in the Run function. The time nagger asks is used as the time entry time. (This seems to be working well)
 
 
             // get the difference between the two entries and update the first
