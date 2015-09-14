@@ -18,7 +18,7 @@ Nagger is still in development. Setting it up should be as simple as downloading
 ### Contribution guidelines ###
 
 * Writing tests
-Tests have not been written as of yet. The whole coding process thus far has been about discovery and less about coding against a blueprint. Testing is a goal of the project however.
+Tests have not been written as of yet. This is a future goal!
 
 ### Who do I talk to? ###
 
