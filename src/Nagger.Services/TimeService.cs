@@ -113,6 +113,13 @@
                 }
             }
 
+            // it's possible to skip the last entry of the day.this makes sure we don't do that
+            if (firstEntryForTask != null && firstEntryForTask.TimeRecorded.Date == currentDate && firstEntryForTask != entriesToRemove.LastOrDefault() &&
+                firstEntryForTask != squashedEntries.LastOrDefault())
+            {
+                squashedEntries.Add(firstEntryForTask);
+            }
+
             // update any timeEntries with '0' Minutes with the minimum
             foreach (var squashedEntry in squashedEntries)
             {
