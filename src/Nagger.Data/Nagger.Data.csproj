@@ -59,6 +59,7 @@
     <Compile Include="JIRA\DTO\Project.cs" />
     <Compile Include="JIRA\API\JiraApi.cs" />
     <Compile Include="JIRA\DTO\Task.cs" />
+    <Compile Include="JIRA\DTO\Worklog.cs" />
     <Compile Include="JIRA\JiraRemoteProjectRepository.cs" />
     <Compile Include="JIRA\JiraRemoteTaskRepository.cs" />
     <Compile Include="JIRA\JiraRemoteTimeRepository.cs" />
