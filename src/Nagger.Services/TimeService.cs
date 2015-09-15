@@ -142,6 +142,9 @@
 
         TimeEntry UpdateEntryWithTimeDifference(TimeEntry first, TimeEntry second)
         {
+            // just return the entry if they are the same
+            if (first == second) return first;
+
             // quick notes here - the problem is that sometimes the difference between the two entries
             // is 14 minutes and sometimes it's 16 minutes.
             // so do we want to do a ceiling or not? Or perhaps there is a better way to fix this... maybe by using the time
