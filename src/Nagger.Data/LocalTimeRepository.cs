@@ -51,7 +51,8 @@
                         Comment = reader.Get<string>("Comment"),
                         Id = reader.Get<int>("Id"),
                         Task = _localTaskRepository.GetTaskById(reader.Get<string>("TaskId")),
-                        Synced = reader.Get<bool>("Synced")
+                        Synced = reader.Get<bool>("Synced"),
+                        MinutesSpent = reader.Get<int>("MinutesSpent")
                         //Project = _projectRepository.GetProjectById(reader.GetString(reader.GetOrdinal("ProjectId")))
                     };
 
@@ -78,7 +79,8 @@
                             Comment = reader.Get<string>("Comment"),
                             Id = reader.Get<int>("Id"),
                             Task = _localTaskRepository.GetTaskById(reader.Get<string>("TaskId")),
-                            Synced = reader.Get<bool>("Synced")
+                            Synced = reader.Get<bool>("Synced"),
+                            MinutesSpent = reader.Get<int>("MinutesSpent")
                             //Project = _projectRepository.GetProjectById(reader.GetString(reader.GetOrdinal("ProjectId")))
                         };
 
