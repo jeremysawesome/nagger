@@ -113,6 +113,12 @@
                 }
             }
 
+            // update any timeEntries with '0' Minutes with the minimum
+            foreach (var squashedEntry in squashedEntries)
+            {
+                if (squashedEntry.MinutesSpent == 0) squashedEntry.MinutesSpent = NaggingInterval;
+            }
+
             // note: the current implementation does not update the last entry in a list of entries - that's because there is nothing to difference it against.
             // we might want to rectify that... or we just assume that they will continue to enter time
             // but what a task that is the last in the day and the only difference is to difference with the task a day later?
