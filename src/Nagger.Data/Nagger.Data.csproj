@@ -80,6 +80,10 @@
       <Project>{e9a962fd-ae0b-40f9-9bb1-0d2e83db21fd}</Project>
       <Name>Nagger.Models</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Nagger.Services\Nagger.Services.csproj">
+      <Project>{23a0bfd0-1ef1-4cef-a5c9-41834baf44af}</Project>
+      <Name>Nagger.Services</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
