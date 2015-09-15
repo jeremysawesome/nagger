@@ -1,5 +1,6 @@
 ﻿namespace Nagger.Data
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Interfaces;
@@ -46,7 +47,7 @@
 
                     var timeEntry = new TimeEntry
                     {
-                        TimeRecorded = reader.GetDateTime(reader.GetOrdinal("TimeRecorded")),
+                        TimeRecorded = DateTime.SpecifyKind(reader.GetDateTime(reader.GetOrdinal("TimeRecorded")), DateTimeKind.Local),
                         Comment = reader.Get<string>("Comment"),
                         Id = reader.Get<int>("Id"),
                         Task = _localTaskRepository.GetTaskById(reader.Get<string>("TaskId")),
@@ -73,7 +74,7 @@
                     {
                         var timeEntry = new TimeEntry
                         {
-                            TimeRecorded = reader.GetDateTime(reader.GetOrdinal("TimeRecorded")),
+                            TimeRecorded = DateTime.SpecifyKind(reader.GetDateTime(reader.GetOrdinal("TimeRecorded")), DateTimeKind.Local),
                             Comment = reader.Get<string>("Comment"),
                             Id = reader.Get<int>("Id"),
                             Task = _localTaskRepository.GetTaskById(reader.Get<string>("TaskId")),
