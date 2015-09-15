@@ -23,6 +23,11 @@
             _settingsService = settingsService;
         }
 
+        private int NaggingInterval
+        {
+            get { return _settingsService.GetSetting<int>("NaggingInterval"); }
+        }
+
         public void RecordTime(Task task)
         {
             var timeEntry = new TimeEntry(task);
@@ -131,8 +136,7 @@
 
         TimeSpan ApplyCeiling(TimeSpan span)
         {
-            var interval = _settingsService.GetSetting<int>("NaggingInterval");
-            var intervalSpan = TimeSpan.FromMinutes(interval);
+            var intervalSpan = TimeSpan.FromMinutes(NaggingInterval);
             return span.Ceiling(intervalSpan);
         }
 
