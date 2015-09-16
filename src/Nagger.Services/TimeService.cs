@@ -48,6 +48,16 @@
             RecordTime(task, recordTime);
         }
 
+        public void RecordMarker(DateTime time)
+        {
+            var timeEntry = new TimeEntry
+            {
+                Internal = true,
+                TimeRecorded = time
+            };
+            RecordTime(timeEntry);
+        }
+
         public void RecordTime(TimeEntry timeEntry)
         {
             _localTimeRepository.RecordTime(timeEntry);
