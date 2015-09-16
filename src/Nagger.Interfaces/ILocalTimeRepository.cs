@@ -12,6 +12,6 @@
         void RemoveTimeEntries(IEnumerable<TimeEntry> entries);
 
         TimeEntry GetLastTimeEntry();
-        IEnumerable<TimeEntry> GetUnsyncedEntries();
+        IEnumerable<TimeEntry> GetUnsyncedEntries(bool getInternal = false);
     }
 }

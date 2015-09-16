@@ -63,13 +63,15 @@
         }
 
         //todo: refactor the building of timeentries into an execute method (potentially)
-        public IEnumerable<TimeEntry> GetUnsyncedEntries()
+        public IEnumerable<TimeEntry> GetUnsyncedEntries(bool getInternal = false)
         {
             var entries = new List<TimeEntry>();
             using (var cnn = GetConnection())
             using (var cmd = cnn.CreateCommand())
             {
-                cmd.CommandText = "SELECT * FROM TimeEntries WHERE Synced=0";
+                var cmdText = "SELECT * FROM TimeEntries WHERE Synced=0";
+                if (!getInternal) cmdText += " AND Internal = 0";
+                cmd.CommandText = cmdText;
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
