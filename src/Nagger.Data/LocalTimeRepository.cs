@@ -20,7 +20,8 @@
             using (var cnn = GetConnection())
             using (var cmd = cnn.CreateCommand())
             {
-                cmd.CommandText = @"INSERT INTO TimeEntries (TimeRecorded, Comment, MinutesSpent, TaskId, ProjectId, Internal)
+                cmd.CommandText =
+                    @"INSERT INTO TimeEntries (TimeRecorded, Comment, MinutesSpent, TaskId, ProjectId, Internal)
                                 VALUES (@TimeRecorded, @Comment, @MinutesSpent, @TaskId, @ProjectId, @Internal)";
 
                 cmd.Prepare();
@@ -48,7 +49,9 @@
 
                     var timeEntry = new TimeEntry
                     {
-                        TimeRecorded = DateTime.SpecifyKind(reader.GetDateTime(reader.GetOrdinal("TimeRecorded")), DateTimeKind.Local),
+                        TimeRecorded =
+                            DateTime.SpecifyKind(reader.GetDateTime(reader.GetOrdinal("TimeRecorded")),
+                                DateTimeKind.Local),
                         Comment = reader.Get<string>("Comment"),
                         Id = reader.Get<int>("Id"),
                         Task = _localTaskRepository.GetTaskById(reader.Get<string>("TaskId")),
@@ -79,7 +82,9 @@
                     {
                         var timeEntry = new TimeEntry
                         {
-                            TimeRecorded = DateTime.SpecifyKind(reader.GetDateTime(reader.GetOrdinal("TimeRecorded")), DateTimeKind.Local),
+                            TimeRecorded =
+                                DateTime.SpecifyKind(reader.GetDateTime(reader.GetOrdinal("TimeRecorded")),
+                                    DateTimeKind.Local),
                             Comment = reader.Get<string>("Comment"),
                             Id = reader.Get<int>("Id"),
                             Task = _localTaskRepository.GetTaskById(reader.Get<string>("TaskId")),
