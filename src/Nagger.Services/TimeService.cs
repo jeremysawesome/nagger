@@ -40,6 +40,14 @@
             _localTimeRepository.RecordTime(timeEntry);
         }
 
+        public void RecordTime(Task task, int intervalCount, int minutesWorked, DateTime offset)
+        {
+            var totalMinutes = intervalCount*NaggingInterval;
+            var minutesOfBreak = totalMinutes - minutesWorked;
+            var recordTime = offset.AddMinutes(minutesOfBreak);
+            RecordTime(task, recordTime);
+        }
+
         public void RecordTime(TimeEntry timeEntry)
         {
             _localTimeRepository.RecordTime(timeEntry);
