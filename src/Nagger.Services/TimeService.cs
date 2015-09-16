@@ -105,7 +105,7 @@
         public void SquashTime()
         {
             // get all time entries that have not been synced
-            var unsyncedEntries = _localTimeRepository.GetUnsyncedEntries().OrderBy(x => x.TimeRecorded);
+            var unsyncedEntries = _localTimeRepository.GetUnsyncedEntries(true).OrderBy(x => x.TimeRecorded);
             if (!unsyncedEntries.Any()) return;
 
             var currentDate = DateTime.MinValue;
