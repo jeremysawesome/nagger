@@ -59,7 +59,8 @@
 
         static IContainer Container { get; set; }
 
-        static bool running = false;
+        static bool _running = false;
+        static int _runMiss = 0;
 
         static void RegisterComponents(ContainerBuilder builder)
         {
@@ -187,7 +188,14 @@
                 ConsoleUtil.HideWindow();
 
                 if (currentTask == null) return;
-                timeService.RecordTime(currentTask, askTime);
+
+                // keep track of if we missed a check in with a variable set in the execute method (maybe a miss count)
+                // check the variable here, if it's true then we missed a check in
+                if (_runMiss == 0) timeService.RecordTime(currentTask, askTime);
+                else
+                {
+                    AskAboutBreak(inputService, timeService, currentTask, askTime, _runMiss);
+                }
             }
         }
 
@@ -224,10 +232,15 @@
         {
             public void Execute(IJobExecutionContext context)
             {
-                if (running) return;
-                running = true;
+                if (_running)
+                {
+                    _runMiss++;
+                    return;
+                }
+                _running = true;
                 Run();
-                running = false;
+                _runMiss = 0;
+                _running = false;
             }
         }
 
