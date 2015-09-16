@@ -1,6 +1,7 @@
 ﻿namespace Nagger.Interfaces
 {
     using System;
+    using System.Collections.Generic;
     using Models;
 
     public interface ITimeService
@@ -12,5 +13,6 @@
         void SquashTime(); // this will probably end up being internal to the time service
         void SyncWithRemote();
         TimeEntry GetLastTimeEntry();
+        IEnumerable<int> GetIntervalMinutes(int intervalCount);
     }
 }

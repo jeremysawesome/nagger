@@ -50,6 +50,14 @@
             return _localTimeRepository.GetLastTimeEntry();
         }
 
+        public IEnumerable<int> GetIntervalMinutes(int intervalCount)
+        {
+            for (var i = 1; i <= intervalCount; i++)
+            {
+                yield return i*NaggingInterval;
+            }
+        }
+
         public void DailyTimeSync()
         {
             var lastSync = _settingsService.GetSetting<DateTime>("LastSyncedDate");
