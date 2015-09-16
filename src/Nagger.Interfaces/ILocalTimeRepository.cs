@@ -10,7 +10,6 @@
         void UpdateMinutesSpentOnTimeEntries(IEnumerable<TimeEntry> entries);
         void UpdateSyncedOnTimeEntry(TimeEntry entry);
         void RemoveTimeEntries(IEnumerable<TimeEntry> entries);
-        int GetNaggingInterval();
 
         TimeEntry GetLastTimeEntry();
         IEnumerable<TimeEntry> GetUnsyncedEntries();

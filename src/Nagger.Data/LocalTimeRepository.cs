@@ -169,11 +169,5 @@
                 UpdateMinutesSpentOnTimeEntry(timeEntry);
             }
         }
-
-        public int GetNaggingInterval()
-        {
-            // todo: hook this up to the db or something to allow users to set this
-            return 15;
-        }
     }
 }
