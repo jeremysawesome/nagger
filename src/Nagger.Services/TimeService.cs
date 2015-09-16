@@ -114,8 +114,13 @@
                 }
                 else
                 {
-                    // question: what about lunches in the middle of the day? if there are no entries in the DB then how can you track lunches and breaks?
-                    // do we really care about tracking lunches and breaks though... we are tracking time worked on tasks (not time on breaks).
+                    /** 
+                     * question: what about lunches in the middle of the day? if there are no entries in the DB then how can you track lunches and breaks?
+                     * do we really care about tracking lunches and breaks though... we are tracking time worked on tasks (not time on breaks).
+                     * NOTE: We care about lunches and breaks because the difference between two time entries is used to
+                     *  calculate the amount of time spent working on a task.
+                     *  If the difference between two time entries includes lunch time, then we have a problem.
+                    **/
                     squashedEntries.Add(firstEntryForTask);
                     firstEntryForTask = entry;
                 }
