@@ -185,9 +185,12 @@
                     if (!stillWorking) currentTask = null;
                 }
                 if (currentTask == null) currentTask = AskForTask(projectService, inputService, taskService);
-                ConsoleUtil.HideWindow();
 
-                if (currentTask == null) return;
+                if (currentTask == null)
+                {
+                    ConsoleUtil.HideWindow();
+                    return;
+                }
 
                 // keep track of if we missed a check in with a variable set in the execute method (maybe a miss count)
                 // check the variable here, if it's true then we missed a check in
@@ -196,6 +199,7 @@
                 {
                     AskAboutBreak(inputService, timeService, currentTask, askTime, _runMiss);
                 }
+                ConsoleUtil.HideWindow();
             }
         }
 
