@@ -20,13 +20,14 @@
             using (var cnn = GetConnection())
             using (var cmd = cnn.CreateCommand())
             {
-                cmd.CommandText = @"INSERT INTO TimeEntries (TimeRecorded, Comment, MinutesSpent, TaskId, ProjectId)
-                                VALUES (@TimeRecorded, @Comment, @MinutesSpent, @TaskId, @ProjectId)";
+                cmd.CommandText = @"INSERT INTO TimeEntries (TimeRecorded, Comment, MinutesSpent, TaskId, ProjectId, Internal)
+                                VALUES (@TimeRecorded, @Comment, @MinutesSpent, @TaskId, @ProjectId, @Internal)";
 
                 cmd.Prepare();
                 cmd.Parameters.AddWithValue("@TimeRecorded", timeEntry.TimeRecorded);
                 cmd.Parameters.AddWithValue("@Comment", timeEntry.Comment);
                 cmd.Parameters.AddWithValue("@MinutesSpent", timeEntry.MinutesSpent); // not sure if necessary
+                cmd.Parameters.AddWithValue("@Internal", timeEntry.Internal);
 
                 cmd.Parameters.AddWithValue("@TaskId", (timeEntry.Task == null) ? "" : timeEntry.Task.Id);
                 cmd.Parameters.AddWithValue("@ProjectId", (timeEntry.Project == null) ? "" : timeEntry.Project.Id);
