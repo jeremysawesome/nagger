@@ -1,10 +1,11 @@
 ﻿namespace Nagger.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Text;
     using Interfaces;
 
-    public class InputService : IInputService
+    public class ConsoleInputService : IInputService
     {
         public string AskForInput(string question)
         {
@@ -52,6 +53,24 @@
             }
 
             return sb.ToString();
+        }
+
+        public T AskForSelection<T>(string question, IList<T> options)
+        {
+            while (true)
+            {
+                for (var i = 0; i < options.Count; i++)
+                {
+                    Console.WriteLine("{0}) {1}", i, options[i]);
+                }
+                var answer = AskForInput(question);
+                int selection;
+                if (int.TryParse(answer, out selection) && selection < options.Count && selection >= 0)
+                {
+                    return options[selection];
+                }
+                Console.WriteLine("That was an invalid selection. Please try again.");
+            }
         }
     }
 }

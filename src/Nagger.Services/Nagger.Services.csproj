@@ -39,7 +39,7 @@
   <ItemGroup>
     <Compile Include="ExtensionMethods\StringExtensions.cs" />
     <Compile Include="ExtensionMethods\TimeSpanExtensions.cs" />
-    <Compile Include="InputService.cs" />
+    <Compile Include="ConsoleInputService.cs" />
     <Compile Include="ProjectService.cs" />
     <Compile Include="SettingsService.cs" />
     <Compile Include="TaskService.cs" />

@@ -77,7 +77,7 @@
             builder.RegisterType<SettingsService>().As<ISettingsService>();
             builder.RegisterType<TaskService>().As<ITaskService>();
             builder.RegisterType<TimeService>().As<ITimeService>();
-            builder.RegisterType<InputService>().As<IInputService>();
+            builder.RegisterType<ConsoleInputService>().As<IInputService>();
 
             builder.RegisterType<BaseJiraRepository>();
         }
