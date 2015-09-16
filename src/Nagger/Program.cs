@@ -109,17 +109,30 @@
             scheduler.ScheduleJob(job, trigger);
         }
 
+        static Task AskForTask(IInputService inputService, ITaskService taskService)
+        {
+            var idIsKnown = inputService.AskForBoolean("Do you know the key of the task you are working on? (example: CAT-102)");
+            if (!idIsKnown) return null;
+            var taskId = inputService.AskForInput("What is the task key?");
+            return taskService.GetTaskByName(taskId);
+        }
+
         static Task AskForTask(IProjectService projectService, IInputService inputService, ITaskService taskService)
         {
-            Console.WriteLine("Ok. We're going to list some projects. Let's figure out what you are working on.");
+            var task = AskForTask(inputService, taskService);
+            if (task != null) return task;
+
+            Console.WriteLine("Ok. Let's figure out what you are working on. We're going to list some projects.");
             var projects = projectService.GetProjects().ToList();
             Console.WriteLine(OutputProjects(projects));
             var projectId = inputService.AskForInput("Which project Id are you working on?");
             Console.WriteLine("Getting tasks for that project. This might take a while.");
             var tasks = taskService.GetTasksByProjectId(projectId);
-            Console.WriteLine("Ok. We've got the tasks. If you know the key of the task you are working on you can insert that key. Or we can show all the tasks and you can pick.");
-            var idIsKnown = inputService.AskForBoolean("Do you know the key of the task you are working on? (example: CAT-102)");
-            if (idIsKnown)
+            Console.WriteLine("Ok. We've got the tasks. Outputting the tasks for that project.");
+            Console.WriteLine(OutputTasks(tasks));
+
+            return AskForTask(inputService, taskService);
+        }
             {
                 var taskId = inputService.AskForInput("What is the task key?");
                 return taskService.GetTaskByName(taskId);
