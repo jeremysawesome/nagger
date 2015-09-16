@@ -48,6 +48,7 @@
         public int MinutesSpent { get; set; }
         public Project Project { get; set; }
         public bool Synced { get; set; }
+        public bool Internal { get; set; }
 
         public bool HasTask
         {

@@ -52,7 +52,8 @@
                         Id = reader.Get<int>("Id"),
                         Task = _localTaskRepository.GetTaskById(reader.Get<string>("TaskId")),
                         Synced = reader.Get<bool>("Synced"),
-                        MinutesSpent = reader.Get<int>("MinutesSpent")
+                        MinutesSpent = reader.Get<int>("MinutesSpent"),
+                        Internal = reader.Get<bool>("Internal")
                         //Project = _projectRepository.GetProjectById(reader.GetString(reader.GetOrdinal("ProjectId")))
                     };
 
@@ -80,7 +81,8 @@
                             Id = reader.Get<int>("Id"),
                             Task = _localTaskRepository.GetTaskById(reader.Get<string>("TaskId")),
                             Synced = reader.Get<bool>("Synced"),
-                            MinutesSpent = reader.Get<int>("MinutesSpent")
+                            MinutesSpent = reader.Get<int>("MinutesSpent"),
+                            Internal = reader.Get<bool>("Internal")
                             //Project = _projectRepository.GetProjectById(reader.GetString(reader.GetOrdinal("ProjectId")))
                         };
 
