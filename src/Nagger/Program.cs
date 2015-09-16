@@ -133,16 +133,31 @@
 
             return AskForTask(inputService, taskService);
         }
+
+        static void AskAboutBreak(IInputService inputService, ITimeService timeService, Task currentTask, DateTime askTime, int missedInterval)
+        {
+            if (!inputService.AskForBoolean("Looks like we missed " + missedInterval + " check in(s). Were you on break?"))
             {
-                var taskId = inputService.AskForInput("What is the task key?");
-                return taskService.GetTaskByName(taskId);
+                timeService.RecordTime(currentTask, askTime);
             }
             else
             {
-                Console.WriteLine("Ok. We are outputting the tasks for that project.");
-                Console.WriteLine(OutputTasks(tasks));
-                var taskId = inputService.AskForInput("What is the task key?");
-                return taskService.GetTaskByName(taskId);
+                // insert an internal time marker for ask time
+                timeService.RecordMarker(askTime);
+
+                if (inputService.AskForBoolean("Have you worked on anything since you've been back?"))
+                {
+                    var intervalsMissed = timeService.GetIntervalMinutes(_runMiss).ToList();
+
+                    var minutesWorked = inputService.AskForSelection("Which of these options represents about how long you have been working?", intervalsMissed);
+
+                    timeService.RecordTime(currentTask, _runMiss, minutesWorked, askTime);
+                }
+                else
+                {
+                    // if no: insert a time entry for the current task for right now
+                    timeService.RecordTime(currentTask, DateTime.Now);
+                }
             }
         }
 
