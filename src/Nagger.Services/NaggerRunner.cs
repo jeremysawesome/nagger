@@ -15,8 +15,6 @@
         readonly ITaskService _taskService;
         readonly ITimeService _timeService;
 
-        int _runMiss = 0;
-
         public NaggerRunner(IProjectService projectService, ITaskService taskService, ITimeService timeService,
             IInputService inputService, IOutputService outputService)
         {
@@ -27,9 +25,8 @@
             _outputService = outputService;
         }
 
-        public void Run(int runMiss)
+        public void Run()
         {
-            _runMiss = runMiss;
             _timeService.DailyTimeSync();
 
             var askTime = DateTime.Now;
@@ -55,10 +52,11 @@
 
             // keep track of if we missed a check in with a variable set in the execute method (maybe a miss count)
             // check the variable here, if it's true then we missed a check in
-            if (_runMiss == 0) _timeService.RecordTime(currentTask, askTime);
+            var runMiss = _timeService.IntervalsSinceTime(askTime);
+            if (runMiss == 0) _timeService.RecordTime(currentTask, askTime);
             else
             {
-                AskAboutBreak(currentTask, askTime, _runMiss);
+                AskAboutBreak(currentTask, askTime, runMiss);
             }
             _outputService.HideInterface();
         }
@@ -149,13 +147,13 @@
 
                 if (_inputService.AskForBoolean("Have you worked on anything since you've been back?"))
                 {
-                    var intervalsMissed = _timeService.GetIntervalMinutes(_runMiss).ToList();
+                    var intervalsMissed = _timeService.GetIntervalMinutes(missedInterval).ToList();
 
                     var minutesWorked =
                         _inputService.AskForSelection(
                             "Which of these options represents about how long you have been working?", intervalsMissed);
 
-                    _timeService.RecordTime(currentTask, _runMiss, minutesWorked, askTime);
+                    _timeService.RecordTime(currentTask, missedInterval, minutesWorked, askTime);
                 }
                 else
                 {

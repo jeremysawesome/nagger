@@ -29,7 +29,6 @@
 
         static IContainer Container { get; set; }
 
-        static int _runMiss;
         static bool _running;
 
         static void RegisterComponents(ContainerBuilder builder)
@@ -87,17 +86,13 @@
         {
             using (var scope = Container.BeginLifetimeScope())
             {
-                if (_running)
-                {
-                    _runMiss++;
-                    return;
-                }
+                if (_running) return;
+
                 _running = true;
 
                 var runner = scope.Resolve<IRunnerService>();
-                runner.Run(_runMiss);
+                runner.Run();
 
-                _runMiss = 0;
                 _running = false;
             }
         }

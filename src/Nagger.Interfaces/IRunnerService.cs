@@ -2,6 +2,6 @@
 {
     public interface IRunnerService
     {
-        void Run(int runMiss);
+        void Run();
     }
 }
