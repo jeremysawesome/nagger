@@ -43,6 +43,7 @@
     <Compile Include="IProjectService.cs" />
     <Compile Include="IRemoteProjectRepository.cs" />
     <Compile Include="IRemoteTaskRepository.cs" />
+    <Compile Include="IRunnerService.cs" />
     <Compile Include="ISettingsRepository.cs" />
     <Compile Include="ISettingsService.cs" />
     <Compile Include="ITaskRepository.cs" />
