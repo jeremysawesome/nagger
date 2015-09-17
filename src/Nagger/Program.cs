@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Runtime.InteropServices;
     using System.Text;
     using Data;
     using Data.JIRA;
@@ -13,30 +12,6 @@
     using Quartz.Impl;
     using Services;
     using Autofac;
-
-    internal static class ConsoleUtil
-    {
-        const int Hide = 0;
-        const int Show = 5;
-
-        [DllImport("kernel32.dll")]
-        static extern IntPtr GetConsoleWindow();
-
-        [DllImport("user32.dll")]
-        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-        public static void HideWindow()
-        {
-            var handle = GetConsoleWindow();
-            ShowWindow(handle, Hide);
-        }
-
-        public static void ShowWindow()
-        {
-            var handle = GetConsoleWindow();
-            ShowWindow(handle, Show);
-        }
-    }
 
     internal class Program
     {
@@ -59,9 +34,6 @@
 
         static IContainer Container { get; set; }
 
-        static bool _running = false;
-        static int _runMiss = 0;
-
         static void RegisterComponents(ContainerBuilder builder)
         {
             builder.RegisterType<JiraRemoteProjectRepository>().As<IRemoteProjectRepository>();
@@ -79,6 +51,7 @@
             builder.RegisterType<TaskService>().As<ITaskService>();
             builder.RegisterType<TimeService>().As<ITimeService>();
             builder.RegisterType<ConsoleInputService>().As<IInputService>();
+            builder.RegisterType<ConsoleOutputService>().As<IOutputService>();
 
             builder.RegisterType<BaseJiraRepository>();
         }
@@ -110,58 +83,6 @@
             scheduler.ScheduleJob(job, trigger);
         }
 
-        static Task AskForTask(IInputService inputService, ITaskService taskService)
-        {
-            var idIsKnown = inputService.AskForBoolean("Do you know the key of the task you are working on? (example: CAT-102)");
-            if (!idIsKnown) return null;
-            var taskId = inputService.AskForInput("What is the task key?");
-            return taskService.GetTaskByName(taskId);
-        }
-
-        static Task AskForTask(IProjectService projectService, IInputService inputService, ITaskService taskService)
-        {
-            var task = AskForTask(inputService, taskService);
-            if (task != null) return task;
-
-            Console.WriteLine("Ok. Let's figure out what you are working on. We're going to list some projects.");
-            var projects = projectService.GetProjects().ToList();
-            Console.WriteLine(OutputProjects(projects));
-            var projectId = inputService.AskForInput("Which project Id are you working on?");
-            Console.WriteLine("Getting tasks for that project. This might take a while.");
-            var tasks = taskService.GetTasksByProjectId(projectId);
-            Console.WriteLine("Ok. We've got the tasks. Outputting the tasks for that project.");
-            Console.WriteLine(OutputTasks(tasks));
-
-            return AskForTask(inputService, taskService);
-        }
-
-        static void AskAboutBreak(IInputService inputService, ITimeService timeService, Task currentTask, DateTime askTime, int missedInterval)
-        {
-            if (!inputService.AskForBoolean("Looks like we missed " + missedInterval + " check in(s). Were you on break?"))
-            {
-                timeService.RecordTime(currentTask, askTime);
-            }
-            else
-            {
-                // insert an internal time marker for ask time
-                timeService.RecordMarker(askTime);
-
-                if (inputService.AskForBoolean("Have you worked on anything since you've been back?"))
-                {
-                    var intervalsMissed = timeService.GetIntervalMinutes(_runMiss).ToList();
-
-                    var minutesWorked = inputService.AskForSelection("Which of these options represents about how long you have been working?", intervalsMissed);
-
-                    timeService.RecordTime(currentTask, _runMiss, minutesWorked, askTime);
-                }
-                else
-                {
-                    // if no: insert a time entry for the current task for right now
-                    timeService.RecordTime(currentTask, DateTime.Now);
-                }
-            }
-        }
-
         static void Run()
         {
             using (var scope = Container.BeginLifetimeScope())
@@ -170,36 +91,10 @@
                 var taskService = scope.Resolve<ITaskService>();
                 var inputService = scope.Resolve<IInputService>();
                 var timeService = scope.Resolve<ITimeService>();
+                var outputService = scope.Resolve<IOutputService>();
 
-                if (projectService == null || taskService == null) return;
-
-                var askTime = DateTime.Now;
-
-                timeService.DailyTimeSync();
-
-                ConsoleUtil.ShowWindow();
-                var currentTask = taskService.GetLastTask();
-                if (currentTask != null)
-                {
-                    var stillWorking = inputService.AskForBoolean("Are you still working on " + currentTask.Name+"?");
-                    if (!stillWorking) currentTask = null;
-                }
-                if (currentTask == null) currentTask = AskForTask(projectService, inputService, taskService);
-
-                if (currentTask == null)
-                {
-                    ConsoleUtil.HideWindow();
-                    return;
-                }
-
-                // keep track of if we missed a check in with a variable set in the execute method (maybe a miss count)
-                // check the variable here, if it's true then we missed a check in
-                if (_runMiss == 0) timeService.RecordTime(currentTask, askTime);
-                else
-                {
-                    AskAboutBreak(inputService, timeService, currentTask, askTime, _runMiss);
-                }
-                ConsoleUtil.HideWindow();
+                var runner = new Runner(projectService, taskService, timeService, inputService, outputService);
+                runner.Run();
             }
         }
 
@@ -215,7 +110,73 @@
             Schedule();
         }
 
-        #region OutputProjects
+        class JobRunner : IJob
+        {
+            public void Execute(IJobExecutionContext context)
+            {
+                Run();
+            }
+        }
+    }
+
+    public class Runner
+    {
+        readonly IProjectService _projectService;
+        readonly ITaskService _taskService;
+        readonly ITimeService _timeService;
+        readonly IInputService _inputService;
+        readonly IOutputService _outputService;
+
+        int _runMiss = 0;
+        bool _running;
+
+        public Runner(IProjectService projectService, ITaskService taskService, ITimeService timeService, IInputService inputService, IOutputService outputService)
+        {
+            _projectService = projectService;
+            _taskService = taskService;
+            _timeService = timeService;
+            _inputService = inputService;
+            _outputService = outputService;
+        }
+
+        public void Run()
+        {
+            if (_running)
+            {
+                _runMiss++;
+                return;
+            }
+            _running = true;
+
+            _timeService.DailyTimeSync();
+
+            var askTime = DateTime.Now;
+
+            _outputService.ShowInterface();
+            var currentTask = _taskService.GetLastTask();
+            if (currentTask != null)
+            {
+                var stillWorking = _inputService.AskForBoolean("Are you still working on " + currentTask.Name + "?");
+                if (!stillWorking) currentTask = null;
+            }
+            if (currentTask == null) currentTask = AskForTask();
+
+            if (currentTask == null)
+            {
+                _outputService.HideInterface();
+                return;
+            }
+
+            // keep track of if we missed a check in with a variable set in the execute method (maybe a miss count)
+            // check the variable here, if it's true then we missed a check in
+            if (_runMiss == 0) _timeService.RecordTime(currentTask, askTime);
+            else
+            {
+                AskAboutBreak(currentTask, askTime, _runMiss);
+            }
+            _outputService.HideInterface();
+            _running = false;
+        }
 
         static string OutputProjects(ICollection<Project> projects)
         {
@@ -229,26 +190,6 @@
 
             return sb.ToString();
         }
-
-        #endregion
-
-        class JobRunner : IJob
-        {
-            public void Execute(IJobExecutionContext context)
-            {
-                if (_running)
-                {
-                    _runMiss++;
-                    return;
-                }
-                _running = true;
-                Run();
-                _runMiss = 0;
-                _running = false;
-            }
-        }
-
-        #region OutputTasks
 
         static string OutputTasks(IEnumerable<Task> tasks)
         {
@@ -280,6 +221,57 @@
                 task.HasTasks, Environment.NewLine);
         }
 
-        #endregion
+        Task AskForSpecificTask()
+        {
+            var idIsKnown = _inputService.AskForBoolean("Do you know the key of the task you are working on? (example: CAT-102)");
+            if (!idIsKnown) return null;
+            var taskId = _inputService.AskForInput("What is the task key?");
+            return _taskService.GetTaskByName(taskId);
+        }
+
+        Task AskForTask()
+        {
+            var task = AskForSpecificTask();
+            if (task != null) return task;
+
+            _outputService.ShowInformation("Ok. Let's figure out what you are working on. We're going to list some projects.");
+            var projects = _projectService.GetProjects().ToList();
+            _outputService.ShowInformation(OutputProjects(projects));
+            var projectId = _inputService.AskForInput("Which project Id are you working on?");
+            _outputService.LoadingMessage("Getting tasks for that project. This might take a while.");
+            var tasks = _taskService.GetTasksByProjectId(projectId);
+            _outputService.ShowInformation("Ok. We've got the tasks. Outputting the tasks for that project.");
+            _outputService.ShowInformation(OutputTasks(tasks));
+
+            return AskForSpecificTask();
+        }
+
+        void AskAboutBreak(Task currentTask, DateTime askTime, int missedInterval)
+        {
+            if (!_inputService.AskForBoolean("Looks like we missed " + missedInterval + " check in(s). Were you on break?"))
+            {
+                _timeService.RecordTime(currentTask, askTime);
+            }
+            else
+            {
+                // insert an internal time marker for ask time
+                _timeService.RecordMarker(askTime);
+
+                if (_inputService.AskForBoolean("Have you worked on anything since you've been back?"))
+                {
+                    var intervalsMissed = _timeService.GetIntervalMinutes(_runMiss).ToList();
+
+                    var minutesWorked = _inputService.AskForSelection("Which of these options represents about how long you have been working?", intervalsMissed);
+
+                    _timeService.RecordTime(currentTask, _runMiss, minutesWorked, askTime);
+                }
+                else
+                {
+                    // if no: insert a time entry for the current task for right now
+                    _timeService.RecordTime(currentTask, DateTime.Now);
+                }
+            }
+        }
+
     }
 }
