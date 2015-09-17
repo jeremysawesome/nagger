@@ -29,6 +29,9 @@
 
         static IContainer Container { get; set; }
 
+        static int _runMiss;
+        static bool _running;
+
         static void RegisterComponents(ContainerBuilder builder)
         {
             builder.RegisterType<JiraRemoteProjectRepository>().As<IRemoteProjectRepository>();
@@ -84,8 +87,18 @@
         {
             using (var scope = Container.BeginLifetimeScope())
             {
+                if (_running)
+                {
+                    _runMiss++;
+                    return;
+                }
+                _running = true;
+
                 var runner = scope.Resolve<IRunnerService>();
-                runner.Run();
+                runner.Run(_runMiss);
+
+                _runMiss = 0;
+                _running = false;
             }
         }
 

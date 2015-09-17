@@ -14,8 +14,8 @@
         readonly IProjectService _projectService;
         readonly ITaskService _taskService;
         readonly ITimeService _timeService;
-        int _runMiss;
-        bool _running;
+
+        int _runMiss = 0;
 
         public NaggerRunner(IProjectService projectService, ITaskService taskService, ITimeService timeService,
             IInputService inputService, IOutputService outputService)
@@ -27,15 +27,9 @@
             _outputService = outputService;
         }
 
-        public void Run()
+        public void Run(int runMiss)
         {
-            if (_running)
-            {
-                _runMiss++;
-                return;
-            }
-            _running = true;
-
+            _runMiss = runMiss;
             _timeService.DailyTimeSync();
 
             var askTime = DateTime.Now;
@@ -67,7 +61,6 @@
                 AskAboutBreak(currentTask, askTime, _runMiss);
             }
             _outputService.HideInterface();
-            _running = false;
         }
 
         static string OutputProjects(ICollection<Project> projects)
