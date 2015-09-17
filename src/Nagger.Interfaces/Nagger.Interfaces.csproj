@@ -39,6 +39,7 @@
     <Compile Include="ILocalProjectRepository.cs" />
     <Compile Include="ILocalTaskRepository.cs" />
     <Compile Include="ILocalTimeRepository.cs" />
+    <Compile Include="IOutputService.cs" />
     <Compile Include="IProjectService.cs" />
     <Compile Include="IRemoteProjectRepository.cs" />
     <Compile Include="IRemoteTaskRepository.cs" />
