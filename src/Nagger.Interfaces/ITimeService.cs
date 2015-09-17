@@ -16,5 +16,6 @@
         void SyncWithRemote();
         TimeEntry GetLastTimeEntry();
         IEnumerable<int> GetIntervalMinutes(int intervalCount);
+        int IntervalsSinceTime(DateTime startTime);
     }
 }

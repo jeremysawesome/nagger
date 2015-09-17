@@ -76,6 +76,14 @@
             }
         }
 
+        public int IntervalsSinceTime(DateTime startTime)
+        {
+            var difference = DateTime.Now - startTime;
+            if (!(difference.TotalMinutes > NaggingInterval)) return 0;
+            var span = ApplyFloor(difference);
+            return (int) span.TotalMinutes/NaggingInterval;
+        }
+
         public void DailyTimeSync()
         {
             var lastSync = _settingsService.GetSetting<DateTime>("LastSyncedDate");
@@ -182,6 +190,12 @@
         {
             var intervalSpan = TimeSpan.FromMinutes(NaggingInterval);
             return span.Ceiling(intervalSpan);
+        }
+
+        TimeSpan ApplyFloor(TimeSpan span)
+        {
+            var intervalSpan = TimeSpan.FromMinutes(NaggingInterval);
+            return span.Floor(intervalSpan);
         }
 
         TimeEntry UpdateEntryWithTimeDifference(TimeEntry first, TimeEntry second)
