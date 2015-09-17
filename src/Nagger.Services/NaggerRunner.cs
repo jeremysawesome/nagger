@@ -9,16 +9,16 @@
 
     public class NaggerRunner : IRunnerService
     {
+        readonly IInputService _inputService;
+        readonly IOutputService _outputService;
         readonly IProjectService _projectService;
         readonly ITaskService _taskService;
         readonly ITimeService _timeService;
-        readonly IInputService _inputService;
-        readonly IOutputService _outputService;
-
-        int _runMiss = 0;
+        int _runMiss;
         bool _running;
 
-        public NaggerRunner(IProjectService projectService, ITaskService taskService, ITimeService timeService, IInputService inputService, IOutputService outputService)
+        public NaggerRunner(IProjectService projectService, ITaskService taskService, ITimeService timeService,
+            IInputService inputService, IOutputService outputService)
         {
             _projectService = projectService;
             _taskService = taskService;
@@ -105,13 +105,15 @@
                 checkingTask = checkingTask.Parent;
             }
 
-            return String.Format("{0}Name: {1} || Description: {2} || HasTasks: {3} {4}", beginningSpace, task.Name, task.Description,
+            return String.Format("{0}Name: {1} || Description: {2} || HasTasks: {3} {4}", beginningSpace, task.Name,
+                task.Description,
                 task.HasTasks, Environment.NewLine);
         }
 
         Task AskForSpecificTask()
         {
-            var idIsKnown = _inputService.AskForBoolean("Do you know the key of the task you are working on? (example: CAT-102)");
+            var idIsKnown =
+                _inputService.AskForBoolean("Do you know the key of the task you are working on? (example: CAT-102)");
             if (!idIsKnown) return null;
             var taskId = _inputService.AskForInput("What is the task key?");
             return _taskService.GetTaskByName(taskId);
@@ -122,7 +124,8 @@
             var task = AskForSpecificTask();
             if (task != null) return task;
 
-            _outputService.ShowInformation("Ok. Let's figure out what you are working on. We're going to list some projects.");
+            _outputService.ShowInformation(
+                "Ok. Let's figure out what you are working on. We're going to list some projects.");
             var projects = _projectService.GetProjects().ToList();
             _outputService.ShowInformation(OutputProjects(projects));
             var projectId = _inputService.AskForInput("Which project Id are you working on?");
@@ -136,7 +139,9 @@
 
         void AskAboutBreak(Task currentTask, DateTime askTime, int missedInterval)
         {
-            if (!_inputService.AskForBoolean("Looks like we missed " + missedInterval + " check in(s). Were you on break?"))
+            if (
+                !_inputService.AskForBoolean("Looks like we missed " + missedInterval +
+                                             " check in(s). Were you on break?"))
             {
                 _timeService.RecordTime(currentTask, askTime);
             }
@@ -149,7 +154,9 @@
                 {
                     var intervalsMissed = _timeService.GetIntervalMinutes(_runMiss).ToList();
 
-                    var minutesWorked = _inputService.AskForSelection("Which of these options represents about how long you have been working?", intervalsMissed);
+                    var minutesWorked =
+                        _inputService.AskForSelection(
+                            "Which of these options represents about how long you have been working?", intervalsMissed);
 
                     _timeService.RecordTime(currentTask, _runMiss, minutesWorked, askTime);
                 }
