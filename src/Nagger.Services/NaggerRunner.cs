@@ -40,6 +40,10 @@
 
             var askTime = DateTime.Now;
 
+            // todo: somewhere in here we need to ask if the user is working (what if they are at home?) 
+            // or do we care about this? If they aren't working they can just close nagger and restart it in the morning.
+
+
             _outputService.ShowInterface();
             var currentTask = _taskService.GetLastTask();
             if (currentTask != null)
