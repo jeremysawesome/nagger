@@ -84,6 +84,12 @@
             return (int) span.TotalMinutes/NaggingInterval;
         }
 
+        public int IntervalsSinceLastRecord()
+        {
+            var lastRecord = GetLastTimeEntry();
+            return lastRecord == null ? 0 : IntervalsSinceTime(lastRecord.TimeRecorded);
+        }
+
         public void DailyTimeSync()
         {
             var lastSync = _settingsService.GetSetting<DateTime>("LastSyncedDate");
