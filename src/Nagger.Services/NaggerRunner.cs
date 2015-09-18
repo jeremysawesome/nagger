@@ -52,7 +52,7 @@
 
             // keep track of if we missed a check in with a variable set in the execute method (maybe a miss count)
             // check the variable here, if it's true then we missed a check in
-            var runMiss = _timeService.IntervalsSinceTime(askTime);
+            var runMiss = _timeService.IntervalsSinceLastRecord();
             if (runMiss == 0) _timeService.RecordTime(currentTask, askTime);
             else
             {
