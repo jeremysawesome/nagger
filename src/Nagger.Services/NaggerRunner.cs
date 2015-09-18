@@ -144,8 +144,12 @@
             }
             else
             {
+                var lastTime = _timeService.GetLastTimeEntry().TimeRecorded;
+                var minutes = _timeService.GetIntervalMinutes(1).First();
+                lastTime = lastTime.AddMinutes(minutes);
+
                 // insert an internal time marker for ask time
-                _timeService.RecordMarker(askTime);
+                _timeService.RecordMarker(lastTime);
 
                 if (_inputService.AskForBoolean("Have you worked on anything since you've been back?"))
                 {
@@ -155,13 +159,12 @@
                         _inputService.AskForSelection(
                             "Which of these options represents about how long you have been working?", intervalsMissed);
 
-                    _timeService.RecordTime(currentTask, missedInterval, minutesWorked, askTime);
+                    // insert an entry for when they started working
+                    _timeService.RecordTime(currentTask, missedInterval, minutesWorked, lastTime);
                 }
-                else
-                {
-                    // if no: insert a time entry for the current task for right now
-                    _timeService.RecordTime(currentTask, DateTime.Now);
-                }
+                
+                // also insert an entry for the current time (since they are working and are no longer on break)
+                _timeService.RecordTime(currentTask, DateTime.Now);
             }
         }
     }
