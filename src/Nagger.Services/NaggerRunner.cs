@@ -53,7 +53,9 @@
             // keep track of if we missed a check in with a variable set in the execute method (maybe a miss count)
             // check the variable here, if it's true then we missed a check in
             var runMiss = _timeService.IntervalsSinceLastRecord();
-            if (runMiss == 0) _timeService.RecordTime(currentTask, askTime);
+
+            // there will usually be 1 interval between the last time this ran and this time (it only makes sense)
+            if (runMiss <= 1) _timeService.RecordTime(currentTask, askTime);
             else
             {
                 AskAboutBreak(currentTask, askTime, runMiss);
