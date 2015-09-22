@@ -14,7 +14,7 @@
         void DailyTimeSync();
         void SquashTime(); // this will probably end up being internal to the time service
         void SyncWithRemote();
-        TimeEntry GetLastTimeEntry();
+        TimeEntry GetLastTimeEntry(bool getInternal = false);
         IEnumerable<int> GetIntervalMinutes(int intervalCount);
         int IntervalsSinceTime(DateTime startTime);
         int IntervalsSinceLastRecord();

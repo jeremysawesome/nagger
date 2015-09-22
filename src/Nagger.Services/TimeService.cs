@@ -60,9 +60,9 @@
             _localTimeRepository.RecordTime(timeEntry);
         }
 
-        public TimeEntry GetLastTimeEntry()
+        public TimeEntry GetLastTimeEntry(bool getInternal = false)
         {
-            return _localTimeRepository.GetLastTimeEntry();
+            return _localTimeRepository.GetLastTimeEntry(getInternal);
         }
 
         public IEnumerable<int> GetIntervalMinutes(int intervalCount)
@@ -83,7 +83,7 @@
 
         public int IntervalsSinceLastRecord()
         {
-            var lastRecord = GetLastTimeEntry();
+            var lastRecord = GetLastTimeEntry(true);
             return lastRecord == null ? 0 : IntervalsSinceTime(lastRecord.TimeRecorded);
         }
 
