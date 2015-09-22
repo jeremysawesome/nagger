@@ -9,15 +9,12 @@
 
     public class TimeService : ITimeService
     {
-        readonly ILocalTaskRepository _localTaskRepository;
         readonly ILocalTimeRepository _localTimeRepository;
         readonly IRemoteTimeRepository _remoteTimeRepository;
         readonly ISettingsService _settingsService;
 
-        public TimeService(ILocalTimeRepository localTimeRepository, ILocalTaskRepository localTaskRepository,
-            IRemoteTimeRepository remoteTimeRepository, ISettingsService settingsService)
+        public TimeService(ILocalTimeRepository localTimeRepository, IRemoteTimeRepository remoteTimeRepository, ISettingsService settingsService)
         {
-            _localTaskRepository = localTaskRepository;
             _localTimeRepository = localTimeRepository;
             _remoteTimeRepository = remoteTimeRepository;
             _settingsService = settingsService;
