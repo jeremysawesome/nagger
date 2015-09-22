@@ -80,8 +80,6 @@
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine("Outputting Tasks...");
-
             foreach (var task in tasks)
             {
                 sb.Append(TaskString(task));
@@ -118,6 +116,10 @@
 
         Task AskForTask()
         {
+            var mostRecentTasks = _taskService.GetTasksByTaskIds(_timeService.GetRecentlyRecordedTaskIds(5));
+            _outputService.ShowInformation("Recent Tasks:");
+            _outputService.OutputList(mostRecentTasks.Select(x=>x.Name));
+
             var task = AskForSpecificTask();
             if (task != null) return task;
 
