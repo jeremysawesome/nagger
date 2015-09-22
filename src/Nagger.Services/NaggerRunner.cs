@@ -42,7 +42,18 @@
                 var stillWorking = _inputService.AskForBoolean("Are you still working on " + currentTask.Name + "?");
                 if (!stillWorking) currentTask = null;
             }
-            if (currentTask == null) currentTask = AskForTask();
+
+            if (currentTask == null)
+            {
+                if (!_inputService.AskForBoolean("Are you working?"))
+                {
+                    _timeService.RecordMarker(askTime);
+                }
+                else
+                {
+                    currentTask = AskForTask();   
+                }
+            }
 
             if (currentTask == null)
             {
