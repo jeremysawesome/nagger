@@ -101,6 +101,26 @@
             return entries;
         }
 
+        public IEnumerable<string> GetRecentlyRecordedTaskIds(int limit)
+        {
+            var ids = new List<string>();
+
+            using (var cnn = GetConnection())
+            using (var cmd = cnn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT DISTINCT TaskId FROM TimeEntries WHERE Internal = 0 ORDER BY TimeRecorded DESC LIMIT @limit";
+                cmd.Parameters.AddWithValue("@limit", limit);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        ids.Add(reader.Get<string>("TaskId"));
+                    }
+                }
+            }
+            return ids;
+        }
+
         public void RemoveTimeEntries(IEnumerable<TimeEntry> entries)
         {
             if (!entries.Any()) return;

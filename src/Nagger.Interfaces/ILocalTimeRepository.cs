@@ -13,5 +13,6 @@
 
         TimeEntry GetLastTimeEntry();
         IEnumerable<TimeEntry> GetUnsyncedEntries(bool getInternal = false);
+        IEnumerable<string> GetRecentlyRecordedTaskIds(int limit);
     }
 }

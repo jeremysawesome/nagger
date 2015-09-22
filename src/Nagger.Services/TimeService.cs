@@ -90,6 +90,11 @@
             return lastRecord == null ? 0 : IntervalsSinceTime(lastRecord.TimeRecorded);
         }
 
+        public IEnumerable<string> GetRecentlyRecordedTaskIds(int limit)
+        {
+            return _localTimeRepository.GetRecentlyRecordedTaskIds(limit);
+        }
+
         public void DailyTimeSync()
         {
             var lastSync = _settingsService.GetSetting<DateTime>("LastSyncedDate");

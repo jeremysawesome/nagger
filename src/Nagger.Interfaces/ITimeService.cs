@@ -18,5 +18,6 @@
         IEnumerable<int> GetIntervalMinutes(int intervalCount);
         int IntervalsSinceTime(DateTime startTime);
         int IntervalsSinceLastRecord();
+        IEnumerable<string> GetRecentlyRecordedTaskIds(int limit);
     }
 }
