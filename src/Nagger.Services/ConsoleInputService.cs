@@ -11,6 +11,7 @@
         {
             Console.WriteLine(question);
             var answer = Console.ReadLine();
+            Console.WriteLine();
 
             return answer;
         }
@@ -20,6 +21,7 @@
             Console.WriteLine(question);
             Console.Write("(Y)es/(N)o: ");
             var answer = Console.ReadLine() ?? "";
+            Console.WriteLine();
             return (answer.ToLower().StartsWith("y"));
         }
 
