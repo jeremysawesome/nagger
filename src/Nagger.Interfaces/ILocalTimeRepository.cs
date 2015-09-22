@@ -11,7 +11,7 @@
         void UpdateSyncedOnTimeEntry(TimeEntry entry);
         void RemoveTimeEntries(IEnumerable<TimeEntry> entries);
 
-        TimeEntry GetLastTimeEntry();
+        TimeEntry GetLastTimeEntry(bool getInternal = false);
         IEnumerable<TimeEntry> GetUnsyncedEntries(bool getInternal = false);
         IEnumerable<string> GetRecentlyRecordedTaskIds(int limit);
     }

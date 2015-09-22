@@ -37,12 +37,15 @@
             }
         }
 
-        public TimeEntry GetLastTimeEntry()
+        public TimeEntry GetLastTimeEntry(bool getInternal = false)
         {
             using (var cnn = GetConnection())
             using (var cmd = cnn.CreateCommand())
             {
-                cmd.CommandText = "SELECT * FROM TimeEntries WHERE Internal = 0 ORDER BY Id DESC LIMIT 1";
+                var internalWhere = (getInternal) ? "" : "WHERE Internal = 0";
+
+                cmd.CommandText = "SELECT * FROM TimeEntries "+internalWhere+" ORDER BY Id DESC LIMIT 1";
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     if (!reader.Read()) return null;
