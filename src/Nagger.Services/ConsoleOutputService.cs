@@ -1,6 +1,7 @@
 ﻿namespace Nagger.Services
 {
     using System;
+    using System.Collections.Generic;
     using System.Runtime.InteropServices;
     using Interfaces;
 
@@ -38,6 +39,16 @@
         public void LoadingMessage(string message)
         {
             ShowInformation(message);
+        }
+
+        public void OutputList(IEnumerable<object> outputObjects)
+        {
+            ShowInformation("");
+            foreach (var value in outputObjects)
+            {
+                ShowInformation(value.ToString());
+            }
+            ShowInformation("");
         }
 
         public void HideInterface()
