@@ -11,6 +11,7 @@
         void StoreTask(Task task);
         void SyncTasksWithRemote();
         IEnumerable<Task> GetTasks();
+        IEnumerable<Task> GetTasksByTaskIds(IEnumerable<string> taskIds);
         IEnumerable<Task> GetTasksByProject(Project project);
         IEnumerable<Task> GetTasksByProjectId(string projectId);
 

@@ -75,6 +75,11 @@
             return _localTaskRepository.GetTasks();
         }
 
+        public IEnumerable<Task> GetTasksByTaskIds(IEnumerable<string> taskIds)
+        {
+            return _localTaskRepository.GetTasksByTaskIds(taskIds);
+        }
+
         public IEnumerable<Task> GetTasksByProject(Project project)
         {
             return GetTasksByProjectId(project.Id);

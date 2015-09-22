@@ -1,11 +1,17 @@
 ﻿namespace Nagger.Data
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Interfaces;
     using Models;
 
     public class LocalTaskRepository : LocalBaseRepository, ILocalTaskRepository
     {
+        public IEnumerable<Task> GetTasksByTaskIds(IEnumerable<string> taskIds)
+        {
+            return taskIds.Select(GetTaskById).ToList();
+        }
+
         public IEnumerable<Task> GetTasksByProject(Project project)
         {
             return GetTasks(project.Id);

@@ -11,6 +11,7 @@
         Task GetTaskById(string id);
         void StoreTask(Task task);
         IEnumerable<Task> GetTasks(string projectId = null);
+        IEnumerable<Task> GetTasksByTaskIds(IEnumerable<string> taskIds);
         IEnumerable<Task> GetTasksByProject(Project project);
 
         // todo: remove
