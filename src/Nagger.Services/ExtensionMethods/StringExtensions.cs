@@ -15,5 +15,15 @@
             var result = source.Remove(place, find.Length).Insert(place, replace);
             return result;
         }
+
+        public static string Truncate(this string source, int length, string ellipsis = "...")
+        {
+            if (source.Length > length)
+            {
+                source = source.Substring(0, length);
+                source += ellipsis;
+            }
+            return source;
+        }
     }
 }
