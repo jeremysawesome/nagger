@@ -22,7 +22,12 @@
 
         public Task GetTaskByName(string name)
         {
-            return _localTaskRepository.GetTaskByName(name);
+            var task = _localTaskRepository.GetTaskByName(name);
+            if (task != null) return task;
+
+            task = _remoteTaskRepository.GetTaskByName(name);
+            if(task != null) StoreTask(task);
+            return task;
         }
 
         public Task GetTaskById(string taskId)
