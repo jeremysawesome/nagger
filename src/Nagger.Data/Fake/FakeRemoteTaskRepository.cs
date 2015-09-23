@@ -2,11 +2,17 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using Interfaces;
     using Models;
 
     public class FakeRemoteTaskRepository : IRemoteTaskRepository
     {
+        public Task GetTaskByName(string name)
+        {
+            return GetTasks().First();
+        }
+
         public IEnumerable<Task> GetTasks()
         {
             var tasks = new List<Task>();

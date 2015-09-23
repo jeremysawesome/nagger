@@ -92,6 +92,40 @@
             });
         }
 
+        public Task GetTaskByName(string name)
+        {
+            var request = new RestRequest
+            {
+                Resource = "search",
+                Parameters =
+                {
+                    new Parameter {Name = "fields", Type = ParameterType.QueryString, Value = "summary,parent,project"},
+                    new Parameter {Name = "jql", Type = ParameterType.QueryString, Value = "id = " + name }
+                }
+            };
+
+            var apiResult = _api.Execute<TaskResult>(request);
+
+            if (apiResult == null || apiResult.issues == null || !apiResult.issues.Any()) return null;
+
+            var issue = apiResult.issues[0];
+            return new Task
+            {
+                Id = issue.id,
+                Name = issue.key,
+                Description = (issue.fields == null) ? "" : issue.fields.summary,
+                Project = (issue.fields == null || issue.fields.project == null)
+                    ? null
+                    : new Project
+                    {
+                        Id = issue.fields.project.id,
+                        Key = issue.fields.project.key,
+                        Name = issue.fields.project.name
+                    },
+                Parent = (issue.fields == null || issue.fields.parent == null) ? null : new Task { Id = issue.fields.parent.id }
+            };
+        }
+
         public IEnumerable<Task> GetTasks()
         {
             // todo: Implement this
