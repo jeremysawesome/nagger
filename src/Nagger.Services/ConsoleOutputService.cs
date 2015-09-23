@@ -51,6 +51,11 @@
             ShowInformation("");
         }
 
+        public void OutputSound()
+        {
+            System.Media.SystemSounds.Hand.Play();
+        }
+
         public void HideInterface()
         {
             ConsoleUtil.HideWindow();
