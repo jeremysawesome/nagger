@@ -131,7 +131,7 @@
         {
             var mostRecentTasks = _taskService.GetTasksByTaskIds(_timeService.GetRecentlyRecordedTaskIds(5));
             _outputService.ShowInformation("Recent Tasks:");
-            _outputService.OutputList(mostRecentTasks.Select(x=> string.Format("{0,10} {1,10}", x.Name,x.Description.Truncate(197))));
+            _outputService.OutputList(mostRecentTasks.Select(x=> string.Format("{0,10} {1,10}", x.Name,x.Description.Truncate(50))));
 
             var task = AskForSpecificTask();
             if (task != null) return task;
