@@ -82,7 +82,7 @@
             sb.AppendFormat("Outputting {0} Projects...", projects.Count).AppendLine();
             foreach (var project in projects)
             {
-                sb.AppendFormat("ID: {0} || Name: {1} || Key: {2}", project.Id, project.Name, project.Key);
+                sb.AppendFormat("{0,10} || {1}", project.Key, project.Name);
                 sb.AppendLine();
             }
 
@@ -140,7 +140,7 @@
                 "Ok. Let's figure out what you are working on. We're going to list some projects.");
             var projects = _projectService.GetProjects().ToList();
             _outputService.ShowInformation(OutputProjects(projects));
-            var projectId = _inputService.AskForInput("Which project Id are you working on?");
+            var projectId = _inputService.AskForInput("Which project Key are you working on?");
             _outputService.LoadingMessage("Getting tasks for that project. This might take a while.");
             var tasks = _taskService.GetTasksByProjectId(projectId);
             _outputService.ShowInformation("Ok. We've got the tasks. Outputting the tasks for that project.");
