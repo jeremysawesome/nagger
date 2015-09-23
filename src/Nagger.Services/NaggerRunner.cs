@@ -37,6 +37,7 @@
 
 
             _outputService.ShowInterface();
+            _outputService.OutputSound();
             var currentTask = _taskService.GetLastTask();
             if (currentTask != null)
             {
