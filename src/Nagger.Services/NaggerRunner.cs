@@ -113,9 +113,9 @@
                 checkingTask = checkingTask.Parent;
             }
 
-            return String.Format("{0}Name: {1} || Description: {2} || HasTasks: {3} {4}", beginningSpace, task.Name,
-                task.Description,
-                task.HasTasks, Environment.NewLine);
+            return String.Format("{0}{1} - {2}{3}", beginningSpace, task.Name,
+                task.Description.Truncate(50),
+                Environment.NewLine);
         }
 
         Task AskForSpecificTask()
