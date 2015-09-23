@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using ExtensionMethods;
     using Interfaces;
     using Models;
 
@@ -129,7 +130,7 @@
         {
             var mostRecentTasks = _taskService.GetTasksByTaskIds(_timeService.GetRecentlyRecordedTaskIds(5));
             _outputService.ShowInformation("Recent Tasks:");
-            _outputService.OutputList(mostRecentTasks.Select(x=>x.Name));
+            _outputService.OutputList(mostRecentTasks.Select(x=> string.Format("{0,10} {1,10}", x.Name,x.Description.Truncate(197))));
 
             var task = AskForSpecificTask();
             if (task != null) return task;
