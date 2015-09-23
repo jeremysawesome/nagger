@@ -81,9 +81,10 @@
             return (int) span.TotalMinutes/NaggingInterval;
         }
 
-        public int IntervalsSinceLastRecord()
+        public int IntervalsSinceLastRecord(bool justToday = true)
         {
             var lastRecord = GetLastTimeEntry(true);
+            if (justToday && lastRecord.TimeRecorded < DateTime.Today) return 0;
             return lastRecord == null ? 0 : IntervalsSinceTime(lastRecord.TimeRecorded);
         }
 

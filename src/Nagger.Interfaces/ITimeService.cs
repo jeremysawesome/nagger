@@ -17,7 +17,7 @@
         TimeEntry GetLastTimeEntry(bool getInternal = false);
         IEnumerable<int> GetIntervalMinutes(int intervalCount);
         int IntervalsSinceTime(DateTime startTime);
-        int IntervalsSinceLastRecord();
+        int IntervalsSinceLastRecord(bool justToday = true);
         IEnumerable<string> GetRecentlyRecordedTaskIds(int limit);
     }
 }
