@@ -203,7 +203,7 @@
                             Type = ParameterType.QueryString,
                             Value = string.Format("project=\"{0}\" {1} order by id", projectId, lastTaskCondition)
                         },
-                        new Parameter {Name = "fields", Type = ParameterType.QueryString, Value = "summary"}
+                        new Parameter {Name = "fields", Type = ParameterType.QueryString, Value = "summary,project"}
                     }
                 };
 
