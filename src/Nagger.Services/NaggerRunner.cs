@@ -140,9 +140,10 @@
                 "Ok. Let's figure out what you are working on. We're going to list some projects.");
             var projects = _projectService.GetProjects().ToList();
             _outputService.ShowInformation(OutputProjects(projects));
-            var projectId = _inputService.AskForInput("Which project Key are you working on?");
+            var projectKey = _inputService.AskForInput("Which project Key are you working on?");
             _outputService.LoadingMessage("Getting tasks for that project. This might take a while.");
-            var tasks = _taskService.GetTasksByProjectId(projectId);
+            var project = _projectService.GetProjectByKey(projectKey);
+            var tasks = _taskService.GetTasksByProject(project);
             _outputService.ShowInformation("Ok. We've got the tasks. Outputting the tasks for that project.");
             _outputService.ShowInformation(OutputTasks(tasks));
 
