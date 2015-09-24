@@ -221,7 +221,8 @@
             using (var cnn = GetConnection())
             using (var cmd = cnn.CreateCommand())
             {
-                cmd.CommandText = @"INSERT OR IGNORE INTO Tasks (Id, Name, Description, ParentId, ProjectId)
+                // the actual task name or description could change, that's why we are doing an insert replace instead of insert ignore
+                cmd.CommandText = @"INSERT OR REPLACE INTO Tasks (Id, Name, Description, ParentId, ProjectId)
                                 VALUES (@Id, @Name, @Description, @ParentId, @ProjectId)";
 
                 cmd.Prepare();
