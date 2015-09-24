@@ -8,5 +8,6 @@
         IEnumerable<Project> GetProjects();
 
         Project GetProjectById(string id);
+        Project GetProjectByKey(string key);
     }
 }

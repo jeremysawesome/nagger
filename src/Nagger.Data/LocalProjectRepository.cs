@@ -33,6 +33,33 @@
             }
         }
 
+        public Project GetProjectByKey(string key)
+        {
+            using (var cnn = GetConnection())
+            using (var cmd = cnn.CreateCommand())
+            {
+                cmd.CommandText = @"SELECT * FROM Projects
+                                    WHERE Key = @key";
+
+                cmd.Prepare();
+                cmd.Parameters.AddWithValue("@key", key);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (!reader.Read()) return null;
+
+                    var project = new Project
+                    {
+                        Id = reader.Get<string>("Id"),
+                        Name = reader.Get<string>("Name"),
+                        Key = reader.Get<string>("Key")
+                    };
+
+                    return project;
+                }
+            }
+        }
+
         public IEnumerable<Project> GetProjects()
         {
             var projects = new List<Project>();
