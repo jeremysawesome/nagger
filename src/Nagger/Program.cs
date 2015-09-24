@@ -10,6 +10,7 @@
 
     internal class Program
     {
+        static bool _running;
         // note: Elysium can be used for WPF theming - seems like pretty easily
         //http://bizvise.com/2012/09/27/how-to-create-metro-style-window-on-wpf-using-elysium/
 
@@ -28,8 +29,6 @@
         // use hangfire or Quartz.net to schedule tasks: http://hangfire.io/
 
         static IContainer Container { get; set; }
-
-        static bool _running;
 
         static void RegisterComponents(ContainerBuilder builder)
         {

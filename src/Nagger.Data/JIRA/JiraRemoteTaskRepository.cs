@@ -100,7 +100,7 @@
                 Parameters =
                 {
                     new Parameter {Name = "fields", Type = ParameterType.QueryString, Value = "summary,parent,project"},
-                    new Parameter {Name = "jql", Type = ParameterType.QueryString, Value = "id = " + name }
+                    new Parameter {Name = "jql", Type = ParameterType.QueryString, Value = "id = " + name}
                 }
             };
 

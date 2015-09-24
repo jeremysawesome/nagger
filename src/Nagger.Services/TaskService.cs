@@ -26,7 +26,7 @@
             if (task != null) return task;
 
             task = _remoteTaskRepository.GetTaskByName(name);
-            if(task != null) StoreTask(task);
+            if (task != null) StoreTask(task);
             return task;
         }
 
@@ -35,22 +35,9 @@
             return _localTaskRepository.GetTaskById(taskId);
         }
 
-        Task GetLastSyncedTask(string projectId = null)
-        {
-            return _localTaskRepository.GetLastSyncedTask(projectId);
-        }
-
         public void StoreTask(Task task)
         {
             _localTaskRepository.StoreTask(task);
-        }
-
-        void StoreTasks(IEnumerable<Task> tasks)
-        {
-            foreach (var task in tasks)
-            {
-                _localTaskRepository.StoreTask(task);
-            }
         }
 
         public IEnumerable<Task> GetTasksByTaskIds(IEnumerable<string> taskIds)
@@ -78,6 +65,19 @@
         public Task GetTestTask()
         {
             return _localTaskRepository.GetTestTask();
+        }
+
+        Task GetLastSyncedTask(string projectId = null)
+        {
+            return _localTaskRepository.GetLastSyncedTask(projectId);
+        }
+
+        void StoreTasks(IEnumerable<Task> tasks)
+        {
+            foreach (var task in tasks)
+            {
+                _localTaskRepository.StoreTask(task);
+            }
         }
     }
 }

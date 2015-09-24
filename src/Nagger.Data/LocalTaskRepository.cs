@@ -62,14 +62,14 @@
             using (var cmd = cnn.CreateCommand())
             {
                 var where = "";
-                if(projectId != null)
+                if (projectId != null)
                 {
                     where = "WHERE ProjectId = @projectId";
                     cmd.Parameters.AddWithValue("@projectId", projectId);
                 }
-                cmd.CommandText = "SELECT id FROM Tasks "+where+" ORDER BY id DESC LIMIT 1";
+                cmd.CommandText = "SELECT id FROM Tasks " + where + " ORDER BY id DESC LIMIT 1";
                 cmd.Prepare();
-                
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     return !reader.Read() ? null : GetTaskById(reader.Get<string>("Id"));

@@ -13,14 +13,15 @@
         readonly IRemoteTimeRepository _remoteTimeRepository;
         readonly ISettingsService _settingsService;
 
-        public TimeService(ILocalTimeRepository localTimeRepository, IRemoteTimeRepository remoteTimeRepository, ISettingsService settingsService)
+        public TimeService(ILocalTimeRepository localTimeRepository, IRemoteTimeRepository remoteTimeRepository,
+            ISettingsService settingsService)
         {
             _localTimeRepository = localTimeRepository;
             _remoteTimeRepository = remoteTimeRepository;
             _settingsService = settingsService;
         }
 
-        private int NaggingInterval
+        int NaggingInterval
         {
             get { return _settingsService.GetSetting<int>("NaggingInterval"); }
         }
@@ -162,7 +163,8 @@
             }
 
             // it's possible to skip the last entry of the day.this makes sure we don't do that
-            if (firstEntryForTask != null && firstEntryForTask.TimeRecorded.Date == currentDate && firstEntryForTask != entriesToRemove.LastOrDefault() &&
+            if (firstEntryForTask != null && firstEntryForTask.TimeRecorded.Date == currentDate &&
+                firstEntryForTask != entriesToRemove.LastOrDefault() &&
                 firstEntryForTask != squashedEntries.LastOrDefault())
             {
                 squashedEntries.Add(firstEntryForTask);
@@ -222,7 +224,7 @@
             // get the difference between the two entries and update the first
             var timeDifference = second.TimeRecorded - first.TimeRecorded;
             timeDifference = ApplyCeiling(timeDifference);
-            first.MinutesSpent = (int)timeDifference.TotalMinutes;
+            first.MinutesSpent = (int) timeDifference.TotalMinutes;
             return first;
         }
     }
