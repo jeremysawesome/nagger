@@ -56,12 +56,20 @@
             return tasks;
         }
 
-        public Task GetLastSyncedTask()
+        public Task GetLastSyncedTask(string projectId = null)
         {
             using (var cnn = GetConnection())
             using (var cmd = cnn.CreateCommand())
             {
-                cmd.CommandText = @"SELECT id FROM Tasks ORDER BY id DESC LIMIT 1";
+                var where = "";
+                if(projectId != null)
+                {
+                    where = "WHERE ProjectId = @projectId";
+                    cmd.Parameters.AddWithValue("@projectId", projectId);
+                }
+                cmd.CommandText = "SELECT id FROM Tasks "+where+" ORDER BY id DESC LIMIT 1";
+                cmd.Prepare();
+                
                 using (var reader = cmd.ExecuteReader())
                 {
                     return !reader.Read() ? null : GetTaskById(reader.Get<string>("Id"));

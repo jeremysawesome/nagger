@@ -6,7 +6,7 @@
     public interface ILocalTaskRepository
     {
         Task GetLastTask();
-        Task GetLastSyncedTask();
+        Task GetLastSyncedTask(string projectId = null);
         Task GetTaskByName(string name);
         Task GetTaskById(string id);
         void StoreTask(Task task);
