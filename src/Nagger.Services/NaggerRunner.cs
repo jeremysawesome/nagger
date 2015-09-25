@@ -40,7 +40,9 @@
 
             if (currentTask != null)
             {
-                var stillWorking = _inputService.AskForBoolean(string.Format("Are you still working on {0} ({1})?", currentTask.Name, currentTask.Description.Truncate(50)));
+                var stillWorking =
+                    _inputService.AskForBoolean(string.Format("Are you still working on {0} ({1})?", currentTask.Name,
+                        currentTask.Description.Truncate(50)));
                 if (!stillWorking) currentTask = null;
             }
 
