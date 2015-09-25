@@ -36,7 +36,7 @@
             _outputService.OutputSound();
 
             var currentTask = _taskService.GetLastTask();
-            var runMiss = _timeService.IntervalsSinceLastRecord();
+            var runMiss = 0;
 
             if (currentTask != null)
             {
@@ -50,6 +50,7 @@
             {
                 if (!_inputService.AskForBoolean("Are you working?"))
                 {
+                    runMiss = _timeService.IntervalsSinceLastRecord();
                     if (runMiss <= 1) _timeService.RecordMarker(askTime);
                     else
                     {
@@ -73,6 +74,8 @@
                 return;
             }
 
+            //todo: refactor the way runMiss is done
+            runMiss = _timeService.IntervalsSinceLastRecord();
             // there will usually be 1 interval between the last time this ran and this time (it only makes sense)
             if (runMiss <= 1) _timeService.RecordTime(currentTask, askTime);
             else
