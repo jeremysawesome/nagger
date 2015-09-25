@@ -34,7 +34,10 @@
 
             _outputService.ShowInterface();
             _outputService.OutputSound();
+
             var currentTask = _taskService.GetLastTask();
+            var runMiss = _timeService.IntervalsSinceLastRecord();
+
             if (currentTask != null)
             {
                 var stillWorking = _inputService.AskForBoolean(string.Format("Are you still working on {0} ({1})?", currentTask.Name, currentTask.Description.Truncate(50)));
@@ -45,7 +48,16 @@
             {
                 if (!_inputService.AskForBoolean("Are you working?"))
                 {
-                    _timeService.RecordMarker(askTime);
+                    if (runMiss <= 1) _timeService.RecordMarker(askTime);
+                    else
+                    {
+                        var lastTime = _timeService.GetLastTimeEntry().TimeRecorded;
+                        var minutes = _timeService.GetIntervalMinutes(1).First();
+                        lastTime = lastTime.AddMinutes(minutes);
+
+                        // insert an internal time marker for ask time
+                        _timeService.RecordMarker(lastTime);
+                    }
                 }
                 else
                 {
@@ -58,10 +70,6 @@
                 _outputService.HideInterface();
                 return;
             }
-
-            // keep track of if we missed a check in with a variable set in the execute method (maybe a miss count)
-            // check the variable here, if it's true then we missed a check in
-            var runMiss = _timeService.IntervalsSinceLastRecord();
 
             // there will usually be 1 interval between the last time this ran and this time (it only makes sense)
             if (runMiss <= 1) _timeService.RecordTime(currentTask, askTime);
