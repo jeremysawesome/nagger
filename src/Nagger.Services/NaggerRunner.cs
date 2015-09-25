@@ -37,7 +37,7 @@
             var currentTask = _taskService.GetLastTask();
             if (currentTask != null)
             {
-                var stillWorking = _inputService.AskForBoolean("Are you still working on " + currentTask.Name + "?");
+                var stillWorking = _inputService.AskForBoolean(string.Format("Are you still working on {0} ({1})?", currentTask.Name, currentTask.Description.Truncate(50)));
                 if (!stillWorking) currentTask = null;
             }
 
