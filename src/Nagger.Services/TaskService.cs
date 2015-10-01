@@ -1,6 +1,7 @@
 ﻿namespace Nagger.Services
 {
     using System.Collections.Generic;
+    using System.Linq;
     using Interfaces;
     using Models;
 
@@ -47,7 +48,7 @@
 
         public IEnumerable<Task> GetTasksByProject(Project project)
         {
-            return GetTasksByProjectId(project.Id);
+            return project == null ? Enumerable.Empty<Task>() : GetTasksByProjectId(project.Id);
         }
 
         public IEnumerable<Task> GetTasksByProjectId(string projectId)
@@ -56,7 +57,9 @@
             // then when we call the remote task repository we get all tasks since the most recent one
             var mostRecentTask = GetLastSyncedTask(projectId);
 
-            var remoteTasks = _remoteTaskRepository.GetTasksByProjectId(projectId, mostRecentTask.Id);
+            var mostRecentId = (mostRecentTask == null) ? null : mostRecentTask.Id;
+
+            var remoteTasks = _remoteTaskRepository.GetTasksByProjectId(projectId, mostRecentId);
             StoreTasks(remoteTasks);
             return _localTaskRepository.GetTasks(projectId);
         }
