@@ -20,7 +20,7 @@ In some cases you might need to "Unblock" the zip file before extracting the con
 
 Note: Nagger makes use of `%localappdata%\Nagger`.
  
- ### How do I get set up? ###
+### How do I get set up? ###
 
 Nagger is still in development. Setting it up should be as simple as downloading the repo and opening the solution in Visual Studio. Nagger makes use of NuGet for some packages, so package restore should be enabled.
 
