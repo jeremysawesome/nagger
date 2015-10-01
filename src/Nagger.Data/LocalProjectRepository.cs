@@ -39,7 +39,7 @@
             using (var cmd = cnn.CreateCommand())
             {
                 cmd.CommandText = @"SELECT * FROM Projects
-                                    WHERE Key = @key";
+                                    WHERE Key = @key COLLATE NOCASE";
 
                 cmd.Prepare();
                 cmd.Parameters.AddWithValue("@key", key);

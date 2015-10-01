@@ -82,7 +82,7 @@
             using (var cnn = GetConnection())
             using (var cmd = cnn.CreateCommand())
             {
-                cmd.CommandText = @"SELECT Id FROM Tasks WHERE Name = @name";
+                cmd.CommandText = @"SELECT Id FROM Tasks WHERE Name = @name COLLATE NOCASE";
                 cmd.Prepare();
                 cmd.Parameters.AddWithValue("@name", name);
 
