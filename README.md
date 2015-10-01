@@ -11,7 +11,16 @@ Why the name Nagger? Well... because that's what it does.
 
  (The 15 minute increment might be made configurable, that is TBD). 
 
-### How do I get set up? ###
+How to Install
+--------------------
+
+There is no installer at the moment, so you are just going to have to download the ZIP and extract it somewhere on your harddrive. Then you run the "nagger.exe" and it does the rest.
+
+In some cases you might need to "Unblock" the zip file before extracting the contents. Otherwise you'll find that the program may not work correctly. You can do this by Right-clicking the downloaded zip file, selecting properties, and pressing the `Unblock` button within the Security section of that window.
+
+Note: Nagger makes use of `%localappdata%\Nagger`.
+ 
+ ### How do I get set up? ###
 
 Nagger is still in development. Setting it up should be as simple as downloading the repo and opening the solution in Visual Studio. Nagger makes use of NuGet for some packages, so package restore should be enabled.
 
