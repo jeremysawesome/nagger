@@ -85,8 +85,9 @@
         public int IntervalsSinceLastRecord(bool justToday = true)
         {
             var lastRecord = GetLastTimeEntry(true);
+            if (lastRecord == null) return 0;
             if (justToday && lastRecord.TimeRecorded < DateTime.Today) return 0;
-            return lastRecord == null ? 0 : IntervalsSinceTime(lastRecord.TimeRecorded);
+            return IntervalsSinceTime(lastRecord.TimeRecorded);
         }
 
         public IEnumerable<string> GetRecentlyRecordedTaskIds(int limit)
