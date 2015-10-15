@@ -25,9 +25,6 @@
         // get all ProjectName issues
         // https://www.example.com/rest/api/latest/search?jql=project%3D%22ProjectName%22
 
-        // schedule a task to run
-        // use hangfire or Quartz.net to schedule tasks: http://hangfire.io/
-
         static IContainer Container { get; set; }
 
         static void RegisterComponents(ContainerBuilder builder)
@@ -98,12 +95,6 @@
 
         static void Main(string[] args)
         {
-            // task scheduler example:
-            //https://taskscheduler.codeplex.com/documentation
-
-            // example url
-            //https://www.example.com/rest/api/latest/issue/cat-262
-
             SetupIocContainer();
             Schedule();
         }
