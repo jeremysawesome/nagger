@@ -24,6 +24,13 @@
         // - search for issues https://www.example.com/rest/api/latest/search
         // get all ProjectName issues
         // https://www.example.com/rest/api/latest/search?jql=project%3D%22ProjectName%22
+        
+        
+        // note. Add in an implementation for Meazure.
+        // you should be able to post a JSON object to /Time/Save  which will save a single time entry
+        // example JSON:
+        // {"Date":"2015-10-16T00:00:00.000Z","Notes":"Example Notes(comments)","ProjectId":"426","TaskId":"3","WorkItems":[],"TimeString":"120m","DurationSeconds":7200}
+        // a workitem in Meazure is akin to a issue key in JIRA. 
 
         static IContainer Container { get; set; }
 
