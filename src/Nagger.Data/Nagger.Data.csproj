@@ -68,6 +68,9 @@
     <Compile Include="LocalBaseRepository.cs" />
     <Compile Include="LocalTaskRepository.cs" />
     <Compile Include="LocalTimeRepository.cs" />
+    <Compile Include="Meazure\MeazureRemoteProjectRepository.cs" />
+    <Compile Include="Meazure\MeazureRemoteTaskRepository.cs" />
+    <Compile Include="Meazure\MeazureRemoteTimeRepository.cs" />
     <Compile Include="SettingsRepository.cs" />
     <Compile Include="SQLiteDataReaderExtensions.cs" />
   </ItemGroup>
