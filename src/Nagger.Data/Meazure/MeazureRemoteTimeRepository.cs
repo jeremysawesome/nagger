@@ -1,6 +1,8 @@
 ﻿namespace Nagger.Data.Meazure
 {
     using System;
+    using System.Collections.Generic;
+    using DTO;
     using Interfaces;
     using Models;
 
@@ -23,6 +25,19 @@
             }
              a workitem in Meazure is akin to a issue key in JIRA. 
             **/
+
+            // meazure requires either Notes, a project, or a task
+            if (!timeEntry.HasProject && !timeEntry.HasTask && !timeEntry.HasComment) return false;
+
+            var timeEntryModel = new TimeEntryModel
+            {
+                Date = timeEntry.TimeRecorded.ToString("O"),
+                Notes = timeEntry.Comment,
+                TimeString = timeEntry.MinutesSpent + "m",
+                DurationSeconds = timeEntry.MinutesSpent * 60,
+                ProjectId = timeEntry.Project?.Id,
+                TaskId = timeEntry.Task?.Id // note the task is different in meazure, a task is more of a "task type" in meazure
+            };
             throw new NotImplementedException();
         }
     }
