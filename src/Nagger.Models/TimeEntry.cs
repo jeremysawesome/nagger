@@ -49,12 +49,8 @@
         public Project Project { get; set; }
         public bool Synced { get; set; }
         public bool Internal { get; set; }
-
-        public bool HasTask
-        {
-            get { return Task != null; }
-        }
-
-        // note: no need to add a "user" we are going to work under the assumption that there is only one user
+        public bool HasTask => Task != null;
+        public bool HasProject => Project != null;
+        public bool HasComment => Comment != null;
     }
 }
