@@ -97,6 +97,9 @@
 
         public void DailyTimeSync()
         {
+            var remoteSyncEnabled = _settingsService.GetSetting<bool>("RemoteSyncEnabled");
+            if (!remoteSyncEnabled) return;
+
             var lastSync = _settingsService.GetSetting<DateTime>("LastSyncedDate");
             if (lastSync.Date >= DateTime.Today) return;
             SyncWithRemote();
