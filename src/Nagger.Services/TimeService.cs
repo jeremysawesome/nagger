@@ -97,20 +97,21 @@
 
         public void DailyTimeSync()
         {
+            var lastSync = _settingsService.GetSetting<DateTime>("LastSyncedDate");
+            if (lastSync.Date >= DateTime.Today) return;
+
+            // Squash the time.
+            SquashTime();
+
             var remoteSyncEnabled = _settingsService.GetSetting<bool>("RemoteSyncEnabled");
             if (!remoteSyncEnabled) return;
 
-            var lastSync = _settingsService.GetSetting<DateTime>("LastSyncedDate");
-            if (lastSync.Date >= DateTime.Today) return;
             SyncWithRemote();
             _settingsService.SaveSetting("LastSyncedDate", DateTime.Now.ToString());
         }
 
         public void SyncWithRemote()
         {
-            // Squash the time.
-            SquashTime();
-
             // get the unsynced entries
             var unsyncedEntries = _localTimeRepository.GetUnsyncedEntries();
 
