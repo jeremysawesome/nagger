@@ -97,11 +97,16 @@
 
         public void DailyTimeOperations()
         {
+            var lastSquash = _settingsService.GetSetting<DateTime>("LastSquashDate");
+            if (lastSquash < DateTime.Today)
+            {
+                // Squash the time.
+                SquashTime();
+                _settingsService.SaveSetting("LastSquashDate", DateTime.Now.ToString());
+            }
+
             var lastSync = _settingsService.GetSetting<DateTime>("LastSyncedDate");
             if (lastSync.Date >= DateTime.Today) return;
-
-            // Squash the time.
-            SquashTime();
             SyncWithRemote();
             _settingsService.SaveSetting("LastSyncedDate", DateTime.Now.ToString());
         }
