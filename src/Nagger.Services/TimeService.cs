@@ -102,16 +102,16 @@
 
             // Squash the time.
             SquashTime();
-
-            var remoteSyncEnabled = _settingsService.GetSetting<bool>("RemoteSyncEnabled");
-            if (!remoteSyncEnabled) return;
-
             SyncWithRemote();
             _settingsService.SaveSetting("LastSyncedDate", DateTime.Now.ToString());
         }
 
         public void SyncWithRemote()
         {
+            // only sync if this feature is enabled
+            var remoteSyncEnabled = _settingsService.GetSetting<bool>("RemoteSyncEnabled");
+            if (!remoteSyncEnabled) return;
+
             // get the unsynced entries
             var unsyncedEntries = _localTimeRepository.GetUnsyncedEntries();
 
