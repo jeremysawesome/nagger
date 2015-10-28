@@ -28,7 +28,7 @@
 
         public void Run()
         {
-            _timeService.DailyTimeSync();
+            _timeService.DailyTimeOperations();
 
             var askTime = DateTime.Now;
 

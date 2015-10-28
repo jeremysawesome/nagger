@@ -95,8 +95,7 @@
             return _localTimeRepository.GetRecentlyRecordedTaskIds(limit);
         }
 
-        // todo: potentially rename this method or refactor. Currently it's checking if sync is enabled and performing the sync as well as squashing time.
-        public void DailyTimeSync()
+        public void DailyTimeOperations()
         {
             var lastSync = _settingsService.GetSetting<DateTime>("LastSyncedDate");
             if (lastSync.Date >= DateTime.Today) return;

@@ -11,7 +11,7 @@
         void RecordTime(Task task, DateTime time);
         void RecordTime(Task task, int intervalCount, int minutesWorked, DateTime offset);
         void RecordMarker(DateTime time);
-        void DailyTimeSync();
+        void DailyTimeOperations();
         void SquashTime(); // this will probably end up being internal to the time service
         void SyncWithRemote();
         TimeEntry GetLastTimeEntry(bool getInternal = false);
