@@ -1,6 +1,7 @@
 ﻿namespace Nagger.Data.Meazure
 {
     using System;
+    using System.Collections.Generic;
     using DTO;
     using Interfaces;
     using Models;
@@ -28,6 +29,12 @@
             // meazure requires either Notes, a project, or a task
             if (!timeEntry.HasProject && !timeEntry.HasTask && !timeEntry.HasComment) return false;
 
+            /** note: It would be nice to be able to pull projects/tasks from JIRA and insert them into Meazure.
+             * however, Meazure has it's own concept of tasks and projects. 
+             * Example: The Meazure project might be "Work with this Client" but the client has it's own projects and tasks.
+             *    in that case, I guess that the Project would be the Meazure project and the client's projects and tasks would be tasks and sub tasks?
+             *      would it then be wise to, when tracking time, track the task and subtask in the WorkItems list collection?
+            **/
             var timeEntryModel = new TimeEntryModel
             {
                 Date = timeEntry.TimeRecorded.ToString("O"),
@@ -35,8 +42,9 @@
                 TimeString = timeEntry.MinutesSpent + "m",
                 DurationSeconds = timeEntry.MinutesSpent*60,
                 ProjectId = timeEntry.Project?.Id,
-                TaskId = timeEntry.Task?.Id
-                // note the task is different in meazure, a task is more of a "task type" in meazure
+                TaskId = timeEntry.Task?.Id,// note the task is different in meazure, a task is more of a "task type" in meazure
+                WorkItems = new List<string> { timeEntry.Task?.Id }
+
             };
 
 
