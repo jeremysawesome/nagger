@@ -200,8 +200,6 @@
 
         static bool EntriesAreForSameWork(TimeEntry firstEntry, TimeEntry secondEntry)
         {
-            // first check if the entries have a task
-            // if they do check if the task ids are the same
             // entries without tasks are considered different even if the comment is the same (for now)
             if (!(firstEntry.HasTask && secondEntry.HasTask)) return false;
             return firstEntry.Task.Id == secondEntry.Task.Id;
