@@ -154,7 +154,7 @@
 
                 // this makes sure that time spent between the two entries is accounted for
                 firstEntryForTask = UpdateEntryWithTimeDifference(firstEntryForTask, entry);
-                if (firstEntryForTask != entry && EntriesAreForSameTask(firstEntryForTask, entry))
+                if (firstEntryForTask != entry && EntriesAreForSameWork(firstEntryForTask, entry))
                 {
                     entriesToRemove.Add(entry);
                 }
@@ -198,7 +198,7 @@
             _localTimeRepository.RemoveTimeEntries(entriesToRemove);
         }
 
-        static bool EntriesAreForSameTask(TimeEntry firstEntry, TimeEntry secondEntry)
+        static bool EntriesAreForSameWork(TimeEntry firstEntry, TimeEntry secondEntry)
         {
             // first check if the entries have a task
             // if they do check if the task ids are the same
