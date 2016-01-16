@@ -32,18 +32,18 @@
             _localTimeRepository.RecordTime(timeEntry);
         }
 
-        public void RecordTime(Task task, DateTime time)
+        public void RecordTime(Task task, DateTime time, string comment)
         {
-            var timeEntry = new TimeEntry(task, time);
+            var timeEntry = new TimeEntry(task, time, comment);
             _localTimeRepository.RecordTime(timeEntry);
         }
 
-        public void RecordTime(Task task, int intervalCount, int minutesWorked, DateTime offset)
+        public void RecordTime(Task task, int intervalCount, int minutesWorked, DateTime offset, string comment)
         {
             var totalMinutes = intervalCount*NaggingInterval;
             var minutesOfBreak = totalMinutes - minutesWorked;
             var recordTime = offset.AddMinutes(minutesOfBreak);
-            RecordTime(task, recordTime);
+            RecordTime(task, recordTime, comment);
         }
 
         public void RecordMarker(DateTime time)

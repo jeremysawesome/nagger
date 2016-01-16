@@ -8,8 +8,8 @@
     {
         void RecordTime(Task task);
         void RecordTime(TimeEntry timeEntry);
-        void RecordTime(Task task, DateTime time);
-        void RecordTime(Task task, int intervalCount, int minutesWorked, DateTime offset);
+        void RecordTime(Task task, DateTime time, string comment);
+        void RecordTime(Task task, int intervalCount, int minutesWorked, DateTime offset, string comment);
         void RecordMarker(DateTime time);
         void DailyTimeOperations();
         void SquashTime(); // this will probably end up being internal to the time service
