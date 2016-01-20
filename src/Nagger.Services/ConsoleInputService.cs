@@ -91,15 +91,12 @@
         {
             while (true)
             {
-                for (var i = 0; i < options.Count; i++)
-                {
-                    Console.WriteLine("{0}) {1}", i, options[i]);
-                }
+                OutputOptions(options);
                 var answer = AskForInput(question);
-                int selection;
-                if (int.TryParse(answer, out selection) && selection < options.Count && selection >= 0)
+                T result;
+                if (TryGetSelection(answer, options, out result))
                 {
-                    return options[selection];
+                    return result;
                 }
                 Console.WriteLine("That was an invalid selection. Please try again.");
             }
