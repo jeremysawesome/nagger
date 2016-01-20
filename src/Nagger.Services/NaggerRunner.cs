@@ -35,14 +35,30 @@
             _outputService.ShowInterface();
             _outputService.OutputSound();
 
-            var currentTask = _taskService.GetLastTask();
             var runMiss = 0;
+            var lastTimeEntry = _timeService.GetLastTimeEntry();
+            var currentTask = lastTimeEntry?.Task;
+            var comment = "";
 
             if (currentTask != null)
             {
-                var stillWorking =
-                    _inputService.AskForBoolean(string.Format("Are you still working on {0} ({1})?", currentTask.Name,
+                var stillWorking = false;
+                const string formatString = "Are you still working on {0} ({1})?";
+
+                if (lastTimeEntry.HasComment)
+                {
+                    stillWorking =
+                        _inputService.AskForBoolean(string.Format(formatString, lastTimeEntry.Comment, currentTask.Name));
+
+                    if (stillWorking) comment = lastTimeEntry.Comment;
+                }
+                
+                if(!stillWorking) {
+                    stillWorking =
+                    _inputService.AskForBoolean(string.Format(formatString, currentTask.Name,
                         currentTask.Description.Truncate(50)));
+                }
+
                 if (!stillWorking) currentTask = null;
             }
 
@@ -74,13 +90,19 @@
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(comment))
+            {
+                var recentComments = _timeService.GetRecentlyRecordedCommentsForTask(5, currentTask).ToList();
+                comment = _inputService.AskForSelectionOrInput("Choose from options or insert a new comment. (Leave Blank for no comment)", recentComments);
+            }
+
             //todo: refactor the way runMiss is done
             runMiss = _timeService.IntervalsSinceLastRecord();
             // there will usually be 1 interval between the last time this ran and this time (it only makes sense)
-            if (runMiss <= 1) _timeService.RecordTime(currentTask, askTime);
+            if (runMiss <= 1) _timeService.RecordTime(currentTask, askTime, comment);
             else
             {
-                AskAboutBreak(currentTask, askTime, runMiss);
+                AskAboutBreak(currentTask, askTime, runMiss, comment);
             }
             _outputService.HideInterface();
         }
@@ -160,13 +182,13 @@
             return AskForSpecificTask();
         }
 
-        void AskAboutBreak(Task currentTask, DateTime askTime, int missedInterval)
+        void AskAboutBreak(Task currentTask, DateTime askTime, int missedInterval, string comment)
         {
             if (
                 !_inputService.AskForBoolean("Looks like we missed " + missedInterval +
                                              " check in(s). Were you on break?"))
             {
-                _timeService.RecordTime(currentTask, askTime);
+                _timeService.RecordTime(currentTask, askTime, comment);
             }
             else
             {
@@ -186,11 +208,11 @@
                             "Which of these options represents about how long you have been working?", intervalsMissed);
 
                     // insert an entry for when they started working
-                    _timeService.RecordTime(currentTask, missedInterval, minutesWorked, lastTime);
+                    _timeService.RecordTime(currentTask, missedInterval, minutesWorked, lastTime, comment);
                 }
 
                 // also insert an entry for the current time (since they are working and are no longer on break)
-                _timeService.RecordTime(currentTask, DateTime.Now);
+                _timeService.RecordTime(currentTask, DateTime.Now, comment);
             }
         }
     }

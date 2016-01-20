@@ -32,18 +32,18 @@
             _localTimeRepository.RecordTime(timeEntry);
         }
 
-        public void RecordTime(Task task, DateTime time)
+        public void RecordTime(Task task, DateTime time, string comment)
         {
-            var timeEntry = new TimeEntry(task, time);
+            var timeEntry = new TimeEntry(task, time, comment);
             _localTimeRepository.RecordTime(timeEntry);
         }
 
-        public void RecordTime(Task task, int intervalCount, int minutesWorked, DateTime offset)
+        public void RecordTime(Task task, int intervalCount, int minutesWorked, DateTime offset, string comment)
         {
             var totalMinutes = intervalCount*NaggingInterval;
             var minutesOfBreak = totalMinutes - minutesWorked;
             var recordTime = offset.AddMinutes(minutesOfBreak);
-            RecordTime(task, recordTime);
+            RecordTime(task, recordTime, comment);
         }
 
         public void RecordMarker(DateTime time)
@@ -93,6 +93,11 @@
         public IEnumerable<string> GetRecentlyRecordedTaskIds(int limit)
         {
             return _localTimeRepository.GetRecentlyRecordedTaskIds(limit);
+        }
+
+        public IEnumerable<string> GetRecentlyRecordedCommentsForTask(int limit, Task task)
+        {
+            return task?.Id == null ? new List<string>() : _localTimeRepository.GetRecentlyRecordedCommentsForTaskId(limit, task.Id);
         }
 
         public void DailyTimeOperations()
@@ -154,7 +159,7 @@
 
                 // this makes sure that time spent between the two entries is accounted for
                 firstEntryForTask = UpdateEntryWithTimeDifference(firstEntryForTask, entry);
-                if (firstEntryForTask != entry && EntriesAreForSameTask(firstEntryForTask, entry))
+                if (firstEntryForTask != entry && EntriesAreForSameWork(firstEntryForTask, entry))
                 {
                     entriesToRemove.Add(entry);
                 }
@@ -198,12 +203,12 @@
             _localTimeRepository.RemoveTimeEntries(entriesToRemove);
         }
 
-        static bool EntriesAreForSameTask(TimeEntry firstEntry, TimeEntry secondEntry)
+        static bool EntriesAreForSameWork(TimeEntry firstEntry, TimeEntry secondEntry)
         {
-            // first check if the entries have a task
-            // if they do check if the task ids are the same
+            // entries are considered for the same work if they have the same task and if they have the same comment
             // entries without tasks are considered different even if the comment is the same (for now)
             if (!(firstEntry.HasTask && secondEntry.HasTask)) return false;
+            if (firstEntry.Comment != secondEntry.Comment) return false;
             return firstEntry.Task.Id == secondEntry.Task.Id;
         }
 

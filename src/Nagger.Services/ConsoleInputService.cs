@@ -57,19 +57,46 @@
             return sb.ToString();
         }
 
+        public string AskForSelectionOrInput(string question, IList<string> options)
+        {
+            OutputOptions(options);
+            Console.WriteLine();
+            var answer = AskForInput(question);
+            string result;
+            return TryGetSelection(answer, options, out result) ? result : answer;
+        }
+
+        static void OutputOptions<T>(IList<T> options)
+        {
+            Console.WriteLine("----Options----");
+            for (var i = 0; i < options.Count; i++)
+            {
+                Console.WriteLine("{0}) {1}", i, options[i]);
+            }
+        }
+
+        static bool TryGetSelection<T>(string answer, IList<T> options, out T result)
+        {
+            int selection;
+            if (int.TryParse(answer, out selection) && selection < options.Count && selection >= 0)
+            {
+                result = options[selection];
+                return true;
+            }
+            result = default(T);
+            return false;
+        }
+
         public T AskForSelection<T>(string question, IList<T> options)
         {
             while (true)
             {
-                for (var i = 0; i < options.Count; i++)
-                {
-                    Console.WriteLine("{0}) {1}", i, options[i]);
-                }
+                OutputOptions(options);
                 var answer = AskForInput(question);
-                int selection;
-                if (int.TryParse(answer, out selection) && selection < options.Count && selection >= 0)
+                T result;
+                if (TryGetSelection(answer, options, out result))
                 {
-                    return options[selection];
+                    return result;
                 }
                 Console.WriteLine("That was an invalid selection. Please try again.");
             }

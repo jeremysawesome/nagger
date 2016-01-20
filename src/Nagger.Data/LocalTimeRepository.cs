@@ -134,6 +134,30 @@
             return ids;
         }
 
+        public IEnumerable<string> GetRecentlyRecordedCommentsForTaskId(int limit, string taskId)
+        {
+            var comments = new List<string>();
+            using (var cnn = GetConnection())
+            using (var cmd = cnn.CreateCommand())
+            {
+                cmd.CommandText = @"SELECT DISTINCT Comment
+                                    FROM TimeEntries 
+                                    WHERE Internal = 0 AND TaskId = @taskId AND trim(Comment) != ''
+                                    ORDER BY TimeRecorded DESC
+                                    LIMIT @limit";
+                cmd.Parameters.AddWithValue("@taskId", taskId);
+                cmd.Parameters.AddWithValue("@limit", limit);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        comments.Add(reader.Get<string>("Comment"));
+                    }
+                }
+            }
+            return comments;
+        }
+
         public void RemoveTimeEntries(IEnumerable<TimeEntry> entries)
         {
             if (!entries.Any()) return;
