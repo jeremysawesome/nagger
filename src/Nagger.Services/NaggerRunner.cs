@@ -92,7 +92,8 @@
 
             if (string.IsNullOrWhiteSpace(comment))
             {
-                comment = _inputService.AskForInput("Insert a comment. (Leave Blank for no comment)");
+                var recentComments = _timeService.GetRecentlyRecordedCommentsForTask(5, currentTask).ToList();
+                comment = _inputService.AskForSelectionOrInput("Choose from options or insert a new comment. (Leave Blank for no comment)", recentComments);
             }
 
             //todo: refactor the way runMiss is done
