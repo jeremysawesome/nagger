@@ -95,6 +95,11 @@
             return _localTimeRepository.GetRecentlyRecordedTaskIds(limit);
         }
 
+        public IEnumerable<string> GetRecentlyRecordedCommentsForTask(int limit, Task task)
+        {
+            return task?.Id == null ? new List<string>() : _localTimeRepository.GetRecentlyRecordedCommentsForTaskId(limit, task.Id);
+        }
+
         public void DailyTimeOperations()
         {
             var lastSquash = _settingsService.GetSetting<DateTime>("LastSquashDate");

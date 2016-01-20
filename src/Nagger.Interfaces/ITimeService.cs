@@ -19,5 +19,6 @@
         int IntervalsSinceTime(DateTime startTime);
         int IntervalsSinceLastRecord(bool justToday = true);
         IEnumerable<string> GetRecentlyRecordedTaskIds(int limit);
+        IEnumerable<string> GetRecentlyRecordedCommentsForTask(int limit, Task task);
     }
 }
