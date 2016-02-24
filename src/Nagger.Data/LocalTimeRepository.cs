@@ -140,9 +140,10 @@
             using (var cnn = GetConnection())
             using (var cmd = cnn.CreateCommand())
             {
-                cmd.CommandText = @"SELECT DISTINCT Comment
+                cmd.CommandText = @"SELECT Comment
                                     FROM TimeEntries 
                                     WHERE Internal = 0 AND TaskId = @taskId AND trim(Comment) != ''
+                                    GROUP BY Comment
                                     ORDER BY TimeRecorded DESC
                                     LIMIT @limit";
                 cmd.Parameters.AddWithValue("@taskId", taskId);
