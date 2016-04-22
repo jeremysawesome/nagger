@@ -189,6 +189,11 @@
                                              " check in(s). Were you on break?"))
             {
                 _timeService.RecordTime(currentTask, askTime, comment);
+
+                // record an entry for now in the case where they forgot about nagger and are just now answering the questions
+                if(_timeService.IntervalsSinceTime(askTime) > 1) _timeService.RecordTime(currentTask, DateTime.Now, comment);
+
+                //TODO: Create a method to ask about abscences (what if they have worked on multiple things in the amount of time they were gone?)
             }
             else
             {
