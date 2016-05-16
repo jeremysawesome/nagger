@@ -27,9 +27,7 @@
 
             var apiResult = _api.Execute<List<DTO.Project>>(request);
 
-            if (apiResult == null) return null;
-
-            return apiResult.Select(x => new Project
+            return apiResult?.Select(x => new Project
             {
                 Id = x.id,
                 Name = x.name,
