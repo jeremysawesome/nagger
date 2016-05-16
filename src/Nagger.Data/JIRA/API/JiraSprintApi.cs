@@ -1,6 +1,5 @@
-﻿namespace Nagger.Data.JIRA
+﻿namespace Nagger.Data.JIRA.API
 {
-    using API;
     using Data.API;
     using Models;
 
