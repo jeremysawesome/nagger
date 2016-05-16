@@ -1,4 +1,4 @@
-﻿namespace Nagger.Data
+﻿namespace Nagger.Data.Local
 {
     using System;
     using System.Collections.Generic;

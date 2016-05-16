@@ -64,10 +64,10 @@
     <Compile Include="JIRA\JiraRemoteTaskRepository.cs" />
     <Compile Include="JIRA\JiraRemoteTimeRepository.cs" />
     <Compile Include="JIRA\API\JiraSprintApi.cs" />
-    <Compile Include="LocalProjectRepository.cs" />
-    <Compile Include="LocalBaseRepository.cs" />
-    <Compile Include="LocalTaskRepository.cs" />
-    <Compile Include="LocalTimeRepository.cs" />
+    <Compile Include="Local\LocalProjectRepository.cs" />
+    <Compile Include="Local\LocalBaseRepository.cs" />
+    <Compile Include="Local\LocalTaskRepository.cs" />
+    <Compile Include="Local\LocalTimeRepository.cs" />
     <Compile Include="SettingsRepository.cs" />
     <Compile Include="SQLiteDataReaderExtensions.cs" />
   </ItemGroup>

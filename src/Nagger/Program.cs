@@ -3,6 +3,7 @@
     using Autofac;
     using Data;
     using Data.JIRA;
+    using Data.Local;
     using Interfaces;
     using Quartz;
     using Quartz.Impl;

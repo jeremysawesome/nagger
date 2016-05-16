@@ -1,6 +1,7 @@
 ﻿namespace Nagger.Data
 {
     using Interfaces;
+    using Local;
 
     public class SettingsRepository : LocalBaseRepository, ISettingsRepository
     {
