@@ -10,13 +10,11 @@
     public class JiraRemoteTimeRepository : IRemoteTimeRepository
     {
         readonly JiraApi _api;
-        readonly BaseJiraRepository _baseJiraRepository;
       
 
         public JiraRemoteTimeRepository(BaseJiraRepository baseJiraRepository)
         {
-            _baseJiraRepository = baseJiraRepository;
-            _api = new JiraApi(_baseJiraRepository.JiraUser, _baseJiraRepository.ApiBaseUrl);
+            _api = new JiraApi(baseJiraRepository.JiraUser, baseJiraRepository.ApiBaseUrl);
         }
 
         // needs to post to: /rest/api/2/issue/{issueIdOrKey}/worklog
