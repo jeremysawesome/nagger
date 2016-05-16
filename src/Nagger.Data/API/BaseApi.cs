@@ -1,4 +1,4 @@
-﻿namespace Nagger.Data.JIRA.API
+﻿namespace Nagger.Data.API
 {
     using System;
     using System.Net;
@@ -6,12 +6,12 @@
     using Models;
     using RestSharp;
 
-    public class JiraBaseApi
+    public class BaseApi
     {
         readonly string _apiUrl;
         readonly User _user;
 
-        public JiraBaseApi(User user, string apiBaseUrl, string apiPath)
+        public BaseApi(User user, string apiBaseUrl, string apiPath)
         {
             _user = user;
             _apiUrl = apiBaseUrl.TrimEnd('/') + apiPath;
