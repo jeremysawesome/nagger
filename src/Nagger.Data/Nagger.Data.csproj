@@ -70,6 +70,9 @@
     <Compile Include="Local\LocalTaskRepository.cs" />
     <Compile Include="Local\LocalTimeRepository.cs" />
     <Compile Include="Local\SettingsRepository.cs" />
+    <Compile Include="Meazure\MeazureProjectRepository.cs" />
+    <Compile Include="Meazure\MeazureTaskRepository.cs" />
+    <Compile Include="Meazure\MeazureTimeRepository.cs" />
     <Compile Include="SQLiteDataReaderExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
