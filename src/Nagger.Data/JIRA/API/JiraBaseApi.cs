@@ -23,11 +23,11 @@
             var response = client.Execute<T>(request);
 
             // we will deal with this later. When InvalidCredentials are provided then we need to clear out the saved creds
-            if(response.StatusCode == HttpStatusCode.Unauthorized) throw new InvalidCredentialException("User provided is not authorized to access this JIRA API: "+_apiUrl);
+            if(response.StatusCode == HttpStatusCode.Unauthorized) throw new InvalidCredentialException("User provided is not authorized to access this API: "+_apiUrl);
 
             if (response.ErrorException == null) return response.Data;
 
-            throw new ApplicationException("Error retrieving data from Jira", response.ErrorException);
+            throw new ApplicationException("Error retrieving data from API", response.ErrorException);
         }
 
         RestClient GetClient()
