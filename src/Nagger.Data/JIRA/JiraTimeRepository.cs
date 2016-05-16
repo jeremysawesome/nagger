@@ -7,12 +7,12 @@
     using RestSharp;
     using Services.ExtensionMethods;
 
-    public class JiraRemoteTimeRepository : IRemoteTimeRepository
+    public class JiraTimeRepository : IRemoteTimeRepository
     {
         readonly JiraApi _api;
       
 
-        public JiraRemoteTimeRepository(BaseJiraRepository baseJiraRepository)
+        public JiraTimeRepository(BaseJiraRepository baseJiraRepository)
         {
             _api = new JiraApi(baseJiraRepository.JiraUser, baseJiraRepository.ApiBaseUrl);
         }

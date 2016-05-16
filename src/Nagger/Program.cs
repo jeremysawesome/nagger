@@ -30,9 +30,9 @@
 
         static void RegisterComponents(ContainerBuilder builder)
         {
-            builder.RegisterType<JiraRemoteProjectRepository>().As<IRemoteProjectRepository>();
-            builder.RegisterType<JiraRemoteTaskRepository>().As<IRemoteTaskRepository>();
-            builder.RegisterType<JiraRemoteTimeRepository>().As<IRemoteTimeRepository>();
+            builder.RegisterType<JiraProjectRepository>().As<IRemoteProjectRepository>();
+            builder.RegisterType<JiraTaskRepository>().As<IRemoteTaskRepository>();
+            builder.RegisterType<JiraTimeRepository>().As<IRemoteTimeRepository>();
 
             builder.RegisterType<LocalProjectRepository>().As<ILocalProjectRepository>();
             builder.RegisterType<LocalTaskRepository>().As<ILocalTaskRepository>();

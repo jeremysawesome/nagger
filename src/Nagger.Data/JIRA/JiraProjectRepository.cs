@@ -7,11 +7,11 @@
     using Models;
     using RestSharp;
 
-    public class JiraRemoteProjectRepository : BaseJiraRepository, IRemoteProjectRepository
+    public class JiraProjectRepository : BaseJiraRepository, IRemoteProjectRepository
     {
         readonly JiraApi _api;
 
-        public JiraRemoteProjectRepository(ISettingsService settingsService, IInputService inputService)
+        public JiraProjectRepository(ISettingsService settingsService, IInputService inputService)
             : base(settingsService, inputService)
         {
             // the project and time repositories use different API's but the same user and password

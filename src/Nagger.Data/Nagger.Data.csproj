@@ -61,9 +61,9 @@
     <Compile Include="JIRA\API\JiraApi.cs" />
     <Compile Include="JIRA\DTO\Task.cs" />
     <Compile Include="JIRA\DTO\Worklog.cs" />
-    <Compile Include="JIRA\JiraRemoteProjectRepository.cs" />
-    <Compile Include="JIRA\JiraRemoteTaskRepository.cs" />
-    <Compile Include="JIRA\JiraRemoteTimeRepository.cs" />
+    <Compile Include="JIRA\JiraProjectRepository.cs" />
+    <Compile Include="JIRA\JiraTaskRepository.cs" />
+    <Compile Include="JIRA\JiraTimeRepository.cs" />
     <Compile Include="JIRA\API\JiraSprintApi.cs" />
     <Compile Include="Local\LocalProjectRepository.cs" />
     <Compile Include="Local\LocalBaseRepository.cs" />

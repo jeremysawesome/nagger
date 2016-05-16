@@ -9,13 +9,13 @@
     using RestSharp;
     using Project = Models.Project;
 
-    public class JiraRemoteTaskRepository : IRemoteTaskRepository
+    public class JiraTaskRepository : IRemoteTaskRepository
     {
         readonly JiraApi _api;
         // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
         readonly BaseJiraRepository _baseJiraRepository;
 
-        public JiraRemoteTaskRepository(BaseJiraRepository baseJiraRepository)
+        public JiraTaskRepository(BaseJiraRepository baseJiraRepository)
         {
             _baseJiraRepository = baseJiraRepository;
             _api = new JiraApi(_baseJiraRepository.JiraUser, _baseJiraRepository.ApiBaseUrl);
