@@ -50,13 +50,9 @@
         public bool Synced { get; set; }
         public bool Internal { get; set; }
 
-        public bool HasTask
-        {
-            get { return Task != null; }
-        }
-
         public bool HasComment => !string.IsNullOrWhiteSpace(Comment);
         public bool HasProject => Project != null;
+        public bool HasTask => Task != null;
 
         // note: no need to add a "user" we are going to work under the assumption that there is only one user
     }
