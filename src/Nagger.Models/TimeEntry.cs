@@ -56,6 +56,7 @@
         }
 
         public bool HasComment => !string.IsNullOrWhiteSpace(Comment);
+        public bool HasProject => Project != null;
 
         // note: no need to add a "user" we are going to work under the assumption that there is only one user
     }
