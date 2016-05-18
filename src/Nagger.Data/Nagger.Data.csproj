@@ -72,6 +72,7 @@
     <Compile Include="Local\SettingsRepository.cs" />
     <Compile Include="Meazure\API\MeazureApi.cs" />
     <Compile Include="Meazure\BaseMeazureRepository.cs" />
+    <Compile Include="Meazure\DTO\LoginModel.cs" />
     <Compile Include="Meazure\DTO\Project.cs" />
     <Compile Include="Meazure\DTO\TimeEntryModel.cs" />
     <Compile Include="Meazure\MeazureProjectRepository.cs" />
