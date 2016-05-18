@@ -42,6 +42,7 @@
     <Compile Include="IOutputService.cs" />
     <Compile Include="IProjectService.cs" />
     <Compile Include="IRemoteProjectRepository.cs" />
+    <Compile Include="IRemoteRunner.cs" />
     <Compile Include="IRemoteTaskRepository.cs" />
     <Compile Include="IRunnerService.cs" />
     <Compile Include="ISettingsRepository.cs" />
