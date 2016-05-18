@@ -27,9 +27,19 @@
                 CookieContainer = new CookieContainer()
             };
 
-            var loginRequest = new RestRequest(LoginPath, Method.POST);
-            loginRequest.AddParameter("Email", User.Username);
-            loginRequest.AddParameter("Password", User.Password);
+            //Meazure requires an actual login
+            var loginRequest = new RestRequest
+            {
+                Resource = LoginPath,
+                Method = Method.POST,
+                RequestFormat = DataFormat.Json
+            };
+
+            loginRequest.AddBody(new DTO.LoginModel
+            {
+                Email = User.Username,
+                Password = User.Password
+            });
 
             client.Execute(loginRequest);
 
