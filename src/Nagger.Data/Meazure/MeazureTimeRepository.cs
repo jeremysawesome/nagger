@@ -14,7 +14,7 @@
         public MeazureTimeRepository(ISettingsService settingsService, IInputService inputService)
         {
             var baseRepository = new BaseMeazureRepository(settingsService, inputService);
-            _api = new MeazureApi(baseRepository.User, baseRepository.ApiBaseUrl, "/Time");
+            _api = new MeazureApi(baseRepository.User, baseRepository.ApiBaseUrl);
         }
 
         public bool RecordTime(TimeEntry timeEntry)
@@ -35,7 +35,7 @@
 
             var post = new RestRequest
             {
-                Resource = "Save",
+                Resource = "Time/Save",
                 Method = Method.POST,
                 RequestFormat = DataFormat.Json
             };

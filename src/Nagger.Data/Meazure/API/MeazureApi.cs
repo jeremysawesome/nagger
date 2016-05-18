@@ -10,7 +10,7 @@
     {
         const string LoginPath = "/Auth/Login";
 
-        public MeazureApi(User user, string apiBaseUrl, string apiPath) : base(user, apiBaseUrl, apiPath)
+        public MeazureApi(User user, string apiBaseUrl) : base(user, apiBaseUrl, "")
         {
         }
 

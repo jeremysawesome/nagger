@@ -14,12 +14,12 @@
         public MeazureProjectRepository(ISettingsService settingsService, IInputService inputService)
         {
             var baseRepository = new BaseMeazureRepository(settingsService, inputService);
-            _api = new MeazureApi(baseRepository.User, baseRepository.ApiBaseUrl, "/Project");
+            _api = new MeazureApi(baseRepository.User, baseRepository.ApiBaseUrl);
         }
 
         public IEnumerable<Project> GetProjects()
         {
-            var request = new RestRequest {Resource = "List"};
+            var request = new RestRequest {Resource = "json/Project/List" };
 
             var apiResult = _api.Execute<List<DTO.Project>>(request);
 
