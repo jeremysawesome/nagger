@@ -9,12 +9,12 @@
 
     public class MeazureTimeRepository : IRemoteTimeRepository
     {
-        readonly BaseApi _api;
+        readonly MeazureApi _api;
 
         public MeazureTimeRepository(ISettingsService settingsService, IInputService inputService)
         {
             var baseRepository = new BaseMeazureRepository(settingsService, inputService);
-            _api = new BaseApi(baseRepository.User, baseRepository.ApiBaseUrl, "/Time");
+            _api = new MeazureApi(baseRepository.User, baseRepository.ApiBaseUrl, "/Time");
         }
 
         public bool RecordTime(TimeEntry timeEntry)

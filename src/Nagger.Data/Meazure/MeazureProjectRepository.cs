@@ -9,12 +9,12 @@
 
     public class MeazureProjectRepository :IRemoteProjectRepository
     {
-        readonly BaseApi _api;
+        readonly MeazureApi _api;
 
         public MeazureProjectRepository(ISettingsService settingsService, IInputService inputService)
         {
             var baseRepository = new BaseMeazureRepository(settingsService, inputService);
-            _api = new BaseApi(baseRepository.User, baseRepository.ApiBaseUrl, "/json/Project");
+            _api = new MeazureApi(baseRepository.User, baseRepository.ApiBaseUrl, "/Project");
         }
 
         public IEnumerable<Project> GetProjects()
