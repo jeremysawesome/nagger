@@ -4,6 +4,7 @@
     using Data;
     using Data.JIRA;
     using Data.Local;
+    using Data.Meazure;
     using Interfaces;
     using Quartz;
     using Quartz.Impl;
@@ -30,9 +31,13 @@
 
         static void RegisterComponents(ContainerBuilder builder)
         {
-            builder.RegisterType<JiraProjectRepository>().As<IRemoteProjectRepository>();
+            /*builder.RegisterType<JiraProjectRepository>().As<IRemoteProjectRepository>();
             builder.RegisterType<JiraTaskRepository>().As<IRemoteTaskRepository>();
-            builder.RegisterType<JiraTimeRepository>().As<IRemoteTimeRepository>();
+            builder.RegisterType<JiraTimeRepository>().As<IRemoteTimeRepository>();*/
+
+            builder.RegisterType<MeazureProjectRepository>().As<IRemoteProjectRepository>();
+            builder.RegisterType<MeazureTaskRepository>().As<IRemoteTaskRepository>();
+            builder.RegisterType<MeazureTimeRepository>().As<IRemoteTimeRepository>();
 
             builder.RegisterType<LocalProjectRepository>().As<ILocalProjectRepository>();
             builder.RegisterType<LocalTaskRepository>().As<ILocalTaskRepository>();
