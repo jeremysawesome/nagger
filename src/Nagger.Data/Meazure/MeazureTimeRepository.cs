@@ -1,12 +1,22 @@
 ﻿namespace Nagger.Data.Meazure
 {
     using System.Collections.Generic;
+    using API;
     using DTO;
     using Interfaces;
     using Models;
+    using RestSharp;
 
     public class MeazureTimeRepository : IRemoteTimeRepository
     {
+        readonly BaseApi _api;
+
+        public MeazureTimeRepository(ISettingsService settingsService, IInputService inputService)
+        {
+            var baseRepository = new BaseMeazureRepository(settingsService, inputService);
+            _api = new BaseApi(baseRepository.User, baseRepository.ApiBaseUrl, "/Time");
+        }
+
         public bool RecordTime(TimeEntry timeEntry)
         {
             // meazure requires either Notes, a project, or a task
@@ -23,9 +33,17 @@
                 WorkItems = new List<string>(), //TODO: add functionality for tracking WorkItems
             };
 
+            var post = new RestRequest
+            {
+                Resource = "Save",
+                Method = Method.POST,
+                RequestFormat = DataFormat.Json
+            };
 
+            post.AddBody(timeEntryModel);
 
-            throw new System.NotImplementedException();
+            var result = _api.Execute<TimeEntryModel>(post);
+            return result != null;
         }
     }
 }
