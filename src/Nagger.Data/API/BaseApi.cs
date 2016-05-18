@@ -17,9 +17,9 @@
             _apiUrl = apiBaseUrl.TrimEnd('/') + apiPath;
         }
 
-        public T Execute<T>(RestRequest request) where T : new()
+        public T Execute<T>(RestRequest request, IRestClient client = null) where T : new()
         {
-            var client = GetClient();
+            if(client == null) client = GetClient();
             var response = client.Execute<T>(request);
 
             // we will deal with this later. When InvalidCredentials are provided then we need to clear out the saved creds
