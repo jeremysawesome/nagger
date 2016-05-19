@@ -17,7 +17,7 @@
             return GetTasks(project.Id);
         }
 
-        public IEnumerable<Task> GetTasks(string projectId = null)
+        public IEnumerable<Task> GetTasks(string projectId = null, bool emptyProjectIdIsOk = false)
         {
             var tasks = new List<Task>();
 
@@ -26,7 +26,7 @@
             {
                 cmd.CommandText = @"SELECT * FROM Tasks WHERE ParentId == ''";
 
-                if (!string.IsNullOrEmpty(projectId))
+                if (emptyProjectIdIsOk || !string.IsNullOrEmpty(projectId))
                 {
                     cmd.CommandText += " AND ProjectId = @projectId";
 

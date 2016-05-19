@@ -9,6 +9,7 @@
         Task GetTaskByName(string name);
         Task GetTaskById(string taskId);
         void StoreTask(Task task);
+        IEnumerable<Task> GetGeneralTasks();
         IEnumerable<Task> GetTasksByTaskIds(IEnumerable<string> taskIds);
         IEnumerable<Task> GetTasksByProject(Project project);
         IEnumerable<Task> GetTasksByProjectId(string projectId);

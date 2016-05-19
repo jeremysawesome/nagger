@@ -41,6 +41,11 @@
             _localTaskRepository.StoreTask(task);
         }
 
+        public IEnumerable<Task> GetGeneralTasks()
+        {
+            return _localTaskRepository.GetTasks("", true);
+        }
+
         public IEnumerable<Task> GetTasksByTaskIds(IEnumerable<string> taskIds)
         {
             return _localTaskRepository.GetTasksByTaskIds(taskIds);

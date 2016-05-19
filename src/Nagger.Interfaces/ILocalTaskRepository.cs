@@ -10,7 +10,7 @@
         Task GetTaskByName(string name);
         Task GetTaskById(string id);
         void StoreTask(Task task);
-        IEnumerable<Task> GetTasks(string projectId = null);
+        IEnumerable<Task> GetTasks(string projectId = null, bool emptyProjectIdIsOk = false);
         IEnumerable<Task> GetTasksByTaskIds(IEnumerable<string> taskIds);
         IEnumerable<Task> GetTasksByProject(Project project);
 
