@@ -32,7 +32,7 @@
 
             if (currentTask == null)
             {
-                var tasks = _taskService.GetTasksByProject(currentProject);
+                var tasks = _taskService.GetGeneralTasks();
                 currentTask = _inputService.AskForSelection("Ok. Above is a list of tasks. Which one were you working on?",
                     tasks.ToList());
             }
