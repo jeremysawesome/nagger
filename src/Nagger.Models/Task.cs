@@ -20,7 +20,8 @@
 
         public override string ToString()
         {
-            return (!string.IsNullOrWhiteSpace(Description) && Name != Description) ? $"{Name} ({Description.Truncate(50)})" : Name;
+            var toReturn = (!string.IsNullOrWhiteSpace(Description) && Name != Description) ? $"{Name} ({Description.Truncate(50)})" : Name;
+            return Project != null ? $"{toReturn} ({Project})" : toReturn;
         }
     }
 }
