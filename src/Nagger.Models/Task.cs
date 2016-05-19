@@ -15,9 +15,6 @@
 
         public bool HasTasks => Tasks != null && Tasks.Any();
 
-        public bool HasParent
-        {
-            get { return Parent != null; }
-        }
+        public bool HasParent => Parent != null;
     }
 }
