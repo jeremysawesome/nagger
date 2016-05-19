@@ -9,6 +9,7 @@
     using Quartz;
     using Quartz.Impl;
     using Services;
+    using Services.Meazure;
 
     internal class Program
     {
@@ -38,6 +39,8 @@
             builder.RegisterType<MeazureProjectRepository>().As<IRemoteProjectRepository>();
             builder.RegisterType<MeazureTaskRepository>().As<IRemoteTaskRepository>();
             builder.RegisterType<MeazureTimeRepository>().As<IRemoteTimeRepository>();
+
+            builder.RegisterType<MeazureRunner>().As<IRemoteRunner>();
 
             builder.RegisterType<LocalProjectRepository>().As<ILocalProjectRepository>();
             builder.RegisterType<LocalTaskRepository>().As<ILocalTaskRepository>();
