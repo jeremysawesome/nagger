@@ -42,6 +42,7 @@
     <Compile Include="ExtensionMethods\TimeSpanExtensions.cs" />
     <Compile Include="ConsoleInputService.cs" />
     <Compile Include="JIRA\JiraRunner.cs" />
+    <Compile Include="Meazure\MeazureRunner.cs" />
     <Compile Include="NaggerRunner.cs" />
     <Compile Include="ProjectService.cs" />
     <Compile Include="SettingsService.cs" />
