@@ -82,6 +82,10 @@
     <Compile Include="SQLiteDataReaderExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Nagger.Extensions\Nagger.Extensions.csproj">
+      <Project>{00D0F70A-2354-44D5-B0D1-C900D0380923}</Project>
+      <Name>Nagger.Extensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Nagger.Interfaces\Nagger.Interfaces.csproj">
       <Project>{b6e0e8e1-438e-4a98-9382-364a478f149d}</Project>
       <Name>Nagger.Interfaces</Name>

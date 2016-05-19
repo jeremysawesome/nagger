@@ -2,10 +2,10 @@
 {
     using API;
     using DTO;
+    using Extensions;
     using Interfaces;
     using Models;
     using RestSharp;
-    using Services.ExtensionMethods;
 
     public class JiraTimeRepository : IRemoteTimeRepository
     {

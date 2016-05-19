@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Extensions;
 
     public class Task
     {
@@ -19,7 +20,7 @@
 
         public override string ToString()
         {
-            return !string.IsNullOrWhiteSpace(Description) ? $"{Name} - {Description}" : Name;
+            return (!string.IsNullOrWhiteSpace(Description) && Name != Description) ? $"{Name} ({Description.Truncate(50)})" : Name;
         }
     }
 }

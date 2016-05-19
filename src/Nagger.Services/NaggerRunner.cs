@@ -2,7 +2,6 @@
 {
     using System;
     using System.Linq;
-    using ExtensionMethods;
     using Interfaces;
     using Models;
 
@@ -41,20 +40,19 @@
             if (currentTask != null)
             {
                 var stillWorking = false;
-                const string formatString = "Are you still working on {0} ({1})?";
 
                 if (lastTimeEntry.HasComment)
                 {
                     stillWorking =
-                        _inputService.AskForBoolean(string.Format(formatString, lastTimeEntry.Comment, currentTask.Name));
+                        _inputService.AskForBoolean($"Are you still working on {lastTimeEntry.Comment} ({currentTask.Name})?");
 
                     if (stillWorking) comment = lastTimeEntry.Comment;
                 }
                 
-                if(!stillWorking) {
+                if(!stillWorking)
+                {
                     stillWorking =
-                    _inputService.AskForBoolean(string.Format(formatString, currentTask.Name,
-                        currentTask.Description.Truncate(50)));
+                    _inputService.AskForBoolean($"Are you still working on {currentTask}?");
                 }
 
                 if (!stillWorking) currentTask = null;

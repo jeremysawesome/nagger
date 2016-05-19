@@ -1,4 +1,4 @@
-﻿namespace Nagger.Services.ExtensionMethods
+﻿namespace Nagger.Extensions
 {
     using System;
 
