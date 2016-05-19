@@ -12,13 +12,15 @@
         readonly ILocalTimeRepository _localTimeRepository;
         readonly IRemoteTimeRepository _remoteTimeRepository;
         readonly ISettingsService _settingsService;
+        readonly IProjectService _projectService;
 
         public TimeService(ILocalTimeRepository localTimeRepository, IRemoteTimeRepository remoteTimeRepository,
-            ISettingsService settingsService)
+            ISettingsService settingsService, IProjectService projectService)
         {
             _localTimeRepository = localTimeRepository;
             _remoteTimeRepository = remoteTimeRepository;
             _settingsService = settingsService;
+            _projectService = projectService;
         }
 
         int NaggingInterval
@@ -63,7 +65,9 @@
 
         public TimeEntry GetLastTimeEntry(bool getInternal = false)
         {
-            return _localTimeRepository.GetLastTimeEntry(getInternal);
+            var entry = _localTimeRepository.GetLastTimeEntry(getInternal);
+            if (entry.HasProject && entry.HasTask) entry.Task.Project = entry.Project;
+            return entry;
         }
 
         public IEnumerable<int> GetIntervalMinutes(int intervalCount)
