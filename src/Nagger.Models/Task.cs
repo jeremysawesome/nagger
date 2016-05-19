@@ -16,5 +16,10 @@
         public bool HasTasks => Tasks != null && Tasks.Any();
 
         public bool HasParent => Parent != null;
+
+        public override string ToString()
+        {
+            return !string.IsNullOrWhiteSpace(Description) ? $"{Name} - {Description}" : Name;
+        }
     }
 }
