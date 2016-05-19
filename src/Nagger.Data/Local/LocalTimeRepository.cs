@@ -9,10 +9,12 @@
     public class LocalTimeRepository : LocalBaseRepository, ILocalTimeRepository
     {
         readonly ILocalTaskRepository _localTaskRepository;
+        readonly ILocalProjectRepository _localProjectRepository;
 
-        public LocalTimeRepository(ILocalTaskRepository localTaskRepository)
+        public LocalTimeRepository(ILocalTaskRepository localTaskRepository, ILocalProjectRepository localProjectRepository)
         {
             _localTaskRepository = localTaskRepository;
+            _localProjectRepository = localProjectRepository;
         }
 
         public void RecordTime(TimeEntry timeEntry)
@@ -60,8 +62,8 @@
                         Task = _localTaskRepository.GetTaskById(reader.Get<string>("TaskId")),
                         Synced = reader.Get<bool>("Synced"),
                         MinutesSpent = reader.Get<int>("MinutesSpent"),
-                        Internal = reader.Get<bool>("Internal")
-                        //Project = _projectRepository.GetProjectById(reader.GetString(reader.GetOrdinal("ProjectId")))
+                        Internal = reader.Get<bool>("Internal"),
+                        Project = _localProjectRepository.GetProjectById(reader.Get<string>("ProjectId"))
                     };
 
                     return timeEntry;
@@ -93,8 +95,8 @@
                             Task = _localTaskRepository.GetTaskById(reader.Get<string>("TaskId")),
                             Synced = reader.Get<bool>("Synced"),
                             MinutesSpent = reader.Get<int>("MinutesSpent"),
-                            Internal = reader.Get<bool>("Internal")
-                            //Project = _projectRepository.GetProjectById(reader.GetString(reader.GetOrdinal("ProjectId")))
+                            Internal = reader.Get<bool>("Internal"),
+                            Project = _localProjectRepository.GetProjectById(reader.Get<string>("ProjectId"))
                         };
 
                         entries.Add(timeEntry);
