@@ -9,5 +9,6 @@
         Project GetProjectByKey(string key);
         IEnumerable<Project> GetProjects();
         void StoreProject(Project project);
+        Project GetProjectByName(string name);
     }
 }
