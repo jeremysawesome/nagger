@@ -13,10 +13,7 @@
 
         public Project Project { get; set; }
 
-        public bool HasTasks
-        {
-            get { return Tasks != null && Tasks.Any(); }
-        }
+        public bool HasTasks => Tasks != null && Tasks.Any();
 
         public bool HasParent
         {
