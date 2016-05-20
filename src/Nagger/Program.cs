@@ -9,6 +9,7 @@
     using Quartz;
     using Quartz.Impl;
     using Services;
+    using Services.JIRA;
     using Services.Meazure;
 
     internal class Program
@@ -30,7 +31,7 @@
 
         static IContainer Container { get; set; }
 
-        static void RegisterComponents(ContainerBuilder builder)
+        static void RegisterInitialComponents(ContainerBuilder builder)
         {
             builder.RegisterType<ConsoleInputService>().As<IInputService>();
             builder.RegisterType<ConsoleOutputService>().As<IOutputService>();
@@ -39,31 +40,48 @@
             builder.RegisterType<LocalProjectRepository>().As<ILocalProjectRepository>();
             builder.RegisterType<LocalTaskRepository>().As<ILocalTaskRepository>();
             builder.RegisterType<LocalTimeRepository>().As<ILocalTimeRepository>();
+        }
 
-            builder.RegisterType<MeazureProjectRepository>().As<IRemoteProjectRepository>();
-            builder.RegisterType<MeazureTaskRepository>().As<IRemoteTaskRepository>();
-            builder.RegisterType<MeazureTimeRepository>().As<IRemoteTimeRepository>();
-            builder.RegisterType<MeazureRunner>().As<IRemoteRunner>();
+        static void RegisterConditionalComponents(IContainer container)
+        {
+            var updater = new ContainerBuilder();
+            updater.RegisterType<MeazureProjectRepository>().As<IRemoteProjectRepository>();
+            updater.RegisterType<MeazureTaskRepository>().As<IRemoteTaskRepository>();
+            updater.RegisterType<MeazureTimeRepository>().As<IRemoteTimeRepository>();
+            updater.RegisterType<MeazureRunner>().As<IRemoteRunner>();
 
-            /*builder.RegisterType<JiraProjectRepository>().As<IRemoteProjectRepository>();
-            builder.RegisterType<JiraTaskRepository>().As<IRemoteTaskRepository>();
-            builder.RegisterType<JiraTimeRepository>().As<IRemoteTimeRepository>();
-            builder.RegisterType<BaseJiraRepository>();
-            builder.RegisterType<JiraRunner>().As<IRemoteRunner>();*/
 
-            builder.RegisterType<ProjectService>().As<IProjectService>();
-            builder.RegisterType<SettingsService>().As<ISettingsService>();
-            builder.RegisterType<TaskService>().As<ITaskService>();
-            builder.RegisterType<TimeService>().As<ITimeService>();
+            //TODO: actually allow JIRA to be used
+            /*updater.RegisterType<JiraProjectRepository>().As<IRemoteProjectRepository>();
+            updater.RegisterType<JiraTaskRepository>().As<IRemoteTaskRepository>();
+            updater.RegisterType<JiraTimeRepository>().As<IRemoteTimeRepository>();
+            updater.RegisterType<BaseJiraRepository>();
+            updater.RegisterType<JiraRunner>().As<IRemoteRunner>();*/
 
-            builder.RegisterType<NaggerRunner>().As<IRunnerService>();
+            updater.Update(container);
+        }
+
+        static void RegisterFinalComponents(IContainer container)
+        {
+            var updater = new ContainerBuilder();
+
+            updater.RegisterType<ProjectService>().As<IProjectService>();
+            updater.RegisterType<SettingsService>().As<ISettingsService>();
+            updater.RegisterType<TaskService>().As<ITaskService>();
+            updater.RegisterType<TimeService>().As<ITimeService>();
+
+            updater.RegisterType<NaggerRunner>().As<IRunnerService>();
+
+            updater.Update(container);
         }
 
         static void SetupIocContainer()
         {
             var builder = new ContainerBuilder();
-            RegisterComponents(builder);
+            RegisterInitialComponents(builder);
             Container = builder.Build();
+            RegisterConditionalComponents(Container);
+            RegisterFinalComponents(Container);
         }
 
         static void Schedule()
