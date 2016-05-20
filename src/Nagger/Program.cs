@@ -1,15 +1,12 @@
 ﻿namespace Nagger
 {
     using Autofac;
-    using Data;
-    using Data.JIRA;
     using Data.Local;
     using Data.Meazure;
     using Interfaces;
     using Quartz;
     using Quartz.Impl;
     using Services;
-    using Services.JIRA;
     using Services.Meazure;
 
     internal class Program
