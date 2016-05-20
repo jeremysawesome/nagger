@@ -133,10 +133,26 @@
             }
         }
 
+        static void MonitorEvents()
+        {
+            using (var scope = Container.BeginLifetimeScope())
+            {
+                var timeService = scope.Resolve<ITimeService>();
+                var outputService = scope.Resolve<IOutputService>();
+
+                var monitorService = new EventMonitoringService(outputService, x =>
+                {
+                    timeService.DailyTimeOperations(true);
+                });
+                monitorService.Monitor();
+            }
+        }
+
         static void Main(string[] args)
         {
             SetupIocContainer();
             Schedule();
+            MonitorEvents();
         }
 
         class JobRunner : IJob

@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Include="ConsoleOutputService.cs" />
     <Compile Include="ConsoleInputService.cs" />
+    <Compile Include="EventMonitoringService.cs" />
     <Compile Include="JIRA\JiraRunner.cs" />
     <Compile Include="Meazure\MeazureRunner.cs" />
     <Compile Include="NaggerRunner.cs" />
