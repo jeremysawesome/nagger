@@ -101,7 +101,15 @@
                     .RepeatForever())
                 .Build();
 
+            var nightlyJob = JobBuilder.Create<NightlyJob>().WithIdentity("nightlyJob").Build();
+
+            var nightlyTrigger = TriggerBuilder.Create()
+                .WithIdentity("nightlyJob")
+                .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(23, 55))
+                .Build();
+
             scheduler.ScheduleJob(job, trigger);
+            scheduler.ScheduleJob(nightlyJob, nightlyTrigger);
         }
 
         static void Run()
@@ -119,6 +127,15 @@
             }
         }
 
+        static void NightlyRun()
+        {
+            using (var scope = Container.BeginLifetimeScope())
+            {
+                var timeService = scope.Resolve<ITimeService>();
+                timeService.DailyTimeOperations(true);
+            }
+        }
+
         static void Main(string[] args)
         {
             SetupIocContainer();
@@ -130,6 +147,14 @@
             public void Execute(IJobExecutionContext context)
             {
                 Run();
+            }
+        }
+
+        class NightlyJob : IJob
+        {
+            public void Execute(IJobExecutionContext context)
+            {
+                NightlyRun();
             }
         }
     }
