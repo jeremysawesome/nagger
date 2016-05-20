@@ -51,8 +51,10 @@
                 
                 if(!stillWorking)
                 {
-                    stillWorking =
-                    _inputService.AskForBoolean($"Are you still working on {currentTask}?");
+                    // attempt to log all time up to this point because tasks were switched
+                    _timeService.DailyTimeOperations(true);
+
+                    stillWorking = _inputService.AskForBoolean($"Are you still working on {currentTask}?");
                 }
 
                 if (!stillWorking) currentTask = null;
