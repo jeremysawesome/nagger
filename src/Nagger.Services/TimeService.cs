@@ -104,10 +104,10 @@
             return task?.Id == null ? new List<string>() : _localTimeRepository.GetRecentlyRecordedCommentsForTaskId(limit, task.Id);
         }
 
-        public void DailyTimeOperations()
+        public void DailyTimeOperations(bool force = false)
         {
             var lastSquash = _settingsService.GetSetting<DateTime>("LastSquashDate");
-            if (lastSquash < DateTime.Today)
+            if (force || lastSquash < DateTime.Today)
             {
                 // Squash the time.
                 SquashTime();
@@ -115,7 +115,7 @@
             }
 
             var lastSync = _settingsService.GetSetting<DateTime>("LastSyncedDate");
-            if (lastSync.Date >= DateTime.Today) return;
+            if (!force && lastSync.Date >= DateTime.Today) return;
             SyncWithRemote();
             _settingsService.SaveSetting("LastSyncedDate", DateTime.Now.ToString());
         }
