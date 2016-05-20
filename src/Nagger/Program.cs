@@ -32,32 +32,31 @@
 
         static void RegisterComponents(ContainerBuilder builder)
         {
-            /*builder.RegisterType<JiraProjectRepository>().As<IRemoteProjectRepository>();
-            builder.RegisterType<JiraTaskRepository>().As<IRemoteTaskRepository>();
-            builder.RegisterType<JiraTimeRepository>().As<IRemoteTimeRepository>();*/
+            builder.RegisterType<ConsoleInputService>().As<IInputService>();
+            builder.RegisterType<ConsoleOutputService>().As<IOutputService>();
 
-            builder.RegisterType<MeazureProjectRepository>().As<IRemoteProjectRepository>();
-            builder.RegisterType<MeazureTaskRepository>().As<IRemoteTaskRepository>();
-            builder.RegisterType<MeazureTimeRepository>().As<IRemoteTimeRepository>();
-
-            builder.RegisterType<MeazureRunner>().As<IRemoteRunner>();
-
+            builder.RegisterType<SettingsRepository>().As<ISettingsRepository>();
             builder.RegisterType<LocalProjectRepository>().As<ILocalProjectRepository>();
             builder.RegisterType<LocalTaskRepository>().As<ILocalTaskRepository>();
             builder.RegisterType<LocalTimeRepository>().As<ILocalTimeRepository>();
 
-            builder.RegisterType<SettingsRepository>().As<ISettingsRepository>();
+            builder.RegisterType<MeazureProjectRepository>().As<IRemoteProjectRepository>();
+            builder.RegisterType<MeazureTaskRepository>().As<IRemoteTaskRepository>();
+            builder.RegisterType<MeazureTimeRepository>().As<IRemoteTimeRepository>();
+            builder.RegisterType<MeazureRunner>().As<IRemoteRunner>();
+
+            /*builder.RegisterType<JiraProjectRepository>().As<IRemoteProjectRepository>();
+            builder.RegisterType<JiraTaskRepository>().As<IRemoteTaskRepository>();
+            builder.RegisterType<JiraTimeRepository>().As<IRemoteTimeRepository>();
+            builder.RegisterType<BaseJiraRepository>();
+            builder.RegisterType<JiraRunner>().As<IRemoteRunner>();*/
 
             builder.RegisterType<ProjectService>().As<IProjectService>();
             builder.RegisterType<SettingsService>().As<ISettingsService>();
             builder.RegisterType<TaskService>().As<ITaskService>();
             builder.RegisterType<TimeService>().As<ITimeService>();
-            builder.RegisterType<ConsoleInputService>().As<IInputService>();
-            builder.RegisterType<ConsoleOutputService>().As<IOutputService>();
 
             builder.RegisterType<NaggerRunner>().As<IRunnerService>();
-
-            builder.RegisterType<BaseJiraRepository>();
         }
 
         static void SetupIocContainer()
