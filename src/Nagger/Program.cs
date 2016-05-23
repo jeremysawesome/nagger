@@ -1,5 +1,6 @@
 ﻿namespace Nagger
 {
+    using System.Linq;
     using Autofac;
     using Data.Local;
     using Data.Meazure;
@@ -30,6 +31,7 @@
 
         static void RegisterInitialComponents(ContainerBuilder builder)
         {
+            builder.RegisterType<CommandService>().As<ICommandService>();
             builder.RegisterType<ConsoleInputService>().As<IInputService>();
             builder.RegisterType<ConsoleOutputService>().As<IOutputService>();
 
@@ -159,9 +161,23 @@
             }
         }
 
+        static bool ExecuteCommands(string[] args)
+        {
+            if (!args.Any()) return false;
+            using (var scope = Container.BeginLifetimeScope())
+            {
+                var commandService = scope.Resolve<ICommandService>();
+                commandService.ExecuteCommands(args);
+            }
+
+            return true;
+        }
+
         static void Main(string[] args)
         {
             SetupIocContainer();
+            if (ExecuteCommands(args)) return;
+
             Schedule();
             MonitorEvents();
         }

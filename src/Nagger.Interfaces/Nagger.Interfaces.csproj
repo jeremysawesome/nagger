@@ -36,6 +36,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ICommandService.cs" />
     <Compile Include="IInputService.cs" />
     <Compile Include="ILocalProjectRepository.cs" />
     <Compile Include="ILocalTaskRepository.cs" />
