@@ -137,9 +137,13 @@
         {
             using (var scope = Container.BeginLifetimeScope())
             {
+                var settingsService = scope.Resolve<ISettingsService>();
+
+                var syncOnLock = settingsService.GetSetting<bool>("SyncOnLock");
+                if (!syncOnLock) return;
+
                 var timeService = scope.Resolve<ITimeService>();
                 var outputService = scope.Resolve<IOutputService>();
-
                 var monitorService = new EventMonitoringService(outputService, x =>
                 {
                     timeService.DailyTimeOperations(true);
