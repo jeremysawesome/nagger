@@ -83,6 +83,13 @@
 
         static void Schedule()
         {
+            int naggingInterval;
+            using (var scope = Container.BeginLifetimeScope())
+            {
+                var settingsService = scope.Resolve<ISettingsService>();
+                naggingInterval = settingsService.GetSetting<int>("NaggingInterval");
+            }
+
             var scheduler = StdSchedulerFactory.GetDefaultScheduler();
             scheduler.Start();
 
@@ -94,7 +101,7 @@
                 .WithIdentity("naggerJob")
                 .StartNow()
                 .WithSimpleSchedule(x => x
-                    .WithIntervalInMinutes(15)
+                    .WithIntervalInMinutes(naggingInterval)
                     .RepeatForever())
                 .Build();
 
