@@ -13,14 +13,16 @@
         readonly IOutputService _outputService;
         readonly ITimeService _timeService;
         readonly IRemoteRunner _remoteRunner;
+        readonly ISettingsService _settingsService;
 
         public NaggerRunner(ITimeService timeService,
-            IInputService inputService, IOutputService outputService, IRemoteRunner remoteRunner)
+            IInputService inputService, IOutputService outputService, IRemoteRunner remoteRunner, ISettingsService settingsService)
         {
             _timeService = timeService;
             _inputService = inputService;
             _outputService = outputService;
             _remoteRunner = remoteRunner;
+            _settingsService = settingsService;
         }
 
         public void Run()
@@ -52,7 +54,7 @@
                 if(!stillWorking)
                 {
                     // attempt to log all time up to this point because tasks were switched
-                    _timeService.DailyTimeOperations(true);
+                    if(_settingsService.GetSetting<bool>("SyncOnTaskSwitch")) _timeService.DailyTimeOperations(true);
 
                     stillWorking = _inputService.AskForBoolean($"Are you still working on {currentTask}?");
                 }
