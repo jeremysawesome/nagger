@@ -205,6 +205,9 @@
 
             _localTimeRepository.UpdateMinutesSpentOnTimeEntries(squashedEntries);
             _localTimeRepository.RemoveTimeEntries(entriesToRemove);
+
+            // insert a marker for the very last entry inserted. This helps to avoid issues in asking about breaks next time Nagger runs.
+            RecordMarker(unsyncedEntries.Last().TimeRecorded);
         }
 
         static bool EntriesAreForSameWork(TimeEntry firstEntry, TimeEntry secondEntry)
