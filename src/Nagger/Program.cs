@@ -49,6 +49,8 @@
             builder.RegisterType<LocalProjectRepository>().As<ILocalProjectRepository>();
             builder.RegisterType<LocalTaskRepository>().As<ILocalTaskRepository>();
             builder.RegisterType<LocalTimeRepository>().As<ILocalTimeRepository>();
+
+            builder.RegisterType<SettingsService>().As<ISettingsService>();
         }
 
         static void RegisterConditionalComponents(IContainer container)
@@ -80,7 +82,6 @@
             var updater = new ContainerBuilder();
 
             updater.RegisterType<ProjectService>().As<IProjectService>();
-            updater.RegisterType<SettingsService>().As<ISettingsService>();
             updater.RegisterType<TaskService>().As<ITaskService>();
             updater.RegisterType<TimeService>().As<ITimeService>();
 
@@ -94,6 +95,10 @@
             var builder = new ContainerBuilder();
             RegisterInitialComponents(builder);
             Container = builder.Build();
+        }
+
+        static void FinalizeIocContainer()
+        {
             RegisterConditionalComponents(Container);
             RegisterFinalComponents(Container);
         }
@@ -196,7 +201,7 @@
             using (var scope = Container.BeginLifetimeScope())
             {
                 var settingsService = scope.Resolve<ISettingsService>();
-                return settingsService.GetSetting<SupportedRemoteRepository>("PrimaryRemoteRepository");
+                return (SupportedRemoteRepository)Enum.Parse(typeof(SupportedRemoteRepository), settingsService.GetSetting<string>("PrimaryRemoteRepository"));
             }
         }
 
@@ -206,7 +211,7 @@
             {
                 var settingsService = scope.Resolve<ISettingsService>();
 
-                if (!settingsService.GetSetting<bool>("Initialized")) return;
+                if (settingsService.GetSetting<bool>("Initialized")) return;
 
                 var inputService = scope.Resolve<IInputService>();
 
@@ -214,16 +219,17 @@
                     SupportedRemoteRepositories().ToList());
 
                 settingsService.SaveSetting("PrimaryRemoteRepository", repository.ToString());
-                settingsService.SaveSetting("Initialized", "1");
+                settingsService.SaveSetting("Initialized", true.ToString());
             }
         }
 
         static void Main(string[] args)
         {
             SetupIocContainer();
+            Initialize();
+            FinalizeIocContainer();
             if (ExecuteCommands(args)) return;
 
-            Initialize();
             Schedule();
             MonitorEvents();
         }
