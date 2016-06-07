@@ -66,6 +66,7 @@
         public TimeEntry GetLastTimeEntry(bool getInternal = false)
         {
             var entry = _localTimeRepository.GetLastTimeEntry(getInternal);
+            if (entry == null) return null;
             if (entry.HasProject && entry.HasTask) entry.Task.Project = entry.Project;
             return entry;
         }
