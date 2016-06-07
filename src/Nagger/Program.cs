@@ -1,17 +1,28 @@
 ﻿namespace Nagger
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Autofac;
+    using Data.JIRA;
     using Data.Local;
     using Data.Meazure;
     using Interfaces;
     using Quartz;
     using Quartz.Impl;
     using Services;
+    using Services.JIRA;
     using Services.Meazure;
+
+    enum SupportedRemoteRepository
+    {
+        Jira,
+        Meazure
+    }
 
     internal class Program
     {
+
         static bool _running;
         // note: Elysium can be used for WPF theming - seems like pretty easily
         //http://bizvise.com/2012/09/27/how-to-create-metro-style-window-on-wpf-using-elysium/
@@ -44,18 +55,23 @@
         static void RegisterConditionalComponents(IContainer container)
         {
             var updater = new ContainerBuilder();
-            updater.RegisterType<MeazureProjectRepository>().As<IRemoteProjectRepository>();
-            updater.RegisterType<MeazureTaskRepository>().As<IRemoteTaskRepository>();
-            updater.RegisterType<MeazureTimeRepository>().As<IRemoteTimeRepository>();
-            updater.RegisterType<MeazureRunner>().As<IRemoteRunner>();
+            var primaryRepository = GetPrimaryRemoteRepository();
 
-
-            //TODO: actually allow JIRA to be used
-            /*updater.RegisterType<JiraProjectRepository>().As<IRemoteProjectRepository>();
-            updater.RegisterType<JiraTaskRepository>().As<IRemoteTaskRepository>();
-            updater.RegisterType<JiraTimeRepository>().As<IRemoteTimeRepository>();
-            updater.RegisterType<BaseJiraRepository>();
-            updater.RegisterType<JiraRunner>().As<IRemoteRunner>();*/
+            if (primaryRepository == SupportedRemoteRepository.Meazure)
+            {
+                updater.RegisterType<MeazureProjectRepository>().As<IRemoteProjectRepository>();
+                updater.RegisterType<MeazureTaskRepository>().As<IRemoteTaskRepository>();
+                updater.RegisterType<MeazureTimeRepository>().As<IRemoteTimeRepository>();
+                updater.RegisterType<MeazureRunner>().As<IRemoteRunner>();
+            }
+            else if (primaryRepository == SupportedRemoteRepository.Jira)
+            {
+                updater.RegisterType<JiraProjectRepository>().As<IRemoteProjectRepository>();
+                updater.RegisterType<JiraTaskRepository>().As<IRemoteTaskRepository>();
+                updater.RegisterType<JiraTimeRepository>().As<IRemoteTimeRepository>();
+                updater.RegisterType<BaseJiraRepository>();
+                updater.RegisterType<JiraRunner>().As<IRemoteRunner>();
+            }
 
             updater.Update(container);
         }
@@ -173,11 +189,44 @@
             return true;
         }
 
+        static IEnumerable<SupportedRemoteRepository> SupportedRemoteRepositories()
+        {
+            return Enum.GetValues(typeof(SupportedRemoteRepository)).Cast<SupportedRemoteRepository>();
+        }
+
+        static SupportedRemoteRepository GetPrimaryRemoteRepository()
+        {
+            using (var scope = Container.BeginLifetimeScope())
+            {
+                var settingsService = scope.Resolve<ISettingsService>();
+                return settingsService.GetSetting<SupportedRemoteRepository>("PrimaryRemoteRepository");
+            }
+        }
+
+        static void Initialize()
+        {
+            using (var scope = Container.BeginLifetimeScope())
+            {
+                var settingsService = scope.Resolve<ISettingsService>();
+
+                if (!settingsService.GetSetting<bool>("Initialized")) return;
+
+                var inputService = scope.Resolve<IInputService>();
+
+                var repository = inputService.AskForSelection("What will your primary remote repository be?",
+                    SupportedRemoteRepositories().ToList());
+
+                settingsService.SaveSetting("PrimaryRemoteRepository", repository.ToString());
+                settingsService.SaveSetting("Initialized", "1");
+            }
+        }
+
         static void Main(string[] args)
         {
             SetupIocContainer();
             if (ExecuteCommands(args)) return;
 
+            Initialize();   
             Schedule();
             MonitorEvents();
         }
