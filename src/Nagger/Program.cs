@@ -14,7 +14,7 @@
     using Services.JIRA;
     using Services.Meazure;
 
-    enum SupportedRemoteRepository
+    internal enum SupportedRemoteRepository
     {
         Jira,
         Meazure
@@ -22,7 +22,6 @@
 
     internal class Program
     {
-
         static bool _running;
         // note: Elysium can be used for WPF theming - seems like pretty easily
         //http://bizvise.com/2012/09/27/how-to-create-metro-style-window-on-wpf-using-elysium/
@@ -169,10 +168,8 @@
 
                 var timeService = scope.Resolve<ITimeService>();
                 var outputService = scope.Resolve<IOutputService>();
-                var monitorService = new EventMonitoringService(outputService, x =>
-                {
-                    timeService.DailyTimeOperations(true);
-                });
+                var monitorService = new EventMonitoringService(outputService,
+                    x => { timeService.DailyTimeOperations(true); });
                 monitorService.Monitor();
             }
         }
@@ -191,7 +188,7 @@
 
         static IEnumerable<SupportedRemoteRepository> SupportedRemoteRepositories()
         {
-            return Enum.GetValues(typeof(SupportedRemoteRepository)).Cast<SupportedRemoteRepository>();
+            return Enum.GetValues(typeof (SupportedRemoteRepository)).Cast<SupportedRemoteRepository>();
         }
 
         static SupportedRemoteRepository GetPrimaryRemoteRepository()
@@ -226,7 +223,7 @@
             SetupIocContainer();
             if (ExecuteCommands(args)) return;
 
-            Initialize();   
+            Initialize();
             Schedule();
             MonitorEvents();
         }
