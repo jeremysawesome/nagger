@@ -42,6 +42,20 @@
             return currentTask;
         }
 
+        public Task AskForAssociatedTask(Task currentTask)
+        {
+            if (!_inputService.AskForBoolean("Associate this entry with an additional task?")) return null;
+
+            Task associatedTask;
+            var recentlyAssociatedTasks = _taskService.GetTasksByTaskIds(_timeService.GetRecentlyAssociatedTaskIds(5, currentTask)).ToDictionary(key=> key.Name);
+            var associatedTaskName = _inputService.AskForSelectionOrInput("Choose from a recent task or insert a new task name",
+                    recentlyAssociatedTasks.Keys.ToList());
+
+            if (recentlyAssociatedTasks.TryGetValue(associatedTaskName, out associatedTask)) return associatedTask;
+
+            return _taskService.GetTaskByName(associatedTaskName);
+        }
+
         Project AskAboutProject(Task currentTask)
         {
             if (currentTask?.Project != null && _inputService.AskForBoolean($"Are you still working on {currentTask.Project.Name}?"))

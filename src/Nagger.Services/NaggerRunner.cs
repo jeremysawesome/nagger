@@ -101,6 +101,11 @@
                 comment = _inputService.AskForSelectionOrInput("Choose from options or insert a new comment. (Leave Blank for no comment)", recentComments);
             }
 
+            if (associatedTask == null)
+            {
+                associatedTask = _remoteRunner.AskForAssociatedTask(currentTask);
+            }
+
             //todo: refactor the way runMiss is done
             runMiss = _timeService.IntervalsSinceLastRecord();
             // there will usually be 1 interval between the last time this ran and this time (it only makes sense)

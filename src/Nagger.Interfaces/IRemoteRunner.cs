@@ -5,5 +5,7 @@
     public interface IRemoteRunner
     {
         Task AskForTask();
+
+        Task AskForAssociatedTask(Task currentTask);
     }
 }
