@@ -1,5 +1,6 @@
 ﻿namespace Nagger.Data.JIRA
 {
+    using Extensions;
     using Interfaces;
     using Models;
 
@@ -9,6 +10,7 @@
         const string UsernameKey = "JiraUsername";
         const string PasswordKey = "JiraPassword";
         const string ApiBaseUrlKey = "JiraApi";
+        const string ModifiedFormat = "{0}_{1}";
         readonly BaseRepository _baseRepository;
 
         User _user;
@@ -32,10 +34,20 @@
         {
             get
             {
-                _user = _user ?? _baseRepository.GetUser(ApiName, UsernameKey, PasswordKey);
+                var uKey = UsernameKey;
+                var pKey = PasswordKey;
+                if (KeyModifier.IsNullOrWhitespace())
+                {
+                    uKey = ModifiedFormat.FormatWith(KeyModifier, UsernameKey);
+                    pKey = ModifiedFormat.FormatWith(KeyModifier, PasswordKey);
+                }
+
+                _user = _user ?? _baseRepository.GetUser(ApiName, uKey, pKey);
                 return _user;
             }
         }
+
+        public string KeyModifier { get; set; }
 
         public bool UserExists => JiraUser != null;
     }
