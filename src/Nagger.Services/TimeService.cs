@@ -3,7 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using ExtensionMethods;
+    using Extensions;
     using Interfaces;
     using Models;
 
@@ -12,13 +12,15 @@
         readonly ILocalTimeRepository _localTimeRepository;
         readonly IRemoteTimeRepository _remoteTimeRepository;
         readonly ISettingsService _settingsService;
+        readonly IProjectService _projectService;
 
         public TimeService(ILocalTimeRepository localTimeRepository, IRemoteTimeRepository remoteTimeRepository,
-            ISettingsService settingsService)
+            ISettingsService settingsService, IProjectService projectService)
         {
             _localTimeRepository = localTimeRepository;
             _remoteTimeRepository = remoteTimeRepository;
             _settingsService = settingsService;
+            _projectService = projectService;
         }
 
         int NaggingInterval
@@ -63,7 +65,10 @@
 
         public TimeEntry GetLastTimeEntry(bool getInternal = false)
         {
-            return _localTimeRepository.GetLastTimeEntry(getInternal);
+            var entry = _localTimeRepository.GetLastTimeEntry(getInternal);
+            if (entry == null) return null;
+            if (entry.HasProject && entry.HasTask) entry.Task.Project = entry.Project;
+            return entry;
         }
 
         public IEnumerable<int> GetIntervalMinutes(int intervalCount)
@@ -100,10 +105,10 @@
             return task?.Id == null ? new List<string>() : _localTimeRepository.GetRecentlyRecordedCommentsForTaskId(limit, task.Id);
         }
 
-        public void DailyTimeOperations()
+        public void DailyTimeOperations(bool force = false)
         {
             var lastSquash = _settingsService.GetSetting<DateTime>("LastSquashDate");
-            if (lastSquash < DateTime.Today)
+            if (force || lastSquash < DateTime.Today)
             {
                 // Squash the time.
                 SquashTime();
@@ -111,7 +116,7 @@
             }
 
             var lastSync = _settingsService.GetSetting<DateTime>("LastSyncedDate");
-            if (lastSync.Date >= DateTime.Today) return;
+            if (!force && lastSync.Date >= DateTime.Today) return;
             SyncWithRemote();
             _settingsService.SaveSetting("LastSyncedDate", DateTime.Now.ToString());
         }
@@ -201,6 +206,9 @@
 
             _localTimeRepository.UpdateMinutesSpentOnTimeEntries(squashedEntries);
             _localTimeRepository.RemoveTimeEntries(entriesToRemove);
+
+            // insert a marker for the very last entry inserted. This helps to avoid issues in asking about breaks next time Nagger runs.
+            RecordMarker(unsyncedEntries.Last().TimeRecorded);
         }
 
         static bool EntriesAreForSameWork(TimeEntry firstEntry, TimeEntry secondEntry)

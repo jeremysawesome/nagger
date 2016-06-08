@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Nagger.Interfaces</RootNamespace>
     <AssemblyName>Nagger.Interfaces</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,6 +36,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ICommandService.cs" />
     <Compile Include="IInputService.cs" />
     <Compile Include="ILocalProjectRepository.cs" />
     <Compile Include="ILocalTaskRepository.cs" />
@@ -42,6 +44,7 @@
     <Compile Include="IOutputService.cs" />
     <Compile Include="IProjectService.cs" />
     <Compile Include="IRemoteProjectRepository.cs" />
+    <Compile Include="IRemoteRunner.cs" />
     <Compile Include="IRemoteTaskRepository.cs" />
     <Compile Include="IRunnerService.cs" />
     <Compile Include="ISettingsRepository.cs" />

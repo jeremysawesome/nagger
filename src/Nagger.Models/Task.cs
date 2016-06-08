@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Extensions;
 
     public class Task
     {
@@ -13,14 +14,14 @@
 
         public Project Project { get; set; }
 
-        public bool HasTasks
-        {
-            get { return Tasks != null && Tasks.Any(); }
-        }
+        public bool HasTasks => Tasks != null && Tasks.Any();
 
-        public bool HasParent
+        public bool HasParent => Parent != null;
+
+        public override string ToString()
         {
-            get { return Parent != null; }
+            var toReturn = (!string.IsNullOrWhiteSpace(Description) && Name != Description) ? $"{Name} ({Description.Truncate(50)})" : Name;
+            return Project != null ? $"{toReturn} ({Project})" : toReturn;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Nagger.Data
+﻿namespace Nagger.Data.Local
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -7,6 +7,13 @@
 
     public class LocalTaskRepository : LocalBaseRepository, ILocalTaskRepository
     {
+        readonly ILocalProjectRepository _localProjectRepository;
+
+        public LocalTaskRepository(ILocalProjectRepository localProjectRepository)
+        {
+            _localProjectRepository = localProjectRepository;
+        }
+
         public IEnumerable<Task> GetTasksByTaskIds(IEnumerable<string> taskIds)
         {
             return taskIds.Select(GetTaskById).ToList();
@@ -17,7 +24,7 @@
             return GetTasks(project.Id);
         }
 
-        public IEnumerable<Task> GetTasks(string projectId = null)
+        public IEnumerable<Task> GetTasks(string projectId = null, bool emptyProjectIdIsOk = false)
         {
             var tasks = new List<Task>();
 
@@ -26,7 +33,7 @@
             {
                 cmd.CommandText = @"SELECT * FROM Tasks WHERE ParentId == ''";
 
-                if (!string.IsNullOrEmpty(projectId))
+                if (emptyProjectIdIsOk || !string.IsNullOrEmpty(projectId))
                 {
                     cmd.CommandText += " AND ProjectId = @projectId";
 
@@ -43,8 +50,8 @@
                             Id = reader.Get<string>("Id"),
                             Name = reader.Get<string>("Name"),
                             Description = reader.Get<string>("Description"),
-                            Parent = GetTaskById(reader.Get<string>("ParentId"))
-                            //Project = _projectRepository.GetProjectById(reader.Get<string>("ProjectId"))
+                            Parent = GetTaskById(reader.Get<string>("ParentId")),
+                            Project = _localProjectRepository.GetProjectById(reader.Get<string>("ProjectId"))
                         };
                         task.Tasks = GetTaskChildren(task);
 
@@ -113,8 +120,8 @@
                         Id = reader.Get<string>("Id"),
                         Name = reader.Get<string>("Name"),
                         Description = reader.Get<string>("Description"),
-                        Parent = GetTaskById(reader.Get<string>("ParentId"))
-                        //Project = _projectRepository.GetProjectById(reader.Get<string>("ProjectId"))
+                        Parent = GetTaskById(reader.Get<string>("ParentId")),
+                        Project = _localProjectRepository.GetProjectById(reader.Get<string>("ProjectId"))
                     };
                     task.Tasks = GetTaskChildren(task);
 
@@ -185,8 +192,8 @@
                             Id = reader.Get<string>("Id"),
                             Name = reader.Get<string>("Name"),
                             Description = reader.Get<string>("Description"),
-                            Parent = parent
-                            //Project = _projectRepository.GetProjectById(reader.Get<string>("ProjectId"))
+                            Parent = parent,
+                            Project = _localProjectRepository.GetProjectById(reader.Get<string>("ProjectId"))
                         };
                         task.Tasks = GetTaskChildren(task);
                         tasks.Add(task);

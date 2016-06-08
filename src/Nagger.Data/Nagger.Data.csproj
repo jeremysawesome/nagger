@@ -9,9 +9,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Nagger.Data</RootNamespace>
     <AssemblyName>Nagger.Data</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>79867b8b</NuGetPackageImportStamp>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,17 +36,18 @@
     <Reference Include="Autofac">
       <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="RestSharp">
       <HintPath>..\packages\RestSharp.105.0.1\lib\net4\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.SQLite, Version=1.0.97.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\System.Data.SQLite.Core.1.0.97.0\lib\net45\System.Data.SQLite.dll</HintPath>
+    <Reference Include="System.Data.SQLite, Version=1.0.101.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.101.0\lib\net451\System.Data.SQLite.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -53,25 +56,38 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseRepository.cs" />
     <Compile Include="Fake\FakeRemoteTaskRepository.cs" />
-    <Compile Include="JIRA\API\JiraBaseApi.cs" />
+    <Compile Include="API\BaseApi.cs" />
     <Compile Include="JIRA\BaseJiraRepository.cs" />
     <Compile Include="JIRA\DTO\Project.cs" />
     <Compile Include="JIRA\API\JiraApi.cs" />
     <Compile Include="JIRA\DTO\Task.cs" />
     <Compile Include="JIRA\DTO\Worklog.cs" />
-    <Compile Include="JIRA\JiraRemoteProjectRepository.cs" />
-    <Compile Include="JIRA\JiraRemoteTaskRepository.cs" />
-    <Compile Include="JIRA\JiraRemoteTimeRepository.cs" />
+    <Compile Include="JIRA\JiraProjectRepository.cs" />
+    <Compile Include="JIRA\JiraTaskRepository.cs" />
+    <Compile Include="JIRA\JiraTimeRepository.cs" />
     <Compile Include="JIRA\API\JiraSprintApi.cs" />
-    <Compile Include="LocalProjectRepository.cs" />
-    <Compile Include="LocalBaseRepository.cs" />
-    <Compile Include="LocalTaskRepository.cs" />
-    <Compile Include="LocalTimeRepository.cs" />
-    <Compile Include="SettingsRepository.cs" />
+    <Compile Include="Local\LocalProjectRepository.cs" />
+    <Compile Include="Local\LocalBaseRepository.cs" />
+    <Compile Include="Local\LocalTaskRepository.cs" />
+    <Compile Include="Local\LocalTimeRepository.cs" />
+    <Compile Include="Local\SettingsRepository.cs" />
+    <Compile Include="Meazure\API\MeazureApi.cs" />
+    <Compile Include="Meazure\BaseMeazureRepository.cs" />
+    <Compile Include="Meazure\DTO\LoginModel.cs" />
+    <Compile Include="Meazure\DTO\Project.cs" />
+    <Compile Include="Meazure\DTO\TimeEntryModel.cs" />
+    <Compile Include="Meazure\MeazureProjectRepository.cs" />
+    <Compile Include="Meazure\MeazureTaskRepository.cs" />
+    <Compile Include="Meazure\MeazureTimeRepository.cs" />
     <Compile Include="SQLiteDataReaderExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Nagger.Extensions\Nagger.Extensions.csproj">
+      <Project>{00D0F70A-2354-44D5-B0D1-C900D0380923}</Project>
+      <Name>Nagger.Extensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Nagger.Interfaces\Nagger.Interfaces.csproj">
       <Project>{b6e0e8e1-438e-4a98-9382-364a478f149d}</Project>
       <Name>Nagger.Interfaces</Name>
@@ -96,12 +112,12 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\System.Data.SQLite.Core.1.0.97.0\build\net45\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.97.0\build\net45\System.Data.SQLite.Core.targets')" />
+  <Import Project="..\packages\System.Data.SQLite.Core.1.0.101.0\build\net451\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.101.0\build\net451\System.Data.SQLite.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.97.0\build\net45\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.97.0\build\net45\System.Data.SQLite.Core.targets'))" />
+    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.101.0\build\net451\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.101.0\build\net451\System.Data.SQLite.Core.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

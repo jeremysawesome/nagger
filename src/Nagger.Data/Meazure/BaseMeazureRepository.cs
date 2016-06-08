@@ -1,20 +1,20 @@
-﻿namespace Nagger.Data.JIRA
+﻿namespace Nagger.Data.Meazure
 {
     using Interfaces;
     using Models;
 
-    public class BaseJiraRepository
+    public class BaseMeazureRepository
     {
-        const string ApiName = "JIRA";
-        const string UsernameKey = "JiraUsername";
-        const string PasswordKey = "JiraPassword";
-        const string ApiBaseUrlKey = "JiraApi";
+        const string ApiName = "Meazure";
+        const string UsernameKey = "MeazureUsername";
+        const string PasswordKey = "MeazurePassword";
+        const string ApiBaseUrlKey = "MeazureApi";
         readonly BaseRepository _baseRepository;
 
         User _user;
         string _apiBaseUrl;
 
-        public BaseJiraRepository(ISettingsService settingsService, IInputService inputService)
+        public BaseMeazureRepository(ISettingsService settingsService, IInputService inputService)
         {
             _baseRepository = new BaseRepository(settingsService, inputService);
         }
@@ -28,7 +28,7 @@
             }
         }
 
-        public User JiraUser
+        public User User
         {
             get
             {
@@ -37,6 +37,6 @@
             }
         }
 
-        public bool UserExists => JiraUser != null;
+        public bool UserExists => User != null;
     }
 }

@@ -32,6 +32,11 @@
             return _localProjectRepository.GetProjectByKey(key);
         }
 
+        public Project GetProjectByName(string name)
+        {
+            return _localProjectRepository.GetProjectByName(name);
+        }
+
         void SyncProjectsWithRemote()
         {
             /**

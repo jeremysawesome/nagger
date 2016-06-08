@@ -1,9 +1,9 @@
-﻿namespace Nagger.Data.JIRA
+﻿namespace Nagger.Data.JIRA.API
 {
-    using API;
+    using Data.API;
     using Models;
 
-    public class JiraSprintApi : JiraBaseApi
+    public class JiraSprintApi : BaseApi
     {
         //todo: move the url out to a setting so this can be used by whomever
         const string ApiUrlPath = "/rest/greenhopper/latest";

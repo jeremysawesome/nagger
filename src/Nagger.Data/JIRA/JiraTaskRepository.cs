@@ -9,13 +9,13 @@
     using RestSharp;
     using Project = Models.Project;
 
-    public class JiraRemoteTaskRepository : IRemoteTaskRepository
+    public class JiraTaskRepository : IRemoteTaskRepository
     {
         readonly JiraApi _api;
         // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
         readonly BaseJiraRepository _baseJiraRepository;
 
-        public JiraRemoteTaskRepository(BaseJiraRepository baseJiraRepository)
+        public JiraTaskRepository(BaseJiraRepository baseJiraRepository)
         {
             _baseJiraRepository = baseJiraRepository;
             _api = new JiraApi(_baseJiraRepository.JiraUser, _baseJiraRepository.ApiBaseUrl);
@@ -73,14 +73,12 @@
 
             var apiResult = _api.Execute<TaskResult>(request);
 
-            if (apiResult == null || apiResult.issues == null) return null;
-
-            return apiResult.issues.Select(x => new Task
+            return apiResult?.issues?.Select(x => new Task
             {
                 Id = x.id,
                 Name = x.key,
                 Description = (x.fields == null) ? "" : x.fields.summary,
-                Project = (x.fields == null || x.fields.project == null)
+                Project = (x.fields?.project == null)
                     ? null
                     : new Project
                     {
@@ -88,7 +86,7 @@
                         Key = x.fields.project.key,
                         Name = x.fields.project.name
                     },
-                Parent = (x.fields == null || x.fields.parent == null) ? null : new Task {Id = x.fields.parent.id}
+                Parent = (x.fields?.parent == null) ? null : new Task {Id = x.fields.parent.id}
             });
         }
 
@@ -106,7 +104,7 @@
 
             var apiResult = _api.Execute<TaskResult>(request);
 
-            if (apiResult == null || apiResult.issues == null || !apiResult.issues.Any()) return null;
+            if (apiResult?.issues == null || !apiResult.issues.Any()) return null;
 
             var issue = apiResult.issues[0];
             return new Task
@@ -114,7 +112,7 @@
                 Id = issue.id,
                 Name = issue.key,
                 Description = (issue.fields == null) ? "" : issue.fields.summary,
-                Project = (issue.fields == null || issue.fields.project == null)
+                Project = (issue.fields?.project == null)
                     ? null
                     : new Project
                     {
@@ -122,7 +120,7 @@
                         Key = issue.fields.project.key,
                         Name = issue.fields.project.name
                     },
-                Parent = (issue.fields == null || issue.fields.parent == null) ? null : new Task { Id = issue.fields.parent.id }
+                Parent = (issue.fields?.parent == null) ? null : new Task { Id = issue.fields.parent.id }
             };
         }
 
@@ -144,7 +142,7 @@
                     {
                         Name = "jql",
                         Type = ParameterType.QueryString,
-                        Value = string.Format("project=\"{0}\" order by id", project.Name)
+                        Value = $"project=\"{project.Name}\" order by id"
                     },
                     new Parameter {Name = "fields", Type = ParameterType.QueryString, Value = "summary"}
                 }
@@ -152,15 +150,13 @@
 
             var apiResult = _api.Execute<TaskResult>(request);
 
-            if (apiResult == null || apiResult.issues == null) return null;
-
-            return apiResult.issues.Select(x => new Task
+            return apiResult?.issues?.Select(x => new Task
             {
                 Id = x.id,
                 Name = x.key,
                 Description = (x.fields == null) ? "" : x.fields.summary,
                 Project = project,
-                Parent = (x.fields == null || x.fields.parent == null) ? null : new Task {Id = x.fields.parent.id}
+                Parent = (x.fields?.parent == null) ? null : new Task {Id = x.fields.parent.id}
             });
         }
 
@@ -171,7 +167,7 @@
                 Id = issue.id,
                 Name = issue.key,
                 Description = (issue.fields == null) ? "" : issue.fields.summary,
-                Project = (issue.fields == null || issue.fields.project == null)
+                Project = (issue.fields?.project == null)
                     ? null
                     : new Project
                     {
@@ -180,7 +176,7 @@
                         Name = issue.fields.project.name
                     },
                 Parent =
-                    (issue.fields == null || issue.fields.parent == null)
+                    (issue.fields?.parent == null)
                         ? null
                         : new Task {Id = issue.fields.parent.id}
             };
@@ -201,14 +197,14 @@
                         {
                             Name = "jql",
                             Type = ParameterType.QueryString,
-                            Value = string.Format("project=\"{0}\" {1} order by id", projectId, lastTaskCondition)
+                            Value = $"project=\"{projectId}\" {lastTaskCondition} order by id"
                         },
                         new Parameter {Name = "fields", Type = ParameterType.QueryString, Value = "summary,project"}
                     }
                 };
 
                 var apiResult = _api.Execute<TaskResult>(request);
-                if (apiResult == null || apiResult.issues == null) yield break;
+                if (apiResult?.issues == null) yield break;
 
                 foreach (var issue in apiResult.issues)
                 {

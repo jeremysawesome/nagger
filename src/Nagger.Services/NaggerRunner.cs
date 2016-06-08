@@ -1,29 +1,28 @@
 ﻿namespace Nagger.Services
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
-    using ExtensionMethods;
     using Interfaces;
     using Models;
+
+    //TODO: this really needs to be refactored...
 
     public class NaggerRunner : IRunnerService
     {
         readonly IInputService _inputService;
         readonly IOutputService _outputService;
-        readonly IProjectService _projectService;
-        readonly ITaskService _taskService;
         readonly ITimeService _timeService;
+        readonly IRemoteRunner _remoteRunner;
+        readonly ISettingsService _settingsService;
 
-        public NaggerRunner(IProjectService projectService, ITaskService taskService, ITimeService timeService,
-            IInputService inputService, IOutputService outputService)
+        public NaggerRunner(ITimeService timeService,
+            IInputService inputService, IOutputService outputService, IRemoteRunner remoteRunner, ISettingsService settingsService)
         {
-            _projectService = projectService;
-            _taskService = taskService;
             _timeService = timeService;
             _inputService = inputService;
             _outputService = outputService;
+            _remoteRunner = remoteRunner;
+            _settingsService = settingsService;
         }
 
         public void Run()
@@ -43,20 +42,21 @@
             if (currentTask != null)
             {
                 var stillWorking = false;
-                const string formatString = "Are you still working on {0} ({1})?";
 
                 if (lastTimeEntry.HasComment)
                 {
                     stillWorking =
-                        _inputService.AskForBoolean(string.Format(formatString, lastTimeEntry.Comment, currentTask.Name));
+                        _inputService.AskForBoolean($"Are you still working on {lastTimeEntry.Comment} ({currentTask.Name})?");
 
                     if (stillWorking) comment = lastTimeEntry.Comment;
                 }
                 
-                if(!stillWorking) {
-                    stillWorking =
-                    _inputService.AskForBoolean(string.Format(formatString, currentTask.Name,
-                        currentTask.Description.Truncate(50)));
+                if(!stillWorking)
+                {
+                    // attempt to log all time up to this point because tasks were switched
+                    if(_settingsService.GetSetting<bool>("SyncOnTaskSwitch")) _timeService.DailyTimeOperations(true);
+
+                    stillWorking = _inputService.AskForBoolean($"Are you still working on {currentTask}?");
                 }
 
                 if (!stillWorking) currentTask = null;
@@ -80,7 +80,7 @@
                 }
                 else
                 {
-                    currentTask = AskForTask();
+                    currentTask = _remoteRunner.AskForTask();
                 }
             }
 
@@ -105,81 +105,6 @@
                 AskAboutBreak(currentTask, askTime, runMiss, comment);
             }
             _outputService.HideInterface();
-        }
-
-        static string OutputProjects(ICollection<Project> projects)
-        {
-            var sb = new StringBuilder();
-            sb.AppendFormat("Outputting {0} Projects...", projects.Count).AppendLine();
-            foreach (var project in projects)
-            {
-                sb.AppendFormat("{0,10} || {1}", project.Key, project.Name);
-                sb.AppendLine();
-            }
-
-            return sb.ToString();
-        }
-
-        static string OutputTasks(IEnumerable<Task> tasks)
-        {
-            var sb = new StringBuilder();
-
-            foreach (var task in tasks)
-            {
-                sb.Append(TaskString(task));
-                if (task.HasTasks) sb.Append(OutputTasks(task.Tasks));
-            }
-
-            return sb.ToString();
-        }
-
-        static string TaskString(Task task)
-        {
-            var beginningSpace = string.Empty;
-
-            var checkingTask = task;
-            while (checkingTask.HasParent)
-            {
-                beginningSpace += "  ";
-                checkingTask = checkingTask.Parent;
-            }
-
-            return String.Format("{0}{1} - {2}{3}", beginningSpace, task.Name,
-                task.Description.Truncate(50),
-                Environment.NewLine);
-        }
-
-        Task AskForSpecificTask()
-        {
-            var idIsKnown =
-                _inputService.AskForBoolean("Do you know the key of the task you are working on? (example: CAT-102)");
-            if (!idIsKnown) return null;
-            var taskId = _inputService.AskForInput("What is the task key?");
-            return _taskService.GetTaskByName(taskId);
-        }
-
-        Task AskForTask()
-        {
-            var mostRecentTasks = _taskService.GetTasksByTaskIds(_timeService.GetRecentlyRecordedTaskIds(5));
-            _outputService.ShowInformation("Recent Tasks:");
-            _outputService.OutputList(
-                mostRecentTasks.Select(x => string.Format("{0,10} {1,10}", x.Name, x.Description.Truncate(50))));
-
-            var task = AskForSpecificTask();
-            if (task != null) return task;
-
-            _outputService.ShowInformation(
-                "Ok. Let's figure out what you are working on. We're going to list some projects.");
-            var projects = _projectService.GetProjects().ToList();
-            _outputService.ShowInformation(OutputProjects(projects));
-            var projectKey = _inputService.AskForInput("Which project Key are you working on?");
-            _outputService.LoadingMessage("Getting tasks for that project. This might take a while.");
-            var project = _projectService.GetProjectByKey(projectKey);
-            var tasks = _taskService.GetTasksByProject(project);
-            _outputService.ShowInformation("Ok. We've got the tasks. Outputting the tasks for that project.");
-            _outputService.ShowInformation(OutputTasks(tasks));
-
-            return AskForSpecificTask();
         }
 
         void AskAboutBreak(Task currentTask, DateTime askTime, int missedInterval, string comment)
