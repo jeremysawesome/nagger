@@ -8,17 +8,12 @@
     using Data.Local;
     using Data.Meazure;
     using Interfaces;
+    using Models;
     using Quartz;
     using Quartz.Impl;
     using Services;
     using Services.JIRA;
     using Services.Meazure;
-
-    internal enum SupportedRemoteRepository
-    {
-        Jira,
-        Meazure
-    }
 
     internal class Program
     {
