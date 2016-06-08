@@ -16,12 +16,11 @@
         readonly ISettingsService _settingsService;
 
         public TimeService(ILocalTimeRepository localTimeRepository, IRemoteTimeRepository remoteTimeRepository,
-            ISettingsService settingsService, IProjectService projectService)
+            ISettingsService settingsService)
         {
             _localTimeRepository = localTimeRepository;
             _remoteTimeRepository = remoteTimeRepository;
             _settingsService = settingsService;
-            _projectService = projectService;
         }
 
         int NaggingInterval
