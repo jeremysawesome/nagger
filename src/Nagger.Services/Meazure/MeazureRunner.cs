@@ -53,7 +53,7 @@
 
             if (recentlyAssociatedTasks.TryGetValue(associatedTaskName, out associatedTask)) return associatedTask;
 
-            return _taskService.GetTaskByName(associatedTaskName);
+            return _taskService.GetAssociatedTaskByName(associatedTaskName, currentTask.Project);
         }
 
         Project AskAboutProject(Task currentTask)

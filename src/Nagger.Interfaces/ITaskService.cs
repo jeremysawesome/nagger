@@ -7,6 +7,7 @@
     {
         Task GetLastTask();
         Task GetTaskByName(string name);
+        Task GetAssociatedTaskByName(string name, Project project);
         Task GetTaskById(string taskId);
         void StoreTask(Task task);
         IEnumerable<Task> GetGeneralTasks();
