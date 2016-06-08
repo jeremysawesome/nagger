@@ -11,13 +11,19 @@
 
     public class JiraTaskRepository : IRemoteTaskRepository
     {
-        readonly JiraApi _api;
+        JiraApi _api;
         // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
         readonly BaseJiraRepository _baseJiraRepository;
 
         public JiraTaskRepository(BaseJiraRepository baseJiraRepository)
         {
             _baseJiraRepository = baseJiraRepository;
+            _api = new JiraApi(_baseJiraRepository.JiraUser, _baseJiraRepository.ApiBaseUrl);
+        }
+
+        public void InitializeForProject(Project project)
+        {
+            _baseJiraRepository.KeyModifier = project.Id;
             _api = new JiraApi(_baseJiraRepository.JiraUser, _baseJiraRepository.ApiBaseUrl);
         }
 

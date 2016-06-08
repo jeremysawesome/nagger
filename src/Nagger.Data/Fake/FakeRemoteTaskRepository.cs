@@ -49,6 +49,11 @@
             throw new NotImplementedException();
         }
 
+        public void InitializeForProject(Project project)
+        {
+            throw new NotImplementedException();
+        }
+
         static Task GetTask(string id, string name, Task parent = null)
         {
             return new Task

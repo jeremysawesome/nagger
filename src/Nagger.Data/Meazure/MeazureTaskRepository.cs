@@ -55,5 +55,9 @@
         {
             return GetTasks();
         }
+
+        public void InitializeForProject(Project project)
+        {
+        }
     }
 }
