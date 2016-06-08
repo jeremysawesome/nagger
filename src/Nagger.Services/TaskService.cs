@@ -9,13 +9,13 @@
     {
         readonly ILocalTaskRepository _localTaskRepository;
         readonly IRemoteTaskRepository _remoteTaskRepository;
-        readonly IAssociatedTaskService _associatedTaskService;
+        readonly IAssociatedRemoteRepositoryService _associatedRemoteRepositoryService;
 
-        public TaskService(ILocalTaskRepository localTaskRepository, IRemoteTaskRepository remoteTaskRepository, IAssociatedTaskService associatedTaskService)
+        public TaskService(ILocalTaskRepository localTaskRepository, IRemoteTaskRepository remoteTaskRepository, IAssociatedRemoteRepositoryService associatedRemoteRepositoryService)
         {
             _localTaskRepository = localTaskRepository;
             _remoteTaskRepository = remoteTaskRepository;
-            _associatedTaskService = associatedTaskService;
+            _associatedRemoteRepositoryService = associatedRemoteRepositoryService;
         }
 
         public Task GetLastTask()
@@ -38,7 +38,7 @@
             var task = _localTaskRepository.GetTaskByName(name);
             if (task != null) return task;
 
-            var remoteTaskRepository = _associatedTaskService.GetAssociatedRemoteTaskRepository(project);
+            var remoteTaskRepository = _associatedRemoteRepositoryService.GetAssociatedRemoteTaskRepository(project);
             if (remoteTaskRepository == null) return null;
 
             task = remoteTaskRepository.GetTaskByName(name);

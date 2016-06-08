@@ -2,7 +2,7 @@
 {
     using Models;
 
-    public interface IAssociatedTaskService
+    public interface IAssociatedRemoteRepositoryService
     {
         IRemoteTaskRepository GetAssociatedRemoteTaskRepository(Project project);
     }

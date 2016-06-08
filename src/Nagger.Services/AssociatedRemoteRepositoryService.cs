@@ -4,11 +4,11 @@
     using Interfaces;
     using Models;
 
-    public class AssociatedTaskService : IAssociatedTaskService
+    public class AssociatedRemoteRepositoryService : IAssociatedRemoteRepositoryService
     {
         readonly IIndex<SupportedRemoteRepository, IRemoteTaskRepository> _remoteTaskRepositories;
 
-        public AssociatedTaskService(IIndex<SupportedRemoteRepository, IRemoteTaskRepository> remoteTaskRepositories)
+        public AssociatedRemoteRepositoryService(IIndex<SupportedRemoteRepository, IRemoteTaskRepository> remoteTaskRepositories)
         {
             _remoteTaskRepositories = remoteTaskRepositories;
         }

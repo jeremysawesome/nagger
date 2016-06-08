@@ -93,7 +93,7 @@
             updater.RegisterType<ProjectService>().As<IProjectService>();
             updater.RegisterType<TaskService>().As<ITaskService>();
             updater.RegisterType<TimeService>().As<ITimeService>();
-            updater.RegisterType<AssociatedTaskService>().As<IAssociatedTaskService>();
+            updater.RegisterType<AssociatedRemoteRepositoryService>().As<IAssociatedRemoteRepositoryService>();
             updater.RegisterType<NaggerRunner>().As<IRunnerService>();
 
             updater.Update(container);
