@@ -1,5 +1,7 @@
 ﻿namespace Nagger.Services.Meazure
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Interfaces;
     using Models;
@@ -23,7 +25,7 @@
         {
             var mostRecentTask = _taskService.GetLastTask();
 
-            var currentProject = AskAboutProject(mostRecentTask);
+            var currentProject = GetProject(mostRecentTask);
 
             var recentTaskNames = _taskService.GetTasksByTaskIds(_timeService.GetRecentlyRecordedTaskIds(5)).Select(x=>x.Name);
             var taskName = _inputService.AskForSelectionOrInput("Choose from a recent task. (If none of these match what you are doing then just leave blank.)", recentTaskNames.ToList());
@@ -54,6 +56,25 @@
             if (recentlyAssociatedTasks.TryGetValue(associatedTaskName, out associatedTask)) return associatedTask;
 
             return _taskService.GetAssociatedTaskByName(associatedTaskName, currentTask.Project);
+        }
+
+        //TODO: Pull this function and the one in Program.cs out into a shared location
+        static IEnumerable<SupportedRemoteRepository> SupportedRemoteRepositories()
+        {
+            return Enum.GetValues(typeof(SupportedRemoteRepository)).Cast<SupportedRemoteRepository>();
+        }
+
+        Project GetProject(Task currentTask)
+        {
+            var project = AskAboutProject(currentTask);
+
+            if (!project.AssociatedRemoteRepository.HasValue && _inputService.AskForBoolean("Would you like to record time for this project in an additional repository?"))
+            {
+                project.AssociatedRemoteRepository = _inputService.AskForSelection("What will your additional remote repository be?",
+                    SupportedRemoteRepositories().ToList());
+            }
+
+            return project;
         }
 
         Project AskAboutProject(Task currentTask)
