@@ -35,18 +35,18 @@
             _localTimeRepository.RecordTime(timeEntry);
         }
 
-        public void RecordTime(Task task, DateTime time, string comment)
+        public void RecordTime(Task task, DateTime time, string comment, Task associatedTask)
         {
-            var timeEntry = new TimeEntry(task, time, comment);
+            var timeEntry = new TimeEntry(task, time, comment, associatedTask);
             _localTimeRepository.RecordTime(timeEntry);
         }
 
-        public void RecordTime(Task task, int intervalCount, int minutesWorked, DateTime offset, string comment)
+        public void RecordTime(Task task, int intervalCount, int minutesWorked, DateTime offset, string comment, Task associatedTask)
         {
             var totalMinutes = intervalCount*NaggingInterval;
             var minutesOfBreak = totalMinutes - minutesWorked;
             var recordTime = offset.AddMinutes(minutesOfBreak);
-            RecordTime(task, recordTime, comment);
+            RecordTime(task, recordTime, comment, associatedTask);
         }
 
         public void RecordMarker(DateTime time)
@@ -99,6 +99,11 @@
         public IEnumerable<string> GetRecentlyRecordedTaskIds(int limit)
         {
             return _localTimeRepository.GetRecentlyRecordedTaskIds(limit);
+        }
+
+        public IEnumerable<string> GetRecentlyAssociatedTaskIds(int limit, Task task)
+        {
+            return task?.Project?.Id == null ? new List<string>() : _localTimeRepository.GetRecentlyAssociatedTaskIds(limit, task.Project.Id);
         }
 
         public IEnumerable<string> GetRecentlyRecordedCommentsForTask(int limit, Task task)

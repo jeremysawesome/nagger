@@ -24,8 +24,8 @@
             using (var cmd = cnn.CreateCommand())
             {
                 cmd.CommandText =
-                    @"INSERT INTO TimeEntries (TimeRecorded, Comment, MinutesSpent, TaskId, ProjectId, Internal)
-                                VALUES (@TimeRecorded, @Comment, @MinutesSpent, @TaskId, @ProjectId, @Internal)";
+                    @"INSERT INTO TimeEntries (TimeRecorded, Comment, MinutesSpent, TaskId, ProjectId, Internal, AssociatedTaskId)
+                                VALUES (@TimeRecorded, @Comment, @MinutesSpent, @TaskId, @ProjectId, @Internal, @AssociatedTaskId)";
 
                 cmd.Prepare();
                 cmd.Parameters.AddWithValue("@TimeRecorded", timeEntry.TimeRecorded);
@@ -34,6 +34,7 @@
                 cmd.Parameters.AddWithValue("@Internal", timeEntry.Internal);
 
                 cmd.Parameters.AddWithValue("@TaskId", (timeEntry.Task == null) ? "" : timeEntry.Task.Id);
+                cmd.Parameters.AddWithValue("@AssociatedTaskId", timeEntry.AssociatedTask == null ? "" : timeEntry.AssociatedTask.Id);
                 cmd.Parameters.AddWithValue("@ProjectId", (timeEntry.Project == null) ? "" : timeEntry.Project.Id);
 
                 cmd.ExecuteNonQuery();
@@ -198,6 +199,31 @@
                 }
             }
             return comments;
+        }
+
+        public IEnumerable<string> GetRecentlyAssociatedTaskIds(int limit, string projectId)
+        {
+            var associatedTaskIds = new List<string>();
+            using (var cnn = GetConnection())
+            using (var cmd = cnn.CreateCommand())
+            {
+                cmd.CommandText = @"SELECT AssociatedTaskId
+                                    FROM TimeEntries 
+                                    WHERE Internal = 0 AND ProjectId = @projectId AND AssociatedTaskId != ''
+                                    GROUP BY AssociatedTaskId
+                                    ORDER BY TimeRecorded DESC
+                                    LIMIT @limit";
+                cmd.Parameters.AddWithValue("@projectId", projectId);
+                cmd.Parameters.AddWithValue("@limit", limit);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        associatedTaskIds.Add(reader.Get<string>("AssociatedTaskId"));
+                    }
+                }
+            }
+            return associatedTaskIds;
         }
 
         public void RemoveTimeEntries(IEnumerable<TimeEntry> entries)

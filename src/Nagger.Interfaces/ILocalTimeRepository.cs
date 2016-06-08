@@ -17,5 +17,6 @@
         IEnumerable<TimeEntry> GetTimeEntriesSince(DateTime time, bool getInternal = false);
         IEnumerable<string> GetRecentlyRecordedTaskIds(int limit);
         IEnumerable<string> GetRecentlyRecordedCommentsForTaskId(int limit, string taskId);
+        IEnumerable<string> GetRecentlyAssociatedTaskIds(int limit, string projectId);
     }
 }

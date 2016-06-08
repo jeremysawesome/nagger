@@ -38,6 +38,7 @@
             var lastTimeEntry = _timeService.GetLastTimeEntry();
             var currentTask = lastTimeEntry?.Task;
             var comment = "";
+            var associatedTask = (Task)null;
 
             if (currentTask != null)
             {
@@ -48,7 +49,11 @@
                     stillWorking =
                         _inputService.AskForBoolean($"Are you still working on {lastTimeEntry.Comment} ({currentTask.Name})?");
 
-                    if (stillWorking) comment = lastTimeEntry.Comment;
+                    if (stillWorking)
+                    {
+                        comment = lastTimeEntry.Comment;
+                        associatedTask = lastTimeEntry.AssociatedTask;
+                    }
                 }
                 
                 if(!stillWorking)
@@ -99,24 +104,24 @@
             //todo: refactor the way runMiss is done
             runMiss = _timeService.IntervalsSinceLastRecord();
             // there will usually be 1 interval between the last time this ran and this time (it only makes sense)
-            if (runMiss <= 1) _timeService.RecordTime(currentTask, askTime, comment);
+            if (runMiss <= 1) _timeService.RecordTime(currentTask, askTime, comment, associatedTask);
             else
             {
-                AskAboutBreak(currentTask, askTime, runMiss, comment);
+                AskAboutBreak(currentTask, askTime, runMiss, comment, associatedTask);
             }
             _outputService.HideInterface();
         }
 
-        void AskAboutBreak(Task currentTask, DateTime askTime, int missedInterval, string comment)
+        void AskAboutBreak(Task currentTask, DateTime askTime, int missedInterval, string comment, Task associatedTask)
         {
             if (
                 !_inputService.AskForBoolean("Looks like we missed " + missedInterval +
                                              " check in(s). Were you on break?"))
             {
-                _timeService.RecordTime(currentTask, askTime, comment);
+                _timeService.RecordTime(currentTask, askTime, comment, associatedTask);
 
                 // record an entry for now in the case where they forgot about nagger and are just now answering the questions
-                if(_timeService.IntervalsSinceTime(askTime) > 1) _timeService.RecordTime(currentTask, DateTime.Now, comment);
+                if(_timeService.IntervalsSinceTime(askTime) > 1) _timeService.RecordTime(currentTask, DateTime.Now, comment, associatedTask);
 
                 //TODO: Create a method to ask about abscences (what if they have worked on multiple things in the amount of time they were gone?)
             }
@@ -138,11 +143,11 @@
                             "Which of these options represents about how long you have been working?", intervalsMissed);
 
                     // insert an entry for when they started working
-                    _timeService.RecordTime(currentTask, missedInterval, minutesWorked, lastTime, comment);
+                    _timeService.RecordTime(currentTask, missedInterval, minutesWorked, lastTime, comment, associatedTask);
                 }
 
                 // also insert an entry for the current time (since they are working and are no longer on break)
-                _timeService.RecordTime(currentTask, DateTime.Now, comment);
+                _timeService.RecordTime(currentTask, DateTime.Now, comment, associatedTask);
             }
         }
     }
