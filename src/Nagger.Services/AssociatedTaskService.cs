@@ -15,7 +15,11 @@
 
         public IRemoteTaskRepository GetAssociatedRemoteTaskRepository(Project project)
         {
-            return project.AssociatedRemoteRepository == null ? null : _remoteTaskRepositories[project.AssociatedRemoteRepository.Value];
+            if (project.AssociatedRemoteRepository == null) return null;
+
+            var remoteRepository = _remoteTaskRepositories[project.AssociatedRemoteRepository.Value];
+            remoteRepository.InitializeForProject(project);
+            return remoteRepository;
         }
     }
 }
