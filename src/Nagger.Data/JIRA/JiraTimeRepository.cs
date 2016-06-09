@@ -1,11 +1,13 @@
 ﻿namespace Nagger.Data.JIRA
 {
+    using System;
     using API;
     using DTO;
     using Extensions;
     using Interfaces;
     using Models;
     using RestSharp;
+    using Project = Models.Project;
 
     public class JiraTimeRepository : IRemoteTimeRepository
     {
@@ -17,12 +19,34 @@
             _api = new JiraApi(baseJiraRepository.JiraUser, baseJiraRepository.ApiBaseUrl);
         }
 
-        // needs to post to: /rest/api/2/issue/{issueIdOrKey}/worklog
         public bool RecordTime(TimeEntry timeEntry)
         {
-            // Jira requires a task
             if (!timeEntry.HasTask) return false;
-            
+            return RecordTime(timeEntry, timeEntry.Task);
+        }
+
+        public bool RecordAssociatedTime(TimeEntry timeEntry)
+        {
+            if (!timeEntry.HasAssociatedTask) return false;
+            try
+            {
+                return RecordTime(timeEntry, timeEntry.AssociatedTask);
+            }
+            catch (ApplicationException)
+            {
+                return false;
+            }
+        }
+
+        public void InitializeForProject(Project project)
+        {
+            _baseJiraRepository.KeyModifier = project.Id;
+            _api = new JiraApi(_baseJiraRepository.JiraUser, _baseJiraRepository.ApiBaseUrl);
+        }
+
+        // needs to post to: /rest/api/2/issue/{issueIdOrKey}/worklog
+        bool RecordTime(TimeEntry timeEntry, Task task)
+        {
             // jira requires a special format - like ISO 8601 but not quite
             const string jiraTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffK";
 
@@ -38,7 +62,7 @@
 
             var post = new RestRequest()
             {
-                Resource = "issue/"+timeEntry.Task.Id+"/worklog?adjustEstimate=leave",
+                Resource = "issue/"+task.Id+"/worklog?adjustEstimate=leave",
                 Method = Method.POST,
                 RequestFormat = DataFormat.Json
             };
