@@ -11,12 +11,13 @@
 
     public class JiraTimeRepository : IRemoteTimeRepository
     {
-        readonly JiraApi _api;
-      
+        JiraApi _api;
+        readonly BaseJiraRepository _baseJiraRepository;
+        JiraApi Api => _api ?? (_api = new JiraApi(_baseJiraRepository.JiraUser, _baseJiraRepository.ApiBaseUrl));
 
         public JiraTimeRepository(BaseJiraRepository baseJiraRepository)
         {
-            _api = new JiraApi(baseJiraRepository.JiraUser, baseJiraRepository.ApiBaseUrl);
+            _baseJiraRepository = baseJiraRepository;
         }
 
         public bool RecordTime(TimeEntry timeEntry)
@@ -69,7 +70,7 @@
 
             post.AddBody(worklog);
 
-            var result = _api.Execute<Worklog>(post);
+            var result = Api.Execute<Worklog>(post);
             return result != null;
         }
     }

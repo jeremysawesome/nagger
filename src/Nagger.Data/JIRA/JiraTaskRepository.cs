@@ -15,10 +15,12 @@
         // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
         readonly BaseJiraRepository _baseJiraRepository;
 
+        JiraApi Api => _api ?? (_api = new JiraApi(_baseJiraRepository.JiraUser, _baseJiraRepository.ApiBaseUrl));
+
+
         public JiraTaskRepository(BaseJiraRepository baseJiraRepository)
         {
             _baseJiraRepository = baseJiraRepository;
-            _api = new JiraApi(_baseJiraRepository.JiraUser, _baseJiraRepository.ApiBaseUrl);
         }
 
         public void InitializeForProject(Project project)
@@ -77,7 +79,7 @@
                 });
             }
 
-            var apiResult = _api.Execute<TaskResult>(request);
+            var apiResult = Api.Execute<TaskResult>(request);
 
             return apiResult?.issues?.Select(x => new Task
             {
@@ -108,7 +110,7 @@
                 }
             };
 
-            var apiResult = _api.Execute<TaskResult>(request);
+            var apiResult = Api.Execute<TaskResult>(request);
 
             if (apiResult?.issues == null || !apiResult.issues.Any()) return null;
 
@@ -154,7 +156,7 @@
                 }
             };
 
-            var apiResult = _api.Execute<TaskResult>(request);
+            var apiResult = Api.Execute<TaskResult>(request);
 
             return apiResult?.issues?.Select(x => new Task
             {
@@ -209,7 +211,7 @@
                     }
                 };
 
-                var apiResult = _api.Execute<TaskResult>(request);
+                var apiResult = Api.Execute<TaskResult>(request);
                 if (apiResult?.issues == null) yield break;
 
                 foreach (var issue in apiResult.issues)
