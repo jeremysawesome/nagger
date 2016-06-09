@@ -14,6 +14,7 @@
 
         TimeEntry GetLastTimeEntry(bool getInternal = false);
         IEnumerable<TimeEntry> GetUnsyncedEntries(bool getInternal = false);
+        IEnumerable<TimeEntry> GetTimeEntries(IList<int> entryIds, bool getInternal = false);
         IEnumerable<TimeEntry> GetTimeEntriesSince(DateTime time, bool getInternal = false);
         IEnumerable<string> GetRecentlyRecordedTaskIds(int limit);
         IEnumerable<string> GetRecentlyRecordedCommentsForTaskId(int limit, string taskId);
