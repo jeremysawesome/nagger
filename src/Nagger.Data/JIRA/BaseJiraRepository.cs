@@ -25,7 +25,9 @@
         {
             get
             {
-                _apiBaseUrl = _apiBaseUrl ?? _baseRepository.GetApiBaseUrl(ApiName, ApiBaseUrlKey);
+                var apiKey = ApiBaseUrlKey;
+                if (!KeyModifier.IsNullOrWhitespace()) apiKey = ModifiedFormat.FormatWith(KeyModifier, ApiBaseUrlKey);
+                _apiBaseUrl = _apiBaseUrl ?? _baseRepository.GetApiBaseUrl(ApiName, apiKey);
                 return _apiBaseUrl;
             }
         }
@@ -36,7 +38,7 @@
             {
                 var uKey = UsernameKey;
                 var pKey = PasswordKey;
-                if (KeyModifier.IsNullOrWhitespace())
+                if (!KeyModifier.IsNullOrWhitespace())
                 {
                     uKey = ModifiedFormat.FormatWith(KeyModifier, UsernameKey);
                     pKey = ModifiedFormat.FormatWith(KeyModifier, PasswordKey);
