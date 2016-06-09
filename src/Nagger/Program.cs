@@ -53,19 +53,31 @@
             var updater = new ContainerBuilder();
             var primaryRepository = GetPrimaryRemoteRepository();
 
-            Action<ContainerBuilder> registerMeazure = (builder) =>
+            Action<ContainerBuilder, bool> registerMeazure = (builder, isDefault) =>
             {
                 builder.RegisterType<MeazureProjectRepository>().As<IRemoteProjectRepository>();
                 builder.RegisterType<MeazureTaskRepository>().Keyed<IRemoteTaskRepository>(SupportedRemoteRepository.Meazure);
-                builder.RegisterType<MeazureTimeRepository>().As<IRemoteTimeRepository>();
+                builder.RegisterType<MeazureTimeRepository>().Keyed<IRemoteTimeRepository>(SupportedRemoteRepository.Meazure);
+
+                if (isDefault)
+                {
+                    builder.RegisterType<MeazureTaskRepository>().As<IRemoteTaskRepository>();
+                    builder.RegisterType<MeazureTimeRepository>().As<IRemoteTimeRepository>();
+                }
+
                 builder.RegisterType<MeazureRunner>().As<IRemoteRunner>();
             };
 
-            Action<ContainerBuilder> registerJira = (builder) =>
+            Action<ContainerBuilder, bool> registerJira = (builder, isDefault) =>
             {
                 builder.RegisterType<JiraProjectRepository>().As<IRemoteProjectRepository>();
                 builder.RegisterType<JiraTaskRepository>().Keyed<IRemoteTaskRepository>(SupportedRemoteRepository.Jira);
-                builder.RegisterType<JiraTimeRepository>().As<IRemoteTimeRepository>();
+                builder.RegisterType<JiraTimeRepository>().Keyed<IRemoteTimeRepository>(SupportedRemoteRepository.Jira);
+                if (isDefault)
+                {
+                    builder.RegisterType<JiraTaskRepository>().As<IRemoteTaskRepository>();
+                    builder.RegisterType<JiraTimeRepository>().As<IRemoteTimeRepository>();
+                }
                 builder.RegisterType<BaseJiraRepository>();
                 builder.RegisterType<JiraRunner>().As<IRemoteRunner>();
             };
@@ -73,14 +85,14 @@
             if (primaryRepository == SupportedRemoteRepository.Meazure)
             {
                 // meazure is the default so regsiter last
-                registerJira(updater);
-                registerMeazure(updater);
+                registerJira(updater, false);
+                registerMeazure(updater, true);
             }
             else if (primaryRepository == SupportedRemoteRepository.Jira)
             {
                 // jira is the default so register last
-                registerMeazure(updater);
-                registerJira(updater);
+                registerMeazure(updater, false);
+                registerJira(updater, true);
             }
 
             updater.Update(container);
@@ -90,10 +102,10 @@
         {
             var updater = new ContainerBuilder();
 
+            updater.RegisterType<AssociatedRemoteRepositoryService>().As<IAssociatedRemoteRepositoryService>();
             updater.RegisterType<ProjectService>().As<IProjectService>();
             updater.RegisterType<TaskService>().As<ITaskService>();
             updater.RegisterType<TimeService>().As<ITimeService>();
-            updater.RegisterType<AssociatedRemoteRepositoryService>().As<IAssociatedRemoteRepositoryService>();
             updater.RegisterType<NaggerRunner>().As<IRunnerService>();
 
             updater.Update(container);
