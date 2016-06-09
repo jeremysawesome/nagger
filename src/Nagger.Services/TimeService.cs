@@ -14,13 +14,15 @@
         readonly IProjectService _projectService;
         readonly IRemoteTimeRepository _remoteTimeRepository;
         readonly ISettingsService _settingsService;
+        readonly IAssociatedRemoteRepositoryService _associatedRemoteRepositoryService;
 
         public TimeService(ILocalTimeRepository localTimeRepository, IRemoteTimeRepository remoteTimeRepository,
-            ISettingsService settingsService)
+            ISettingsService settingsService, IAssociatedRemoteRepositoryService associatedRemoteRepositoryService)
         {
             _localTimeRepository = localTimeRepository;
             _remoteTimeRepository = remoteTimeRepository;
             _settingsService = settingsService;
+            _associatedRemoteRepositoryService = associatedRemoteRepositoryService;
         }
 
         int NaggingInterval
@@ -151,6 +153,22 @@
             _settingsService.SaveSetting("LastSyncedDate", DateTime.Now.ToString());
         }
 
+        List<int> SyncUnsyncedAssociatedEntries()
+        {
+            var unsyncedIdString = _settingsService.GetSetting<string>("UnsyncedEntries");
+            if(unsyncedIdString.IsNullOrWhitespace()) return new List<int>();
+
+            var previouslyUnsyncedProjectEntries = unsyncedIdString.Split(',').Select(int.Parse).ToList();
+            var unsyncedEntries = _localTimeRepository.GetTimeEntries(previouslyUnsyncedProjectEntries);
+            var unsyncedAssociatedEntries = new List<int>();
+
+            foreach (var entry in unsyncedEntries)
+            {
+                if(!LogWithAssociatedRepository(entry)) unsyncedAssociatedEntries.Add(entry.Id);
+            }
+            return unsyncedAssociatedEntries;
+        }
+
         public void SyncWithRemote()
         {
             // only sync if this feature is enabled
@@ -160,14 +178,29 @@
             // get the unsynced entries
             var unsyncedEntries = _localTimeRepository.GetUnsyncedEntries();
 
+            var unsyncedAssociatedEntries = SyncUnsyncedAssociatedEntries();
+
             // loop through each and record in the remote repo
             foreach (var entry in unsyncedEntries)
             {
                 if (!_remoteTimeRepository.RecordTime(entry)) continue;
+                if (entry.HasAssociatedTask)
+                {
+                     if(!LogWithAssociatedRepository(entry)) unsyncedAssociatedEntries.Add(entry.Id);
+                }
 
                 entry.Synced = true;
                 _localTimeRepository.UpdateSyncedOnTimeEntry(entry);
             }
+
+            _settingsService.SaveSetting("UnsyncedEntries", string.Join(",", unsyncedAssociatedEntries));
+        }
+
+        bool LogWithAssociatedRepository(TimeEntry entry)
+        {
+            var projectTimeRepository = _associatedRemoteRepositoryService.GetAssociatedRemoteTimeRepository(entry.Project);
+            if (projectTimeRepository == null) return false;
+            return projectTimeRepository.RecordAssociatedTime(entry);
         }
 
         public void SquashTime()
