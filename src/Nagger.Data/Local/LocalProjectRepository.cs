@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Extensions;
     using Interfaces;
     using Models;
 
@@ -30,7 +31,7 @@
                         Key = reader.Get<string>("Key")
                     };
 
-                    project.AssociatedRemoteRepository = GetAssociatedRemoteRepositories(project.Id).FirstOrDefault();
+                    project.AssociatedRemoteRepository = GetAssociatedRemoteRepository(project.Id);
 
                     return project;
                 }
@@ -59,7 +60,7 @@
                         Key = reader.Get<string>("Key"),
                     };
 
-                    project.AssociatedRemoteRepository = GetAssociatedRemoteRepositories(project.Id).FirstOrDefault();
+                    project.AssociatedRemoteRepository = GetAssociatedRemoteRepository(project.Id);
 
                     return project;
                 }
@@ -86,7 +87,7 @@
                             Key = reader.Get<string>("Key"),
                         };
 
-                        project.AssociatedRemoteRepository = GetAssociatedRemoteRepositories(project.Id).FirstOrDefault();
+                        project.AssociatedRemoteRepository = GetAssociatedRemoteRepository(project.Id);
 
                         projects.Add(project);
                     }
@@ -120,7 +121,7 @@
             using (var cnn = GetConnection())
             using (var cmd = cnn.CreateCommand())
             {
-                cmd.CommandText = @"INSERT OR IGNORE INTO AssociatedRemoteRepositories (ProjectId, RemoteRepository) VALUES (@ProjectId, @RemoteRepository)";
+                cmd.CommandText = @"INSERT OR REPLACE INTO AssociatedRemoteRepositories (ProjectId, RemoteRepository) VALUES (@ProjectId, @RemoteRepository)";
 
                 cmd.Prepare();
                 cmd.Parameters.AddWithValue("@ProjectId", projectId);
@@ -151,11 +152,18 @@
                         Name = reader.Get<string>("Name"),
                         Key = reader.Get<string>("Key")
                     };
-                    project.AssociatedRemoteRepository = GetAssociatedRemoteRepositories(project.Id).FirstOrDefault();
+                    project.AssociatedRemoteRepository = GetAssociatedRemoteRepository(project.Id);
 
                     return project;
                 }
             }
+        }
+
+        SupportedRemoteRepository? GetAssociatedRemoteRepository(string projectId)
+        {
+            var repositories = GetAssociatedRemoteRepositories(projectId).ToList();
+            if (!repositories.Any()) return null;
+            return repositories.First();
         }
 
         IEnumerable<SupportedRemoteRepository> GetAssociatedRemoteRepositories(string projectId)
@@ -173,9 +181,10 @@
                 {
                     while (reader.Read())
                     {
+                        var repositoryString = reader.Get<string>("RemoteRepository");
+                        if (repositoryString.IsNullOrWhitespace()) continue;
                         SupportedRemoteRepository remoteRepository;
-                        if (Enum.TryParse(reader.Get<string>("RemoteRepository"), out remoteRepository))
-                            yield return remoteRepository;
+                        if (Enum.TryParse(repositoryString, out remoteRepository)) yield return remoteRepository;
                     }
                 }
             }

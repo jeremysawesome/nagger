@@ -8,12 +8,14 @@
     {
         readonly ILocalProjectRepository _localProjectRepository;
         readonly IRemoteProjectRepository _remoteProjectRepository;
+        readonly IAssociatedRemoteRepositoryService _associatedRemoteRepositoryService;
 
         public ProjectService(ILocalProjectRepository localProjectRepository,
-            IRemoteProjectRepository remoteProjectRepository)
+            IRemoteProjectRepository remoteProjectRepository, IAssociatedRemoteRepositoryService associatedRemoteRepositoryService)
         {
             _localProjectRepository = localProjectRepository;
             _remoteProjectRepository = remoteProjectRepository;
+            _associatedRemoteRepositoryService = associatedRemoteRepositoryService;
         }
 
         public IEnumerable<Project> GetProjects()
@@ -35,6 +37,13 @@
         public Project GetProjectByName(string name)
         {
             return _localProjectRepository.GetProjectByName(name);
+        }
+
+        public void AssociateProjectWithRepository(Project project, SupportedRemoteRepository repository)
+        {
+            project.AssociatedRemoteRepository = repository;
+            _associatedRemoteRepositoryService.InitializeAssociatedRepositories(project);
+            _localProjectRepository.StoreProject(project);
         }
 
         void SyncProjectsWithRemote()

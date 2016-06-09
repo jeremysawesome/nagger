@@ -70,8 +70,9 @@
 
             if (!project.AssociatedRemoteRepository.HasValue && _inputService.AskForBoolean("Would you like to record time for this project in an additional repository?"))
             {
-                project.AssociatedRemoteRepository = _inputService.AskForSelection("What will your additional remote repository be?",
+                var selectedRepository = _inputService.AskForSelection("What will your additional remote repository be?",
                     SupportedRemoteRepositories().ToList());
+                _projectService.AssociateProjectWithRepository(project, selectedRepository);
             }
 
             return project;
