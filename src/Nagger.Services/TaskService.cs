@@ -41,6 +41,7 @@
             var remoteTaskRepository = _associatedRemoteRepositoryService.GetAssociatedRemoteTaskRepository(project);
             if (remoteTaskRepository == null) return null;
 
+            //TODO: we need to make sure the id stored is uniqe. We could do this by specifying that this is the remoteId and then internally tracking via auto-incremeneting key.
             task = remoteTaskRepository.GetTaskByName(name);
             if (task != null) StoreTask(task);
             return task;
