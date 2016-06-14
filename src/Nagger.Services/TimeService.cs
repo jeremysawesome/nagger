@@ -11,9 +11,9 @@
     public class TimeService : ITimeService
     {
         readonly ILocalTimeRepository _localTimeRepository;
+        readonly IProjectService _projectService;
         readonly IRemoteTimeRepository _remoteTimeRepository;
         readonly ISettingsService _settingsService;
-        readonly IProjectService _projectService;
 
         public TimeService(ILocalTimeRepository localTimeRepository, IRemoteTimeRepository remoteTimeRepository,
             ISettingsService settingsService, IProjectService projectService)
@@ -103,8 +103,11 @@
 
         public IEnumerable<string> GetRecentlyRecordedCommentsForTask(int limit, Task task)
         {
-            return task?.Id == null ? new List<string>() : _localTimeRepository.GetRecentlyRecordedCommentsForTaskId(limit, task.Id);
+            return task?.Id == null
+                ? new List<string>()
+                : _localTimeRepository.GetRecentlyRecordedCommentsForTaskId(limit, task.Id);
         }
+
         public string GetTimeReport()
         {
             SquashTime();
@@ -126,14 +129,6 @@
             builder.AppendFormat("{0} hours and {1} minutes", hoursToday, minutesToday);
 
             return builder.ToString();
-        }
-
-        TimeSpan GetSpanOfWorkSince(DayOfWeek dayOfWeek)
-        {
-            var weekStart = DateTime.Now.StartOfWeek(dayOfWeek);
-            var entries = _localTimeRepository.GetTimeEntriesSince(weekStart);
-
-            return TimeSpan.FromMinutes(entries.Sum(entry => entry.MinutesSpent));
         }
 
         public void DailyTimeOperations(bool force = false)
@@ -240,6 +235,14 @@
 
             // insert a marker for the very last entry inserted. This helps to avoid issues in asking about breaks next time Nagger runs.
             RecordMarker(unsyncedEntries.Last().TimeRecorded);
+        }
+
+        TimeSpan GetSpanOfWorkSince(DayOfWeek dayOfWeek)
+        {
+            var weekStart = DateTime.Now.StartOfWeek(dayOfWeek);
+            var entries = _localTimeRepository.GetTimeEntriesSince(weekStart);
+
+            return TimeSpan.FromMinutes(entries.Sum(entry => entry.MinutesSpent));
         }
 
         static bool EntriesAreForSameWork(TimeEntry firstEntry, TimeEntry secondEntry)

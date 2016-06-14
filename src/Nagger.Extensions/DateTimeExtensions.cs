@@ -12,7 +12,7 @@
             {
                 diff += 7;
             }
-            return dt.AddDays(-1 * diff).Date;
+            return dt.AddDays(-1*diff).Date;
         }
     }
 }

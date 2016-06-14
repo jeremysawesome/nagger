@@ -8,10 +8,11 @@
 
     public class LocalTimeRepository : LocalBaseRepository, ILocalTimeRepository
     {
-        readonly ILocalTaskRepository _localTaskRepository;
         readonly ILocalProjectRepository _localProjectRepository;
+        readonly ILocalTaskRepository _localTaskRepository;
 
-        public LocalTimeRepository(ILocalTaskRepository localTaskRepository, ILocalProjectRepository localProjectRepository)
+        public LocalTimeRepository(ILocalTaskRepository localTaskRepository,
+            ILocalProjectRepository localProjectRepository)
         {
             _localTaskRepository = localTaskRepository;
             _localProjectRepository = localProjectRepository;
@@ -46,7 +47,7 @@
             {
                 var internalWhere = (getInternal) ? "" : "WHERE Internal = 0";
 
-                cmd.CommandText = "SELECT * FROM TimeEntries "+internalWhere+" ORDER BY Id DESC LIMIT 1";
+                cmd.CommandText = "SELECT * FROM TimeEntries " + internalWhere + " ORDER BY Id DESC LIMIT 1";
 
                 using (var reader = cmd.ExecuteReader())
                 {
