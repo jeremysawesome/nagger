@@ -41,7 +41,7 @@
             var projects = _projectService.GetProjects().ToList();
             _outputService.ShowInformation(OutputProjects(projects));
             var projectKey = _inputService.AskForInput("Which project Key are you working on?");
-            _outputService.LoadingMessage("Getting tasks for that project. This might take a while.");
+            _outputService.LoadingMessage("Getting tasks for that project. This might take a while. (especially for large projects)");
             var project = _projectService.GetProjectByKey(projectKey);
             var tasks = _taskService.GetTasksByProject(project);
             _outputService.ShowInformation("Ok. We've got the tasks. Outputting the tasks for that project.");
@@ -65,11 +65,14 @@
 
         Task AskForSpecificTask()
         {
-            var idIsKnown =
-                _inputService.AskForBoolean("Do you know the key of the task you are working on? (example: CAT-102)");
-            if (!idIsKnown) return null;
-            var taskId = _inputService.AskForInput("What is the task key?");
-            return _taskService.GetTaskByName(taskId);
+            for (var i = 0; i < 3; i++)
+            {
+                var taskId = _inputService.AskForInput("What is the task key you are working on? (example: CAT-102)");
+                var task = _taskService.GetTaskByName(taskId);
+                if (task != null) return task;
+                _outputService.ShowInformation("A task with that key was not found. Let's try again.");
+            }
+            return null;
         }
 
         static string TaskString(Task task)
