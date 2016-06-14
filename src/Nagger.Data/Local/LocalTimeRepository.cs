@@ -8,10 +8,11 @@
 
     public class LocalTimeRepository : LocalBaseRepository, ILocalTimeRepository
     {
-        readonly ILocalTaskRepository _localTaskRepository;
         readonly ILocalProjectRepository _localProjectRepository;
+        readonly ILocalTaskRepository _localTaskRepository;
 
-        public LocalTimeRepository(ILocalTaskRepository localTaskRepository, ILocalProjectRepository localProjectRepository)
+        public LocalTimeRepository(ILocalTaskRepository localTaskRepository,
+            ILocalProjectRepository localProjectRepository)
         {
             _localTaskRepository = localTaskRepository;
             _localProjectRepository = localProjectRepository;
@@ -46,7 +47,7 @@
             {
                 var internalWhere = (getInternal) ? "" : "WHERE Internal = 0";
 
-                cmd.CommandText = "SELECT * FROM TimeEntries "+internalWhere+" ORDER BY Id DESC LIMIT 1";
+                cmd.CommandText = "SELECT * FROM TimeEntries " + internalWhere + " ORDER BY Id DESC LIMIT 1";
 
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -81,6 +82,44 @@
                 var cmdText = "SELECT * FROM TimeEntries WHERE Synced=0";
                 if (!getInternal) cmdText += " AND Internal = 0";
                 cmd.CommandText = cmdText;
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var timeEntry = new TimeEntry
+                        {
+                            TimeRecorded =
+                                DateTime.SpecifyKind(reader.GetDateTime(reader.GetOrdinal("TimeRecorded")),
+                                    DateTimeKind.Local),
+                            Comment = reader.Get<string>("Comment"),
+                            Id = reader.Get<int>("Id"),
+                            Task = _localTaskRepository.GetTaskById(reader.Get<string>("TaskId")),
+                            Synced = reader.Get<bool>("Synced"),
+                            MinutesSpent = reader.Get<int>("MinutesSpent"),
+                            Internal = reader.Get<bool>("Internal"),
+                            Project = _localProjectRepository.GetProjectById(reader.Get<string>("ProjectId"))
+                        };
+
+                        entries.Add(timeEntry);
+                    }
+                }
+            }
+            return entries;
+        }
+
+        public IEnumerable<TimeEntry> GetTimeEntriesSince(DateTime time, bool getInternal = false)
+        {
+            var entries = new List<TimeEntry>();
+            using (var cnn = GetConnection())
+            using (var cmd = cnn.CreateCommand())
+            {
+                var cmdText = "SELECT * FROM TimeEntries WHERE TimeRecorded >= @time";
+                if (!getInternal) cmdText += " AND Internal = 0";
+                cmd.CommandText = cmdText;
+
+                cmd.Prepare();
+                cmd.Parameters.AddWithValue("@time", time);
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())

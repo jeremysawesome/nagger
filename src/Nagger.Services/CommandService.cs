@@ -22,6 +22,10 @@
                     _timeService.DailyTimeOperations(true);
                     _outputService.ShowInformation("Push Has been run.");
                     break;
+                case "-report":
+                    var report = _timeService.GetTimeReport();
+                    _outputService.ShowInformation(report);
+                    break;
             }
         }
     }
