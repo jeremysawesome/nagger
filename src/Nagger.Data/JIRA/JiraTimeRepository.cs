@@ -13,11 +13,16 @@
     {
         JiraApi _api;
         readonly BaseJiraRepository _baseJiraRepository;
+        readonly ISettingsService _settingsService;
+        readonly IInputService _inputService;
+        const string AdjustEstimateKey = "AdjustJiraEstimate";
         JiraApi Api => _api ?? (_api = new JiraApi(_baseJiraRepository.JiraUser, _baseJiraRepository.ApiBaseUrl));
 
-        public JiraTimeRepository(BaseJiraRepository baseJiraRepository)
+        public JiraTimeRepository(BaseJiraRepository baseJiraRepository, ISettingsService settingsService, IInputService inputService)
         {
             _baseJiraRepository = baseJiraRepository;
+            _settingsService = settingsService;
+            _inputService = inputService;
         }
 
         public bool RecordTime(TimeEntry timeEntry)
@@ -43,6 +48,18 @@
         {
             _baseJiraRepository.KeyModifier = project.Id;
             _api = new JiraApi(_baseJiraRepository.JiraUser, _baseJiraRepository.ApiBaseUrl);
+            AdjustJiraEstimate();
+        }
+
+        bool AdjustJiraEstimate(Project project = null)
+        {
+            var settingKey = _baseJiraRepository.GetSettingKey(AdjustEstimateKey);
+            if (!_settingsService.GetSetting<string>(settingKey).IsNullOrWhitespace()) return _settingsService.GetSetting<bool>(settingKey);
+
+            var projectString = (project != null) ? " for {0} ".FormatWith(project.Name) : "";
+            var adjustJiraEstimate = _inputService.AskForBoolean("Would you like JIRA to automatically adjust estimates {0}when you log your time?".FormatWith(projectString));
+            _settingsService.SaveSetting(settingKey, adjustJiraEstimate.ToString());
+            return adjustJiraEstimate;
         }
 
         // needs to post to: /rest/api/2/issue/{issueIdOrKey}/worklog
@@ -61,9 +78,11 @@
                 timeSpent = timeEntry.MinutesSpent +"m"
             };
 
+            var adjustEstimate = !AdjustJiraEstimate() ? "?adjustEstimate=leave": "";
+
             var post = new RestRequest()
             {
-                Resource = "issue/"+task.Id+"/worklog?adjustEstimate=leave",
+                Resource = "issue/{0}/worklog{1}".FormatWith(task.Id, adjustEstimate),
                 Method = Method.POST,
                 RequestFormat = DataFormat.Json
             };
