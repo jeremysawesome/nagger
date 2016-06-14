@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using Extensions;
     using Interfaces;
     using Models;
@@ -103,6 +104,36 @@
         public IEnumerable<string> GetRecentlyRecordedCommentsForTask(int limit, Task task)
         {
             return task?.Id == null ? new List<string>() : _localTimeRepository.GetRecentlyRecordedCommentsForTaskId(limit, task.Id);
+        }
+        public string GetTimeReport()
+        {
+            SquashTime();
+
+            var workThisWeek = GetSpanOfWorkSince(DayOfWeek.Sunday);
+            var workToday = GetSpanOfWorkSince(DateTime.Today.DayOfWeek);
+
+            var hoursThisWeek = workThisWeek.Hours;
+            var minutesThisWeek = workThisWeek.Minutes;
+
+            var hoursToday = workToday.Hours;
+            var minutesToday = workToday.Minutes;
+
+            var builder = new StringBuilder();
+            builder.AppendLine("---This Week---");
+            builder.AppendFormat("{0} hours and {1} minutes", hoursThisWeek, minutesThisWeek);
+            builder.AppendLine();
+            builder.AppendLine("---Today---");
+            builder.AppendFormat("{0} hours and {1} minutes", hoursToday, minutesToday);
+
+            return builder.ToString();
+        }
+
+        TimeSpan GetSpanOfWorkSince(DayOfWeek dayOfWeek)
+        {
+            var weekStart = DateTime.Now.StartOfWeek(dayOfWeek);
+            var entries = _localTimeRepository.GetTimeEntriesSince(weekStart);
+
+            return TimeSpan.FromMinutes(entries.Sum(entry => entry.MinutesSpent));
         }
 
         public void DailyTimeOperations(bool force = false)
