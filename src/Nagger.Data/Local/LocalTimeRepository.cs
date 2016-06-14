@@ -106,6 +106,44 @@
             return entries;
         }
 
+        public IEnumerable<TimeEntry> GetTimeEntriesSince(DateTime time, bool getInternal = false)
+        {
+            var entries = new List<TimeEntry>();
+            using (var cnn = GetConnection())
+            using (var cmd = cnn.CreateCommand())
+            {
+                var cmdText = "SELECT * FROM TimeEntries WHERE TimeRecorded >= @time";
+                if (!getInternal) cmdText += " AND Internal = 0";
+                cmd.CommandText = cmdText;
+
+                cmd.Prepare();
+                cmd.Parameters.AddWithValue("@time", time);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var timeEntry = new TimeEntry
+                        {
+                            TimeRecorded =
+                                DateTime.SpecifyKind(reader.GetDateTime(reader.GetOrdinal("TimeRecorded")),
+                                    DateTimeKind.Local),
+                            Comment = reader.Get<string>("Comment"),
+                            Id = reader.Get<int>("Id"),
+                            Task = _localTaskRepository.GetTaskById(reader.Get<string>("TaskId")),
+                            Synced = reader.Get<bool>("Synced"),
+                            MinutesSpent = reader.Get<int>("MinutesSpent"),
+                            Internal = reader.Get<bool>("Internal"),
+                            Project = _localProjectRepository.GetProjectById(reader.Get<string>("ProjectId"))
+                        };
+
+                        entries.Add(timeEntry);
+                    }
+                }
+            }
+            return entries;
+        }
+
         public IEnumerable<string> GetRecentlyRecordedTaskIds(int limit)
         {
             var ids = new List<string>();
