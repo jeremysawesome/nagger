@@ -69,7 +69,12 @@
             {
                 var taskId = _inputService.AskForInput("What is the task key you are working on? (example: CAT-102)");
                 var task = _taskService.GetTaskByName(taskId);
-                if (task != null) return task;
+                if (task != null)
+                {
+                    _outputService.ShowInformation("Ok you are working on:");
+                    _outputService.ShowInformation(TaskString(task));
+                    return task;
+                }
                 _outputService.ShowInformation("A task with that key was not found. Let's try again.");
             }
             return null;
