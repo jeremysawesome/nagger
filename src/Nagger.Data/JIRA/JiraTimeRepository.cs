@@ -9,7 +9,7 @@
     using RestSharp;
     using Project = Models.Project;
 
-    public class JiraTimeRepository : IRemoteTimeRepository
+    public class JiraTimeRepository : IRemoteTimeRepository, IInitializable
     {
         JiraApi _api;
         readonly BaseJiraRepository _baseJiraRepository;
@@ -48,6 +48,11 @@
         {
             _baseJiraRepository.KeyModifier = project.Id;
             _api = new JiraApi(_baseJiraRepository.JiraUser, _baseJiraRepository.ApiBaseUrl);
+            AdjustJiraEstimate();
+        }
+
+        public void Initialize()
+        {
             AdjustJiraEstimate();
         }
 

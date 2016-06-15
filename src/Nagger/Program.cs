@@ -76,7 +76,9 @@
                 if (isDefault)
                 {
                     builder.RegisterType<JiraTaskRepository>().As<IRemoteTaskRepository>();
-                    builder.RegisterType<JiraTimeRepository>().As<IRemoteTimeRepository>();
+                    builder.RegisterType<JiraTimeRepository>()
+                        .As<IRemoteTimeRepository>()
+                        .As<IInitializable>();
                 }
                 builder.RegisterType<BaseJiraRepository>();
                 builder.RegisterType<JiraRunner>().As<IRemoteRunner>();
@@ -122,6 +124,7 @@
         {
             RegisterConditionalComponents(Container);
             RegisterFinalComponents(Container);
+            InitializeComponents();
         }
 
         static void Schedule()
@@ -223,6 +226,18 @@
             {
                 var settingsService = scope.Resolve<ISettingsService>();
                 return (SupportedRemoteRepository)Enum.Parse(typeof(SupportedRemoteRepository), settingsService.GetSetting<string>("PrimaryRemoteRepository"));
+            }
+        }
+
+        static void InitializeComponents()
+        {
+            using (var scope = Container.BeginLifetimeScope())
+            {
+                var components = scope.Resolve<IEnumerable<IInitializable>>();
+                foreach (var component in components)
+                {
+                    component.Initialize();
+                }
             }
         }
 
