@@ -11,7 +11,6 @@
     public class TimeService : ITimeService
     {
         readonly ILocalTimeRepository _localTimeRepository;
-        readonly IProjectService _projectService;
         readonly IRemoteTimeRepository _remoteTimeRepository;
         readonly ISettingsService _settingsService;
         readonly IAssociatedRemoteRepositoryService _associatedRemoteRepositoryService;
