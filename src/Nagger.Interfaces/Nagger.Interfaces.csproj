@@ -38,6 +38,7 @@
   <ItemGroup>
     <Compile Include="IAssociatedRemoteRepositoryService.cs" />
     <Compile Include="ICommandService.cs" />
+    <Compile Include="IInitializable.cs" />
     <Compile Include="IInputService.cs" />
     <Compile Include="ILocalProjectRepository.cs" />
     <Compile Include="ILocalTaskRepository.cs" />
