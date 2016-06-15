@@ -6,6 +6,7 @@
     using Interfaces;
     using Models;
     using RestSharp;
+    using Project = Models.Project;
 
     public class MeazureTimeRepository : IRemoteTimeRepository
     {
@@ -19,8 +20,18 @@
 
         public bool RecordTime(TimeEntry timeEntry)
         {
-            // meazure requires either Notes, a project, or a task
             if (!timeEntry.HasProject && !timeEntry.HasTask && !timeEntry.HasComment) return false;
+            return RecordTime(timeEntry, timeEntry.Task);
+        }
+
+        public bool RecordAssociatedTime(TimeEntry timeEntry)
+        {
+            if (!timeEntry.HasProject && !timeEntry.HasTask && !timeEntry.HasComment) return false;
+            return RecordTime(timeEntry, timeEntry.AssociatedTask);
+        }
+
+        bool RecordTime(TimeEntry timeEntry, Task task)
+        {
 
             var timeEntryModel = new TimeEntryModel
             {
@@ -29,7 +40,7 @@
                 TimeString = timeEntry.MinutesSpent + "m",
                 DurationSeconds = timeEntry.MinutesSpent*60,
                 ProjectId = timeEntry.Project?.Id,
-                TaskId = timeEntry.Task?.Id,
+                TaskId = task?.Id,
                 WorkItems = new List<string>(), //TODO: add functionality for tracking WorkItems
             };
 
@@ -44,6 +55,10 @@
 
             var result = _api.Execute<TimeEntryModel>(post);
             return result != null;
+        }
+
+        public void InitializeForProject(Project project)
+        {
         }
     }
 }

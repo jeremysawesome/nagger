@@ -8,17 +8,12 @@
     using Data.Local;
     using Data.Meazure;
     using Interfaces;
+    using Models;
     using Quartz;
     using Quartz.Impl;
     using Services;
     using Services.JIRA;
     using Services.Meazure;
-
-    internal enum SupportedRemoteRepository
-    {
-        Jira,
-        Meazure
-    }
 
     internal class Program
     {
@@ -58,20 +53,48 @@
             var updater = new ContainerBuilder();
             var primaryRepository = GetPrimaryRemoteRepository();
 
+            Action<ContainerBuilder, bool> registerMeazure = (builder, isDefault) =>
+            {
+                builder.RegisterType<MeazureProjectRepository>().As<IRemoteProjectRepository>();
+                builder.RegisterType<MeazureTaskRepository>().Keyed<IRemoteTaskRepository>(SupportedRemoteRepository.Meazure);
+                builder.RegisterType<MeazureTimeRepository>().Keyed<IRemoteTimeRepository>(SupportedRemoteRepository.Meazure);
+
+                if (isDefault)
+                {
+                    builder.RegisterType<MeazureTaskRepository>().As<IRemoteTaskRepository>();
+                    builder.RegisterType<MeazureTimeRepository>().As<IRemoteTimeRepository>();
+                }
+
+                builder.RegisterType<MeazureRunner>().As<IRemoteRunner>();
+            };
+
+            Action<ContainerBuilder, bool> registerJira = (builder, isDefault) =>
+            {
+                builder.RegisterType<JiraProjectRepository>().As<IRemoteProjectRepository>();
+                builder.RegisterType<JiraTaskRepository>().Keyed<IRemoteTaskRepository>(SupportedRemoteRepository.Jira);
+                builder.RegisterType<JiraTimeRepository>().Keyed<IRemoteTimeRepository>(SupportedRemoteRepository.Jira);
+                if (isDefault)
+                {
+                    builder.RegisterType<JiraTaskRepository>().As<IRemoteTaskRepository>();
+                    builder.RegisterType<JiraTimeRepository>()
+                        .As<IRemoteTimeRepository>()
+                        .As<IInitializable>();
+                }
+                builder.RegisterType<BaseJiraRepository>();
+                builder.RegisterType<JiraRunner>().As<IRemoteRunner>();
+            };
+
             if (primaryRepository == SupportedRemoteRepository.Meazure)
             {
-                updater.RegisterType<MeazureProjectRepository>().As<IRemoteProjectRepository>();
-                updater.RegisterType<MeazureTaskRepository>().As<IRemoteTaskRepository>();
-                updater.RegisterType<MeazureTimeRepository>().As<IRemoteTimeRepository>();
-                updater.RegisterType<MeazureRunner>().As<IRemoteRunner>();
+                // meazure is the default so regsiter last
+                registerJira(updater, false);
+                registerMeazure(updater, true);
             }
             else if (primaryRepository == SupportedRemoteRepository.Jira)
             {
-                updater.RegisterType<JiraProjectRepository>().As<IRemoteProjectRepository>();
-                updater.RegisterType<JiraTaskRepository>().As<IRemoteTaskRepository>();
-                updater.RegisterType<JiraTimeRepository>().As<IRemoteTimeRepository>();
-                updater.RegisterType<BaseJiraRepository>();
-                updater.RegisterType<JiraRunner>().As<IRemoteRunner>();
+                // jira is the default so register last
+                registerMeazure(updater, false);
+                registerJira(updater, true);
             }
 
             updater.Update(container);
@@ -81,10 +104,10 @@
         {
             var updater = new ContainerBuilder();
 
+            updater.RegisterType<AssociatedRemoteRepositoryService>().As<IAssociatedRemoteRepositoryService>();
             updater.RegisterType<ProjectService>().As<IProjectService>();
             updater.RegisterType<TaskService>().As<ITaskService>();
             updater.RegisterType<TimeService>().As<ITimeService>();
-
             updater.RegisterType<NaggerRunner>().As<IRunnerService>();
 
             updater.Update(container);
@@ -101,6 +124,7 @@
         {
             RegisterConditionalComponents(Container);
             RegisterFinalComponents(Container);
+            InitializeComponents();
         }
 
         static void Schedule()
@@ -202,6 +226,18 @@
             {
                 var settingsService = scope.Resolve<ISettingsService>();
                 return (SupportedRemoteRepository)Enum.Parse(typeof(SupportedRemoteRepository), settingsService.GetSetting<string>("PrimaryRemoteRepository"));
+            }
+        }
+
+        static void InitializeComponents()
+        {
+            using (var scope = Container.BeginLifetimeScope())
+            {
+                var components = scope.Resolve<IEnumerable<IInitializable>>();
+                foreach (var component in components)
+                {
+                    component.Initialize();
+                }
             }
         }
 

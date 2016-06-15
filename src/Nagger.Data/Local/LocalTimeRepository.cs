@@ -24,8 +24,8 @@
             using (var cmd = cnn.CreateCommand())
             {
                 cmd.CommandText =
-                    @"INSERT INTO TimeEntries (TimeRecorded, Comment, MinutesSpent, TaskId, ProjectId, Internal)
-                                VALUES (@TimeRecorded, @Comment, @MinutesSpent, @TaskId, @ProjectId, @Internal)";
+                    @"INSERT INTO TimeEntries (TimeRecorded, Comment, MinutesSpent, TaskId, ProjectId, Internal, AssociatedTaskId)
+                                VALUES (@TimeRecorded, @Comment, @MinutesSpent, @TaskId, @ProjectId, @Internal, @AssociatedTaskId)";
 
                 cmd.Prepare();
                 cmd.Parameters.AddWithValue("@TimeRecorded", timeEntry.TimeRecorded);
@@ -34,6 +34,7 @@
                 cmd.Parameters.AddWithValue("@Internal", timeEntry.Internal);
 
                 cmd.Parameters.AddWithValue("@TaskId", (timeEntry.Task == null) ? "" : timeEntry.Task.Id);
+                cmd.Parameters.AddWithValue("@AssociatedTaskId", timeEntry.AssociatedTask == null ? "" : timeEntry.AssociatedTask.Id);
                 cmd.Parameters.AddWithValue("@ProjectId", (timeEntry.Project == null) ? "" : timeEntry.Project.Id);
 
                 cmd.ExecuteNonQuery();
@@ -47,7 +48,7 @@
             {
                 var internalWhere = (getInternal) ? "" : "WHERE Internal = 0";
 
-                cmd.CommandText = "SELECT * FROM TimeEntries " + internalWhere + " ORDER BY Id DESC LIMIT 1";
+                cmd.CommandText = "SELECT * FROM TimeEntries "+internalWhere+" ORDER BY Id DESC LIMIT 1";
 
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -61,6 +62,7 @@
                         Comment = reader.Get<string>("Comment"),
                         Id = reader.Get<int>("Id"),
                         Task = _localTaskRepository.GetTaskById(reader.Get<string>("TaskId")),
+                        AssociatedTask = _localTaskRepository.GetTaskById(reader.Get<string>("AssociatedTaskId")),
                         Synced = reader.Get<bool>("Synced"),
                         MinutesSpent = reader.Get<int>("MinutesSpent"),
                         Internal = reader.Get<bool>("Internal"),
@@ -94,6 +96,53 @@
                             Comment = reader.Get<string>("Comment"),
                             Id = reader.Get<int>("Id"),
                             Task = _localTaskRepository.GetTaskById(reader.Get<string>("TaskId")),
+                            AssociatedTask = _localTaskRepository.GetTaskById(reader.Get<string>("AssociatedTaskId")),
+                            Synced = reader.Get<bool>("Synced"),
+                            MinutesSpent = reader.Get<int>("MinutesSpent"),
+                            Internal = reader.Get<bool>("Internal"),
+                            Project = _localProjectRepository.GetProjectById(reader.Get<string>("ProjectId"))
+                        };
+
+                        entries.Add(timeEntry);
+                    }
+                }
+            }
+            return entries;
+        }
+
+        public IEnumerable<TimeEntry> GetTimeEntries(IList<int> entryIds,  bool getInternal = false)
+        {
+            var entries = new List<TimeEntry>();
+            using (var cnn = GetConnection())
+            using (var cmd = cnn.CreateCommand())
+            {
+                var paramArgs = new List<string>();
+                for (var i = 0; i < entryIds.Count; i++)
+                {
+                    paramArgs.Add("@entryId"+i);
+                }
+
+                var cmdText = "SELECT * FROM TimeEntries WHERE Id IN("+string.Join(",", paramArgs)+")";
+                if (!getInternal) cmdText += " AND Internal = 0";
+                cmd.CommandText = cmdText;
+                cmd.Prepare();
+                for (var i = 0; i < entryIds.Count; i++)
+                {
+                    cmd.Parameters.AddWithValue("@entryId" + i, entryIds[i]);
+                }
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var timeEntry = new TimeEntry
+                        {
+                            TimeRecorded =
+                                DateTime.SpecifyKind(reader.GetDateTime(reader.GetOrdinal("TimeRecorded")),
+                                    DateTimeKind.Local),
+                            Comment = reader.Get<string>("Comment"),
+                            Id = reader.Get<int>("Id"),
+                            Task = _localTaskRepository.GetTaskById(reader.Get<string>("TaskId")),
+                            AssociatedTask = _localTaskRepository.GetTaskById(reader.Get<string>("AssociatedTaskId")),
                             Synced = reader.Get<bool>("Synced"),
                             MinutesSpent = reader.Get<int>("MinutesSpent"),
                             Internal = reader.Get<bool>("Internal"),
@@ -198,6 +247,31 @@
                 }
             }
             return comments;
+        }
+
+        public IEnumerable<string> GetRecentlyAssociatedTaskIds(int limit, string projectId)
+        {
+            var associatedTaskIds = new List<string>();
+            using (var cnn = GetConnection())
+            using (var cmd = cnn.CreateCommand())
+            {
+                cmd.CommandText = @"SELECT AssociatedTaskId
+                                    FROM TimeEntries 
+                                    WHERE Internal = 0 AND ProjectId = @projectId AND AssociatedTaskId != ''
+                                    GROUP BY AssociatedTaskId
+                                    ORDER BY TimeRecorded DESC
+                                    LIMIT @limit";
+                cmd.Parameters.AddWithValue("@projectId", projectId);
+                cmd.Parameters.AddWithValue("@limit", limit);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        associatedTaskIds.Add(reader.Get<string>("AssociatedTaskId"));
+                    }
+                }
+            }
+            return associatedTaskIds;
         }
 
         public void RemoveTimeEntries(IEnumerable<TimeEntry> entries)

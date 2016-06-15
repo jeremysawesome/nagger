@@ -1,5 +1,7 @@
 ﻿namespace Nagger.Services.Meazure
 {
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Interfaces;
     using Models;
@@ -23,7 +25,7 @@
         {
             var mostRecentTask = _taskService.GetLastTask();
 
-            var currentProject = AskAboutProject(mostRecentTask);
+            var currentProject = GetProject(mostRecentTask);
 
             var recentTaskNames = _taskService.GetTasksByTaskIds(_timeService.GetRecentlyRecordedTaskIds(5)).Select(x=>x.Name);
             var taskName = _inputService.AskForSelectionOrInput("Choose from a recent task. (If none of these match what you are doing then just leave blank.)", recentTaskNames.ToList());
@@ -40,6 +42,40 @@
             currentTask.Project = currentProject;
 
             return currentTask;
+        }
+
+        public Task AskForAssociatedTask(Task currentTask)
+        {
+            if (!_inputService.AskForBoolean("Associate this entry with an additional task?")) return null;
+
+            Task associatedTask;
+            var recentlyAssociatedTasks = _taskService.GetTasksByTaskIds(_timeService.GetRecentlyAssociatedTaskIds(5, currentTask)).ToDictionary(key=> key.Name);
+            var associatedTaskName = _inputService.AskForSelectionOrInput("Choose from a recent task or insert a new task name",
+                    recentlyAssociatedTasks.Keys.ToList());
+
+            if (recentlyAssociatedTasks.TryGetValue(associatedTaskName, out associatedTask)) return associatedTask;
+
+            return _taskService.GetAssociatedTaskByName(associatedTaskName, currentTask.Project);
+        }
+
+        //TODO: Pull this function and the one in Program.cs out into a shared location
+        static IEnumerable<SupportedRemoteRepository> SupportedRemoteRepositories()
+        {
+            return Enum.GetValues(typeof(SupportedRemoteRepository)).Cast<SupportedRemoteRepository>();
+        }
+
+        Project GetProject(Task currentTask)
+        {
+            var project = AskAboutProject(currentTask);
+
+            if (!project.AssociatedRemoteRepository.HasValue && _inputService.AskForBoolean("Would you like to record time for this project in an additional repository?"))
+            {
+                var selectedRepository = _inputService.AskForSelection("What will your additional remote repository be?",
+                    SupportedRemoteRepositories().ToList());
+                _projectService.AssociateProjectWithRepository(project, selectedRepository);
+            }
+
+            return project;
         }
 
         Project AskAboutProject(Task currentTask)

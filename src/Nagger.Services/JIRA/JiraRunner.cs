@@ -50,6 +50,12 @@
             return AskForSpecificTask();
         }
 
+        public Task AskForAssociatedTask(Task currentTask)
+        {
+            // associated tasks are not supported for JIRA at the moment
+            return null;
+        }
+
         static string OutputProjects(ICollection<Project> projects)
         {
             var sb = new StringBuilder();

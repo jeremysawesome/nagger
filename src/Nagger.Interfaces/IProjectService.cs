@@ -10,5 +10,7 @@
         Project GetProjectById(string id);
         Project GetProjectByKey(string key);
         Project GetProjectByName(string name);
+
+        void AssociateProjectWithRepository(Project project, SupportedRemoteRepository repository);
     }
 }

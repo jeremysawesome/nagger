@@ -38,6 +38,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssociatedRemoteRepositoryService.cs" />
     <Compile Include="CommandService.cs" />
     <Compile Include="ConsoleOutputService.cs" />
     <Compile Include="ConsoleInputService.cs" />

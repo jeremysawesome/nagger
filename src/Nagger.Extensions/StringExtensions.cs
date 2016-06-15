@@ -35,5 +35,10 @@
         {
             return string.IsNullOrWhiteSpace(source);
         }
+
+        public static string FormatWith(this string source, params object[] args)
+        {
+            return string.Format(source, args);
+        }
     }
 }

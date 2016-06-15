@@ -9,11 +9,13 @@
     {
         readonly ILocalTaskRepository _localTaskRepository;
         readonly IRemoteTaskRepository _remoteTaskRepository;
+        readonly IAssociatedRemoteRepositoryService _associatedRemoteRepositoryService;
 
-        public TaskService(ILocalTaskRepository localTaskRepository, IRemoteTaskRepository remoteTaskRepository)
+        public TaskService(ILocalTaskRepository localTaskRepository, IRemoteTaskRepository remoteTaskRepository, IAssociatedRemoteRepositoryService associatedRemoteRepositoryService)
         {
             _localTaskRepository = localTaskRepository;
             _remoteTaskRepository = remoteTaskRepository;
+            _associatedRemoteRepositoryService = associatedRemoteRepositoryService;
         }
 
         public Task GetLastTask()
@@ -27,6 +29,20 @@
             if (task != null) return task;
 
             task = _remoteTaskRepository.GetTaskByName(name);
+            if (task != null) StoreTask(task);
+            return task;
+        }
+
+        public Task GetAssociatedTaskByName(string name, Project project)
+        {
+            var task = _localTaskRepository.GetTaskByName(name);
+            if (task != null) return task;
+
+            var remoteTaskRepository = _associatedRemoteRepositoryService.GetAssociatedRemoteTaskRepository(project);
+            if (remoteTaskRepository == null) return null;
+
+            //TODO: we need to make sure the id stored is uniqe. We could do this by specifying that this is the remoteId and then internally tracking via auto-incremeneting key.
+            task = remoteTaskRepository.GetTaskByName(name);
             if (task != null) StoreTask(task);
             return task;
         }
