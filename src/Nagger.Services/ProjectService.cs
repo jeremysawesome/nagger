@@ -24,6 +24,11 @@
             return _localProjectRepository.GetProjects();
         }
 
+        public IEnumerable<Project> GetProjectsByIds(IEnumerable<string> ids)
+        {
+            return _localProjectRepository.GetProjectsByIds(ids);
+        }
+
         public Project GetProjectById(string id)
         {
             return _localProjectRepository.GetProjectById(id);

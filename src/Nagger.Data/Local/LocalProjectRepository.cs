@@ -97,6 +97,11 @@
             return projects;
         }
 
+        public IEnumerable<Project> GetProjectsByIds(IEnumerable<string> ids)
+        {
+            return ids.Select(GetProjectById).ToList();
+        }
+
         public void StoreProject(Project project)
         {
             using (var cnn = GetConnection())
