@@ -85,6 +85,17 @@
                 return currentTask.Project;
             }
 
+            var recentProjects = _projectService.GetProjectsByIds(_timeService.GetRecentlyRecordedProjectIds()).ToDictionary(key=>key.Name);
+
+            if (recentProjects.Any())
+            {
+                var selectedProjectName = _inputService.AskForSelectionOrInput("Select a recent project. (Or insert a new project name)",
+                    recentProjects.Keys.ToList());
+
+                Project recentProject;
+                if (recentProjects.TryGetValue(selectedProjectName, out recentProject)) return recentProject;
+            }
+
             if (_inputService.AskForBoolean("Do you know the name of the project you are working on?"))
             {
                 var projectName = _inputService.AskForInput("What is the name?");
