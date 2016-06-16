@@ -113,6 +113,11 @@
                 : _localTimeRepository.GetRecentlyRecordedCommentsForTaskId(limit, task.Id);
         }
 
+        public IEnumerable<string> GetRecentlyRecordedProjectIds(int limit = 5)
+        {
+            return _localTimeRepository.GetRecentlyRecordedProjectIds(limit);
+        }
+
         public string GetTimeReport()
         {
             SquashTime();

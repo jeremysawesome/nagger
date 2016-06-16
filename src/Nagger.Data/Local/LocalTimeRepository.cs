@@ -274,6 +274,36 @@
             return associatedTaskIds;
         }
 
+        public IEnumerable<string> GetRecentlyRecordedProjectIds(int limit)
+        {
+            var ids = new List<string>();
+
+            using (var cnn = GetConnection())
+            using (var cmd = cnn.CreateCommand())
+            {
+                // for some reason, if we don't select the TimeRecorded out as well, we end up with unexpected results
+                // there is something strange going on with the way the order works. The order has to be run twice 
+                // it could be that the LIMIT applies before the ORDER. So the order only works on a set of limited rows?
+                cmd.CommandText = @"SELECT DISTINCT ProjectId FROM(
+                                        SELECT ProjectId, TimeRecorded 
+                                        FROM TimeEntries 
+                                        WHERE Internal = 0 
+                                        ORDER BY TimeRecorded DESC
+                                    ) AS temp 
+                                    ORDER BY TimeRecorded DESC
+                                    LIMIT @limit";
+                cmd.Parameters.AddWithValue("@limit", limit);
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        ids.Add(reader.Get<string>("ProjectId"));
+                    }
+                }
+            }
+            return ids;
+        }
+
         public void RemoveTimeEntries(IEnumerable<TimeEntry> entries)
         {
             if (!entries.Any()) return;
