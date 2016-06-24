@@ -120,11 +120,11 @@
             var workThisWeek = GetSpanOfWorkSince(DayOfWeek.Sunday);
             var workToday = GetSpanOfWorkSince(DateTime.Today.DayOfWeek);
 
-            var hoursThisWeek = workThisWeek.Hours;
-            var minutesThisWeek = workThisWeek.Minutes;
+            var hoursThisWeek = Math.Truncate(workThisWeek.TotalHours);
+            var minutesThisWeek = (workThisWeek.TotalHours - hoursThisWeek) * 60;
 
-            var hoursToday = workToday.Hours;
-            var minutesToday = workToday.Minutes;
+            var hoursToday = Math.Truncate(workToday.TotalHours);
+            var minutesToday = (workToday.TotalHours - hoursToday) * 60;
 
             var builder = new StringBuilder();
             builder.AppendLine("---This Week---");
