@@ -122,8 +122,15 @@
         {
             SquashTime();
 
+            var today = DateTime.Today;
+            var firstDayOfmonth = today.AddDays(1 - today.Day);
+            var workThisMonth = GetSpanOfWorkSince(firstDayOfmonth);
+
             var workThisWeek = GetSpanOfWorkSince(DayOfWeek.Sunday);
-            var workToday = GetSpanOfWorkSince(DateTime.Today.DayOfWeek);
+            var workToday = GetSpanOfWorkSince(today.DayOfWeek);
+
+            var hoursThisMonth = Math.Truncate(workThisMonth.TotalHours);
+            var minutesThisMonth = (workThisMonth.TotalHours - hoursThisMonth) * 60;
 
             var hoursThisWeek = Math.Truncate(workThisWeek.TotalHours);
             var minutesThisWeek = (workThisWeek.TotalHours - hoursThisWeek) * 60;
@@ -131,12 +138,16 @@
             var hoursToday = Math.Truncate(workToday.TotalHours);
             var minutesToday = (workToday.TotalHours - hoursToday) * 60;
 
+            var reportFormat = "{0} hours and {1} minutes";
             var builder = new StringBuilder();
+            builder.AppendLine("---This Month---");
+            builder.AppendFormat(reportFormat, hoursThisMonth, minutesThisMonth);
+            builder.AppendLine();
             builder.AppendLine("---This Week---");
-            builder.AppendFormat("{0} hours and {1} minutes", hoursThisWeek, minutesThisWeek);
+            builder.AppendFormat(reportFormat, hoursThisWeek, minutesThisWeek);
             builder.AppendLine();
             builder.AppendLine("---Today---");
-            builder.AppendFormat("{0} hours and {1} minutes", hoursToday, minutesToday);
+            builder.AppendFormat(reportFormat, hoursToday, minutesToday);
 
             return builder.ToString();
         }
