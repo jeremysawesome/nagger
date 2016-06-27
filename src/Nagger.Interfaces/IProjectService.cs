@@ -6,7 +6,7 @@
     public interface IProjectService
     {
         IEnumerable<Project> GetProjects();
-
+        IEnumerable<Project> GetProjectsByIds(IEnumerable<string> ids);
         Project GetProjectById(string id);
         Project GetProjectByKey(string key);
         Project GetProjectByName(string name);

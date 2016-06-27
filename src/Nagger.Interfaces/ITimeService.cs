@@ -21,6 +21,7 @@
         IEnumerable<string> GetRecentlyRecordedTaskIds(int limit);
         IEnumerable<string> GetRecentlyAssociatedTaskIds(int limit, Task task);
         IEnumerable<string> GetRecentlyRecordedCommentsForTask(int limit, Task task);
+        IEnumerable<string> GetRecentlyRecordedProjectIds(int limit = 5);
 
         string GetTimeReport();
     }
