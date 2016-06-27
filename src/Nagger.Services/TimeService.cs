@@ -281,8 +281,12 @@
         TimeSpan GetSpanOfWorkSince(DayOfWeek dayOfWeek)
         {
             var weekStart = DateTime.Now.StartOfWeek(dayOfWeek);
-            var entries = _localTimeRepository.GetTimeEntriesSince(weekStart);
+            return GetSpanOfWorkSince(weekStart);
+        }
 
+        TimeSpan GetSpanOfWorkSince(DateTime time)
+        {
+            var entries = _localTimeRepository.GetTimeEntriesSince(time);
             return TimeSpan.FromMinutes(entries.Sum(entry => entry.MinutesSpent));
         }
 
