@@ -32,22 +32,21 @@
 
         bool RecordTime(TimeEntry timeEntry, Task task)
         {
-
             var timeEntryModel = new TimeEntryModel
             {
                 Date = timeEntry.TimeRecorded.Date.ToString("O"), // Meazure reporting likes entries to be "date" specific, not "time" specific
-                Notes = timeEntry.Comment,
-                TimeString = timeEntry.MinutesSpent + "m",
-                DurationSeconds = timeEntry.MinutesSpent*60,
-                ProjectId = timeEntry.Project?.Id,
-                TaskId = task?.Id,
-                WorkItems = new List<string>(), //TODO: add functionality for tracking WorkItems
+                Notes = timeEntry.Comment, 
+                TimeString = timeEntry.MinutesSpent + "m", 
+                DurationSeconds = timeEntry.MinutesSpent*60, 
+                ProjectId = timeEntry.Project?.Id, 
+                TaskId = task?.Id, 
+                WorkItems = new List<string>(), // TODO: add functionality for tracking WorkItems
             };
 
             var post = new RestRequest
             {
-                Resource = "Time/Save",
-                Method = Method.POST,
+                Resource = "Time/Save", 
+                Method = Method.POST, 
                 RequestFormat = DataFormat.Json
             };
 
