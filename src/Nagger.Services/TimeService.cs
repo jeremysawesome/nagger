@@ -10,12 +10,12 @@
 
     public class TimeService : ITimeService
     {
+        readonly IAssociatedRemoteRepositoryService _associatedRemoteRepositoryService;
         readonly ILocalTimeRepository _localTimeRepository;
         readonly IRemoteTimeRepository _remoteTimeRepository;
         readonly ISettingsService _settingsService;
-        readonly IAssociatedRemoteRepositoryService _associatedRemoteRepositoryService;
 
-        public TimeService(ILocalTimeRepository localTimeRepository, IRemoteTimeRepository remoteTimeRepository,
+        public TimeService(ILocalTimeRepository localTimeRepository, IRemoteTimeRepository remoteTimeRepository, 
             ISettingsService settingsService, IAssociatedRemoteRepositoryService associatedRemoteRepositoryService)
         {
             _localTimeRepository = localTimeRepository;
@@ -53,7 +53,7 @@
         {
             var timeEntry = new TimeEntry
             {
-                Internal = true,
+                Internal = true, 
                 TimeRecorded = time
             };
             RecordTime(timeEntry);
@@ -122,21 +122,32 @@
         {
             SquashTime();
 
+            var today = DateTime.Today;
+            var firstDayOfmonth = today.AddDays(1 - today.Day);
+            var workThisMonth = GetSpanOfWorkSince(firstDayOfmonth);
+
             var workThisWeek = GetSpanOfWorkSince(DayOfWeek.Sunday);
-            var workToday = GetSpanOfWorkSince(DateTime.Today.DayOfWeek);
+            var workToday = GetSpanOfWorkSince(today.DayOfWeek);
+
+            var hoursThisMonth = Math.Truncate(workThisMonth.TotalHours);
+            var minutesThisMonth = (workThisMonth.TotalHours - hoursThisMonth)*60;
 
             var hoursThisWeek = Math.Truncate(workThisWeek.TotalHours);
-            var minutesThisWeek = (workThisWeek.TotalHours - hoursThisWeek) * 60;
+            var minutesThisWeek = (workThisWeek.TotalHours - hoursThisWeek)*60;
 
             var hoursToday = Math.Truncate(workToday.TotalHours);
-            var minutesToday = (workToday.TotalHours - hoursToday) * 60;
+            var minutesToday = (workToday.TotalHours - hoursToday)*60;
 
+            var reportFormat = "{0} hours and {1} minutes";
             var builder = new StringBuilder();
+            builder.AppendLine("---This Month---");
+            builder.AppendFormat(reportFormat, hoursThisMonth, minutesThisMonth);
+            builder.AppendLine();
             builder.AppendLine("---This Week---");
-            builder.AppendFormat("{0} hours and {1} minutes", hoursThisWeek, minutesThisWeek);
+            builder.AppendFormat(reportFormat, hoursThisWeek, minutesThisWeek);
             builder.AppendLine();
             builder.AppendLine("---Today---");
-            builder.AppendFormat("{0} hours and {1} minutes", hoursToday, minutesToday);
+            builder.AppendFormat(reportFormat, hoursToday, minutesToday);
 
             return builder.ToString();
         }
@@ -157,22 +168,6 @@
             _settingsService.SaveSetting("LastSyncedDate", DateTime.Now.ToString());
         }
 
-        List<int> SyncUnsyncedAssociatedEntries()
-        {
-            var unsyncedIdString = _settingsService.GetSetting<string>("UnsyncedEntries");
-            if(unsyncedIdString.IsNullOrWhitespace()) return new List<int>();
-
-            var previouslyUnsyncedProjectEntries = unsyncedIdString.Split(',').Select(int.Parse).ToList();
-            var unsyncedEntries = _localTimeRepository.GetTimeEntries(previouslyUnsyncedProjectEntries);
-            var unsyncedAssociatedEntries = new List<int>();
-
-            foreach (var entry in unsyncedEntries)
-            {
-                if(!LogWithAssociatedRepository(entry)) unsyncedAssociatedEntries.Add(entry.Id);
-            }
-            return unsyncedAssociatedEntries;
-        }
-
         public void SyncWithRemote()
         {
             // only sync if this feature is enabled
@@ -190,7 +185,7 @@
                 if (!_remoteTimeRepository.RecordTime(entry)) continue;
                 if (entry.HasAssociatedTask)
                 {
-                     if(!LogWithAssociatedRepository(entry)) unsyncedAssociatedEntries.Add(entry.Id);
+                    if (!LogWithAssociatedRepository(entry)) unsyncedAssociatedEntries.Add(entry.Id);
                 }
 
                 entry.Synced = true;
@@ -198,13 +193,6 @@
             }
 
             _settingsService.SaveSetting("UnsyncedEntries", string.Join(",", unsyncedAssociatedEntries));
-        }
-
-        bool LogWithAssociatedRepository(TimeEntry entry)
-        {
-            var projectTimeRepository = _associatedRemoteRepositoryService.GetAssociatedRemoteTimeRepository(entry.Project);
-            if (projectTimeRepository == null) return false;
-            return projectTimeRepository.RecordAssociatedTime(entry);
         }
 
         public void SquashTime()
@@ -270,7 +258,6 @@
 
             // other thoughts: say we enter the MinutesSpent whenever we enter a task.... the minutes spent would be the difference between the current
             // recorded time and the most recently recorded time.
-
             _localTimeRepository.UpdateMinutesSpentOnTimeEntries(squashedEntries);
             _localTimeRepository.RemoveTimeEntries(entriesToRemove);
 
@@ -278,11 +265,39 @@
             RecordMarker(unsyncedEntries.Last().TimeRecorded);
         }
 
+        List<int> SyncUnsyncedAssociatedEntries()
+        {
+            var unsyncedIdString = _settingsService.GetSetting<string>("UnsyncedEntries");
+            if (unsyncedIdString.IsNullOrWhitespace()) return new List<int>();
+
+            var previouslyUnsyncedProjectEntries = unsyncedIdString.Split(',').Select(int.Parse).ToList();
+            var unsyncedEntries = _localTimeRepository.GetTimeEntries(previouslyUnsyncedProjectEntries);
+            var unsyncedAssociatedEntries = new List<int>();
+
+            foreach (var entry in unsyncedEntries)
+            {
+                if (!LogWithAssociatedRepository(entry)) unsyncedAssociatedEntries.Add(entry.Id);
+            }
+
+            return unsyncedAssociatedEntries;
+        }
+
+        bool LogWithAssociatedRepository(TimeEntry entry)
+        {
+            var projectTimeRepository = _associatedRemoteRepositoryService.GetAssociatedRemoteTimeRepository(entry.Project);
+            if (projectTimeRepository == null) return false;
+            return projectTimeRepository.RecordAssociatedTime(entry);
+        }
+
         TimeSpan GetSpanOfWorkSince(DayOfWeek dayOfWeek)
         {
             var weekStart = DateTime.Now.StartOfWeek(dayOfWeek);
-            var entries = _localTimeRepository.GetTimeEntriesSince(weekStart);
+            return GetSpanOfWorkSince(weekStart);
+        }
 
+        TimeSpan GetSpanOfWorkSince(DateTime time)
+        {
+            var entries = _localTimeRepository.GetTimeEntriesSince(time);
             return TimeSpan.FromMinutes(entries.Sum(entry => entry.MinutesSpent));
         }
 
