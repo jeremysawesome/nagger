@@ -35,7 +35,7 @@
 
             var timeEntryModel = new TimeEntryModel
             {
-                Date = timeEntry.TimeRecorded.ToString("O"),
+                Date = timeEntry.TimeRecorded.Date.ToString("O"), // Meazure reporting likes entries to be "date" specific, not "time" specific
                 Notes = timeEntry.Comment,
                 TimeString = timeEntry.MinutesSpent + "m",
                 DurationSeconds = timeEntry.MinutesSpent*60,
