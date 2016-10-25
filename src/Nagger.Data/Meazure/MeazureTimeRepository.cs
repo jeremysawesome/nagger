@@ -1,6 +1,7 @@
 ﻿namespace Nagger.Data.Meazure
 {
-    using System.Collections.Generic;
+	using System;
+	using System.Collections.Generic;
     using API;
     using DTO;
     using Interfaces;
@@ -30,11 +31,19 @@
             return RecordTime(timeEntry, timeEntry.AssociatedTask);
         }
 
+	    DateTime GetCompatibleDate(TimeEntry timeEntry)
+	    {
+		    var date = new DateTime(timeEntry.TimeRecorded.Year, 
+				timeEntry.TimeRecorded.Month, 
+				timeEntry.TimeRecorded.Day, 0, 0, 0, DateTimeKind.Utc);
+		    return date;
+	    }
+
         bool RecordTime(TimeEntry timeEntry, Task task)
         {
             var timeEntryModel = new TimeEntryModel
             {
-                Date = timeEntry.TimeRecorded.Date.ToString("O"), // Meazure reporting likes entries to be "date" specific, not "time" specific
+                Date = GetCompatibleDate(timeEntry).ToString("O"),
                 Notes = timeEntry.Comment, 
                 TimeString = timeEntry.MinutesSpent + "m", 
                 DurationSeconds = timeEntry.MinutesSpent*60, 
