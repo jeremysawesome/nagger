@@ -46,6 +46,9 @@
 
         public Task AskForAssociatedTask(Task currentTask)
         {
+            // only ask for an associated task if the project repository has an associated repository
+            if (currentTask.Project?.AssociatedRemoteRepository == null) return null;
+
             if (!_inputService.AskForBoolean("Associate this entry with an additional task?")) return null;
 
             Task associatedTask;
