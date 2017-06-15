@@ -15,7 +15,7 @@
             if (!File.Exists(dataSource))
             {
                 Directory.CreateDirectory(appData + "\\Nagger");
-                File.Copy("."+naggerDb, dataSource);
+                File.Copy(AppDomain.CurrentDomain.BaseDirectory + naggerDb, dataSource);
             }
 
             // this still needs work. the db needs to already exist... it should be setup already.
