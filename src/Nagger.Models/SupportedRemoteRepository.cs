@@ -3,6 +3,7 @@
     public enum SupportedRemoteRepository
     {
         Jira,
-        Meazure
+        Meazure,
+        None
     }
 }
