@@ -60,6 +60,7 @@
     <Compile Include="Fake\FakeProjectRepository.cs" />
     <Compile Include="Fake\FakeTaskRepository.cs" />
     <Compile Include="API\BaseApi.cs" />
+    <Compile Include="Fake\FakeTimeRepository.cs" />
     <Compile Include="JIRA\BaseJiraRepository.cs" />
     <Compile Include="JIRA\DTO\Project.cs" />
     <Compile Include="JIRA\API\JiraApi.cs" />
