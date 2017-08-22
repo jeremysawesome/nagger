@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using Autofac;
+    using Data.Fake;
     using Data.JIRA;
     using Data.Local;
     using Data.Meazure;
@@ -12,6 +13,7 @@
     using Quartz;
     using Quartz.Impl;
     using Services;
+    using Services.Fake;
     using Services.JIRA;
     using Services.Meazure;
 
@@ -95,6 +97,14 @@
                 // jira is the default so register last
                 registerMeazure(updater, false);
                 registerJira(updater, true);
+            }
+            else if (primaryRepository == SupportedRemoteRepository.None)
+            {
+                updater.RegisterType<FakeProjectRepository>().As<IRemoteProjectRepository>();
+                updater.RegisterType<FakeTaskRepository>().As<IRemoteTaskRepository>();
+                updater.RegisterType<FakeTimeRepository>().As<IRemoteTimeRepository>();
+
+                updater.RegisterType<FakeRunner>().As<IRemoteRunner>();
             }
 
             updater.Update(container);
