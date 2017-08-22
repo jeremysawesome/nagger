@@ -8,24 +8,26 @@
 
     public class FakeTaskRepository : IRemoteTaskRepository
     {
+        static readonly Task Development = new Task { Id = "1", Name = "Development", Description = "Development" };
+
         public Task GetTaskByName(string name)
         {
-            return null;
+            return name == Development.Name ? Development : null;
         }
 
         public IEnumerable<Task> GetTasks()
         {
-            yield break;
+            yield return Development;
         }
 
         public IEnumerable<Task> GetTasks(Project project)
         {
-            yield break;
+            return GetTasks();
         }
 
         public IEnumerable<Task> GetTasksByProjectId(string projectId, string lastTaskId = "")
         {
-            yield break;
+            return GetTasks();
         }
 
         public void InitializeForProject(Project project)
