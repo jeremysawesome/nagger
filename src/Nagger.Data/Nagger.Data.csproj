@@ -58,7 +58,7 @@
   <ItemGroup>
     <Compile Include="BaseRepository.cs" />
     <Compile Include="Fake\FakeProjectRepository.cs" />
-    <Compile Include="Fake\FakeRemoteTaskRepository.cs" />
+    <Compile Include="Fake\FakeTaskRepository.cs" />
     <Compile Include="API\BaseApi.cs" />
     <Compile Include="JIRA\BaseJiraRepository.cs" />
     <Compile Include="JIRA\DTO\Project.cs" />
